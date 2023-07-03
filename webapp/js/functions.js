@@ -67,6 +67,29 @@ function len(obj){
     return null;
 }
 
+function getCardKeyFromParent(element){
+    var parentElement = element;
+    while(!parentElement.hasAttribute('card_key') && parentElement.tagName != 'BODY'){
+        parentElement = parentElement.parentElement;
+    }
+    if(parentElement.hasAttribute('card_key')){
+        return parentElement.getAttribute('card_key');
+    }
+    return null;
+}
+
+function matchElementAndParent(element, filters){
+    if(!Array.isArray(filters)) filters = [filters];
+    const parentElement = element.parentElement;
+    for(const fi of filters){
+        if(element.matches(fi)) return true;
+        if(parentElement.matches(fi)) return true;
+    }
+    return false;
+}
+
+
+
 // md5 ugly block
 function md5(d){var r = md5m(md5v(md5y(md5x(encodeURIComponent(d)),8*d.length)));return r.toLowerCase()};
 function md5m(d){for(var _,m="0123456789ABCDEF",f="",r=0;r<d.length;r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}

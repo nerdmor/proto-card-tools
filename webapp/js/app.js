@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // global managers
     window.scryfall = new Scryfall();
-    window.listManager = new CardList();
-    window.listManager.setCardMode('table');
+    window.listManager = new CardList(window.settings.enabledStatus, 'table');
 
     // modal handlers
     window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
@@ -88,9 +87,7 @@ window.drawCardList = async function(element){
 document.addEventListener('DOMContentLoaded', function(){
     // call card version selector from click in the correct elements
     document.querySelector('body').addEventListener('click', (evt) => {
-        if(!evt.target.matches('.card-select-set')){
-            return;
-        }
+        if(!matchElementAndParent(evt.target, ['.card-select-set'])) return;
 
         var parentElement = evt.target.parentElement;
         while(!parentElement.hasAttribute('card_key')){
@@ -141,9 +138,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
-        if(!event.target.matches('.table-card-trash') && !event.target.parentElement.matches('.table-card-trash')){
-            return;
-        }
+        if(!matchElementAndParent(event.target, ['.table-card-trash'])) return;
 
         event.target.setAttribute('mouse_down', '1');
         if(!event.target.hasAttribute('mouse_down')){
@@ -154,17 +149,65 @@ document.addEventListener('DOMContentLoaded', function(){
 
         setTimeout((element) => {
             if(element.getAttribute('mouse_down') == '1'){
-                var parentElement = element.parentElement;
-                while(!parentElement.hasAttribute('card_key') && parentElement.tagName != 'BODY'){
-                    parentElement = parentElement.parentElement;
-                }
-                if(parentElement.hasAttribute('card_key')){
-                    window.listManager.removeCard(parentElement.getAttribute('card_key'));
+                const cardKey = getCardKeyFromParent(event.target);
+                if(cardKey){
+                    window.listManager.removeCard(cardKey);
+                    // TODO: change this to remove the element, not redraw the whole list
                     window.drawCardList(window.listElement);
                 }
             }
         }, window.settings.deleteCooldown, event.target)
 
+    });
+
+    // next status
+    document.querySelector('body').addEventListener('click', function(event){
+        if(!matchElementAndParent(event.target, ['.card-status-button'])) return;
+
+        const cardKey = getCardKeyFromParent(event.target);
+        if(cardKey === null){
+            return;
+        }
+
+        window.listManager.setCardStatus(cardKey, 'next');
+        window.listManager.redrawCard(cardKey);
+    });
+
+    // card quantity buttons
+    document.querySelector('body').addEventListener('click', function(event){
+        if(!matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus'])) return;
+
+        const cardKey = getCardKeyFromParent(event.target);
+        if(cardKey === null){ return; }
+
+        if(matchElementAndParent(event.target, '.table-card-minus')){
+            window.listManager.addCardQuantity(cardKey, -1);
+        }else{
+            window.listManager.addCardQuantity(cardKey, 1)
+        }
+
+        window.listManager.redrawCard(cardKey);
+    });
+
+    // card quantity form
+    document.querySelector('body').addEventListener('submit', function(event){
+        if(!matchElementAndParent(event.target, ['.table-card-quantity-form'])) return;
+        event.preventDefault();
+
+        const cardKey = getCardKeyFromParent(event.target);
+        if(cardKey === null){ return; }
+
+        const quantityElement = event.target.querySelector('input.table-card-row-quantity');
+        if(!quantityElement) return;
+        var newQuantity = null;
+        try {
+            newQuantity = parseInt(quantityElement.value);
+        } catch(e) {
+            console.log(e);
+            return;
+        }
+        window.listManager.setCardQuantity(cardKey, newQuantity);
+        window.listManager.redrawCard(cardKey);
     });
 
 

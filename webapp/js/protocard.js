@@ -19,7 +19,7 @@ class ProtoCard{
                   </nav>
                 </div>
                 <div class="card-body finder-card-body">
-                  <img class="finder-card-image" src="%%card-image-url%%" alt="%%card-name%%">
+                  <img class="finder-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
                 </div>
             </div>
             `,
@@ -36,16 +36,16 @@ class ProtoCard{
     static tableModels = {
         innerModel: `
           <div class="col-1 table-card-quantity">
-            <div class="input-group" role="group">
-              <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-minus"><i class="bi bi-dash-lg"></i></button>
-              <input type="text" class="form-control form-control-sm table-card-row-quantity table-card-quantity-control" value="%%quantity%%">
-              <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-plus"><i class="bi bi-plus-lg"></i></button>
-            </div>
+              <form class="table-card-quantity-form input-group" role="group">
+                <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-minus"><i class="bi bi-dash-lg"></i></button>
+                <input type="text" class="form-control form-control-sm table-card-row-quantity table-card-quantity-control" value="%%quantity%%">
+                <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-plus"><i class="bi bi-plus-lg"></i></button>
+              </form>
           </div>
           <div class="col-3 align-middle">
             <span class="table-card-name align-middle">%%name%%</span>
           </div>
-          <div class="col-3 table-card-cost">%%cardcost%%</div>
+          <div class="col-2 table-card-cost">%%cardcost%%</div>
           <div class="col-1 table-card-set">
             <div class="table-card-set-span">
               <button type="button" class="btn btn-sm btn-light card-select-set">
@@ -59,10 +59,11 @@ class ProtoCard{
             </div>
           </div>
           <div class="col-1 table-card-status-symbol align-middle">
-            <button type="button" class="btn btn-sm btn-outline-secondary">✅</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary card-status-button table-card-status-button">%%cardstatus%%</button>
           </div>
-          <div class="col-1 table-card-control">
-            <button type="button" class="table-card-trash"><i class="bi bi-trash"></i></button>
+          <div class="col-2 table-card-control">
+            <button type="button" class="btn btn-sm table-card-details"><i class="bi bi-three-dots"></i></button>
+            <button type="button" class="btn btn-sm table-card-trash"><i class="bi bi-trash"></i></button>
           </div>
         `,
         outerModel: `
@@ -96,6 +97,48 @@ class ProtoCard{
         `
     };
 
+    static detailsModels = {
+        cardModel: `
+            <div class="row card-details-body">
+              <div class="col-md-5 col-sm-12">
+                <img src="%%cardimageurl%%" alt="%%cardname%%">
+              </div>
+              <div class="col-md-7 col-sm-12">
+                <div class="row card-details-row card-details-top">
+                  <div class="col-6 card-details-name">%%cardname%%</div>
+                  <div class="col-6 card-details-cost">%%cardcost%%</div>
+                </div>
+                <div class="row card-details-row card-details-type">%%typeline%%</div>
+                <div class="row card-details-row card-details-body">%%oracletext%%</div>
+                <div class="row card-details-row card-details-stats">%%cardstats%%</div>
+                <div class="row card-details-row card-details-links">
+                  <div class="col-1">
+                    <a class="btn btn-secondary card-details-scryfall-link" target="_blank" href="%%scryfallurl%%">
+                      <svg focusable="false" aria-hidden="true" width="460" height="460" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-60 -58)" fill="none" fill-rule="evenodd"><circle fill="#000" opacity=".09" cx="290" cy="288" r="230"></circle><path fill="#BC979D" d="M279.508 112.547l-.028 361.84 43.137 6.808 56.715-13.23 28.54-72.547-28.044-178.926-31.887-113.004"></path><path fill="#AE7F9C" d="M281.57 100.633l-2.457 383.13-67.972-21.888 13.9-355.852"></path><path d="M207.05 113.316v344.032S87.364 394.5 93.388 283.043C99.41 171.586 207.05 113.316 207.05 113.316z" fill="#786076"></path><path d="M237.375 107.21l-30.603 4.35s-20.682 10.42-37.922 25.5c-75.19 167.948 108.332 115.1-12.725 286.69 50.647 47.86 72.293 41.137 72.293 41.137l8.957-357.676z" fill="#947A92"></path><path d="M343.058 89.985c-109.36-29.303-221.77 35.597-251.073 144.957-29.303 109.36 35.597 221.77 144.957 251.073 109.36 29.303 221.77-35.597 251.073-144.957 29.303-109.36-35.597-221.77-144.957-251.073zM256.342 451.95l.276.71c1.172 3.187 3.562 5.776 6.644 7.2 3.082 1.422 6.603 1.562 9.788.387l48.355-17.774c3.184-1.175 6.706-1.035 9.787.388 3.082 1.424 5.472 4.013 6.644 7.2l.19.56c2.105 5.852-.304 12.37-5.71 15.448-93.23 22.17-187.912-30.724-217.912-121.736s14.67-189.84 102.81-227.453c5.144.502 9.544 3.91 11.32 8.762 2.578 6.977 10.317 10.55 17.3 7.99l15.73-5.803c3.186-1.176 6.707-1.036 9.79.387 3.08 1.423 5.47 4.012 6.643 7.198l.19.56c1.174 3.185 1.034 6.706-.39 9.788-1.422 3.082-4.01 5.472-7.197 6.644l-109.46 40.366c-3.187 1.172-5.777 3.562-7.2 6.644-1.422 3.082-1.562 6.603-.388 9.788l.19.56c1.172 3.186 3.562 5.775 6.643 7.198 3.082 1.423 6.603 1.563 9.788.388l80.06-29.483c3.184-1.174 6.705-1.034 9.787.388 3.082 1.423 5.472 4.013 6.644 7.2l.19.56c1.173 3.184 1.034 6.705-.39 9.787-1.422 3.08-4.01 5.47-7.197 6.643l-127.814 47.08c-3.186 1.17-5.776 3.56-7.2 6.643-1.42 3.082-1.56 6.603-.387 9.788l.19.56c1.172 3.186 3.562 5.775 6.643 7.198 3.08 1.423 6.602 1.563 9.787.388L297.72 226.4c3.184-1.175 6.705-1.036 9.787.387 3.082 1.423 5.472 4.012 6.644 7.198l.467 1.27c1.174 3.186 1.035 6.707-.388 9.79-1.424 3.08-4.014 5.47-7.2 6.643l-113 41.54c-3.187 1.172-5.777 3.562-7.2 6.644-1.422 3.08-1.562 6.603-.387 9.787l.19.56c1.17 3.185 3.56 5.775 6.643 7.198 3.08 1.423 6.603 1.562 9.787.388l51.798-19.06c3.186-1.174 6.707-1.034 9.79.39 3.08 1.422 5.47 4.01 6.643 7.197l.19.56c1.174 3.185 1.034 6.706-.39 9.788-1.422 3.083-4.01 5.473-7.197 6.644l-89.085 32.754c-3.185 1.17-5.774 3.56-7.197 6.643-1.423 3.083-1.562 6.604-.388 9.79l.19.56c1.17 3.185 3.56 5.775 6.643 7.197 3.082 1.423 6.603 1.563 9.788.388L304.563 336.3c3.185-1.173 6.706-1.034 9.788.39 3.083 1.422 5.473 4.01 6.644 7.197l.19.56c1.174 3.185 1.035 6.706-.388 9.788s-4.013 5.472-7.198 6.644l-74.954 27.54c-3.186 1.17-5.776 3.56-7.2 6.643-1.422 3.082-1.56 6.603-.387 9.788l.19.56c1.172 3.187 3.562 5.777 6.643 7.2 3.082 1.422 6.603 1.562 9.788.387l94.147-34.537c3.185-1.175 6.706-1.035 9.788.388s5.472 4.012 6.644 7.198c2.428 6.58-.893 13.887-7.447 16.384l-86.903 33.168c-3.18 1.18-5.764 3.574-7.18 6.658-1.414 3.083-1.547 6.603-.367 9.784l-.018-.09z" fill="#FFF"></path></g></svg>
+                    </a>
+                  </div>
+                  <div class="col-1">
+                    <a class="btn btn-secondary card-details-edhrec-link" target="_blank" href="%%edhrecurl%%">
+                      <svg focusable="false" aria-hidden="true" width="386" height="351" viewBox="0 0 386 351" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero" fill="#000"><path d="M192.8 87.7L155.5 105l-27.7 12.8.2 147.2 64.8-30.3 64.8 30.3V117.7l-38-17.6"></path><path d="M126.3 43.2l10.7-5 29.3 62.8-10.8 5M248.8 38.2l10.5 5.1-29.1 62.7-10.6-4.9"></path><circle cx="124.2" cy="24.7" r="19.1"></circle><circle cx="261.8" cy="24.7" r="19.1"></circle><path d="M104.3 177.6l-80.8 37.6v98.6l80.8-37.7M281.7 177.5l80.9 37.7v98.5l-80.9-37.6M.1 350.6L193 260.7l192.8 89.7M142.6 39.9l60.7-33.2-.9 14.8L256.6.7l-60.5 33.1 1.2-13.5"></path></g></svg>
+                    </a>
+                  </div>
+
+                  <div class="col-1">
+                    <a class="btn btn-secondary card-details-liga-link" target="_blank" href="%%ligamagicurl%%">
+                      <img src="https://www.lmcorp.com.br/arquivos/img/apple-touch-icon-01-152x152.png">
+                    </a>
+                  </div>
+
+                  <div class="col-9"> &nbsp;</div>
+                </div>
+              </div>
+            </div>
+        `,
+        loyaltyModel: `<i class="ms %%loyaltydirection%% ms-loyalty-%%loyalty%%"></i>`,
+        defenseModel: `<i class="ms ms-defense ms-defense-print ms-defense-%%defense%%"></i>`
+        sagaModel: `<i class="ms ms-saga ms-saga-%%chapter%%"></i>`
+    };
+
 
     constructor(index){
         // defined by user
@@ -121,13 +164,21 @@ class ProtoCard{
         this.sets = {};
         this.oracleId = null;
         this.typeLine = null;
-        this.scryfallUrl = null;
+        this.urls = {
+            'scryfall': null,
+            'ligamagic': null,
+            'edhrec': null
+        };
         this.manaCosts = [];
+        this.oracleText = '';
+        this.stats = '';
+
 
         // calculated from Scryfall
         this.isLand = false;
         this.isMulticolor = false;
         this.isColorless = false;
+        this.statType = null;
 
         // internal Control
         this.errors = [];
@@ -155,9 +206,9 @@ class ProtoCard{
         }
 
         if(printmode == 'find')
-            return this._drawInnerFind();
+            return this._drawInnerFind(setData);
         else if(printmode == 'table')
-            return this._drawInnerTable();
+            return this._drawInnerTable(setData);
         throw new Error('Invalid printmode');
     }
 
@@ -180,8 +231,9 @@ class ProtoCard{
 
     _drawInnerFind(){
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
-                                        .replaceAll('%%card-name%%', this.name)
-                                        .replaceAll('%%card-image-url%%', this.sets[this.selectedSet].images[window.settings.cardImgQuality]);
+                                                  .replaceAll('%%cardname%%', this.name)
+                                                  .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet].images[window.settings.cardImgQuality])
+                                                  .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status);
         var rarityIcons = [];
         for (const e of this.rarities) {
             if(window.constants.rarities.includes(e)){
@@ -242,7 +294,8 @@ class ProtoCard{
                                                    .replaceAll('%%cardcost%%', this._makeCostIcons())
                                                    .replaceAll('%%rarityicons%%', rarityIcons)
                                                    .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
-                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name);
+                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name)
+                                                   .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status);;
 
         return html;
     }
@@ -293,7 +346,7 @@ class ProtoCard{
 
 
         if(this.isLand) return 'land';
-        if(this.typeLine.indexOf('artifact') > -1) return 'artifact';
+        if(this.typeLine.toLowerCase().indexOf('artifact') > -1) return 'artifact';
         return 'colorless';
     }
 
@@ -311,6 +364,56 @@ class ProtoCard{
         }
 
         return cards.join('\n');
+    }
+
+    drawDetails(){
+        var stats = '';
+        if(this.statType == 'p/t') stats = this.stats;
+        else if(this.statType == 'defense') stats = ProtoCard.detailsModels.defenseModel.replaceAll('%%defense%%', this.stats);
+        else if(this.statType == 'loyalty') stats = ProtoCard.detailsModels.loyaltyModel.replaceAll('%%loyaltydirection%%', '').replaceAll('%%loyalty%%', this.stats);
+
+        var oracleText = this.oracleText.split('\n');
+        var tmpText = [];
+        if(this.typeLine.indexOf('Planeswalker') > -1){
+            for(const line of oracleText){
+                matches = line.match(/^([\+\-−]?)(\d+)/i);
+                if(!matches){
+                    tmpText.push(`<p>${line}</p>`);
+                    continue;
+                }
+
+                tmpLine = ProtoCard.detailsModels.loyaltyModel;
+                if(matches[1] == '-' || matches[1] == '−'){
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-down').replaceAll('%%loyalty%%', this.matches[2]);
+                }else if(matches[1] == '+'){
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-up').replaceAll('%%loyalty%%', this.matches[2]);
+                }else{
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', '').replaceAll('%%loyalty%%', this.matches[2]);
+                }
+
+                tmpText.push(`<p>${line.replaceAll(matches[0], tmpLine)}</p>`);
+            }
+            oracleText = tmpText;
+        }else{
+            var tmpText = [];
+            for(const line of oracleText){
+                tmpText.push(`<p>${line}</p>`);
+            }
+            oracleText = tmpText;
+        }
+        oracleText = oracleText.join('\n');
+
+
+
+        return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images[window.settings.cardImgQuality])
+                                                    .replaceAll('%%cardname%%', this.name)
+                                                    .replaceAll('%%cardcost%%', this._makeCostIcons())
+                                                    .replaceAll('%%typeline%%', this.typeLine)
+                                                    .replaceAll('%%oracletext%%', oracleText)
+                                                    .replaceAll('%%cardstats%%', stats)
+                                                    .replaceAll('%%scryfallurl%%', this.urls.scryfall)
+                                                    .replaceAll('%%edhrecurl%%', this.urls.edhrec)
+                                                    .replaceAll('%%ligamagicurl%%', this.urls.ligamagic);
     }
 
     buildFromParams(params, calculate=false){
@@ -382,11 +485,16 @@ class ProtoCard{
             if(this.loaded === 0){
                 this.loaded = 1;
                 this.oracleId = scrycard.oracle_id;
-                this.scryfallUrl = scrycard.scryfall_uri;
                 this.cmc = scrycard.cmc;
                 this.name = firstFace.name;
                 this.names.main = firstFace.name;
                 this.data = scrycard;
+                this.urls.scryfall = scrycard.scryfall_uri;
+                if(Object.hasOwn(scrycard, 'related_uris')){
+                    if (Object.hasOwn(scrycard.related_uris, 'edhrec')){
+                        this.urls.edhrec = scrycard.related_uris.edhrec;
+                    }
+                }
 
                 for (var c = 0; c < firstFace.colors.length; c++) {
                     this.colors.push(firstFace.colors[c].toLowerCase());
@@ -395,10 +503,22 @@ class ProtoCard{
                 else if(this.colors.length == 0) this.isColorless = true;
 
 
-                this.typeLine = onlyUnique(firstFace.type_line.replaceAll(' // ', ' ').replaceAll(' - ', ' ').toLowerCase().split(' '));
-                if(firstFace.type_line.indexOf('Land') > -1){
-                    this.isLand = true;
+                // this.typeLine = onlyUnique(firstFace.type_line.replaceAll(' // ', ' ').replaceAll(' - ', ' ').toLowerCase().split(' '));
+                this.typeLine = firstFace.type_line;
+
+                this.oracleText = firstFace.oracle_text;
+                if(Object.hasOwn(firstFace, 'power')){
+                    this.stats = `${firstFace.power}/${firstFace.toughness}`;
+                    this.statType = 'p/t';
+                }else if(Object.hasOwn(firstFace, 'defense')){
+                    this.stats = firstFace.defense;
+                    this.statType = 'defense';
+                }else if(Object.hasOwn(firstFace, 'loyalty')){
+                    this.stats = firstFace.loyalty;
+                    this.statType = 'loyalty';
                 }
+
+                if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
             }
             this.sets[scrycard['set']] = {
                 'rarity': translateRarity(scrycard['rarity']),
@@ -479,6 +599,7 @@ class ProtoCard{
             this.rarities = onlyUnique(this.rarities);
             this.names.faces = onlyUnique(this.names.faces);
             this.names.compiled = this.names.faces.join(' // ');
+            this.urls.ligamagic = `https://www.ligamagic.com.br/?view=cards/card&card=${this.names.compiled}`;
             this.loaded = 2;
 
             if(this.selectedSet === null || !Object.keys(this.sets).includes(this.selectedSet)){

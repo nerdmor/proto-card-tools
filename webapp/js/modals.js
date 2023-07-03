@@ -132,8 +132,8 @@ class ArchidektFileImportModal extends ProtoModal {
     `;
 
     constructor(domElement){
-        this.options = {'focus': true};
         super(domElement);
+        this.options = {'focus': true};
     }
 
     call(categories, confirmCallback, cancelCallback, title=null){
@@ -223,8 +223,8 @@ class CardSetSelectionModal extends ProtoModal {
     `;
 
     constructor(domElement){
-        this.options = {'focus': true};
         super(domElement);
+        this.options = {'focus': true};
     }
 
     call(cardBody, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass ,confirmCallback, cancelCallback, title=null){

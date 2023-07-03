@@ -1,12 +1,18 @@
 class CardList{
-    constructor(){
-        this.allowedModes = ['find', 'table'];
+    static allowedModes = ['find', 'table'];
+    static modeOuterClass = {
+        'find': 'finder-card',
+        'table': 'table-card-row'
+    };
 
-        this.cardMode = null;
+
+    constructor(statusList=null, cardMode=null){
+        this.cardMode = cardMode || Cardlist.allowedModes[0];
         this.cardIndex = [];
         this.cardQueue = [];
         this.cards = {};
         this.sets = {};
+        this.statusList = statusList || [];
 
         this.errors = [];
         this.scryfallClient = null;
@@ -17,10 +23,42 @@ class CardList{
     }
 
     setCardMode(mode){
-        if(!this.allowedModes.includes(mode)){
+        if(!CardList.allowedModes.includes(mode)){
             return false;
         }
         this.cardMode = mode;
+    }
+
+    setCardStatus(cardKey, status){
+        if(!this.statusList.includes(status) && status != 'next') return null;
+        if(!Object.keys(this.cards).includes(cardKey)) return null;
+
+        if(status === 'next'){
+            status = this._getNextStatus(this.cards[cardKey].status);
+        }
+        this.cards[cardKey].status = status;
+    }
+
+    addCardQuantity(cardKey, newQuant){
+        if(!Object.keys(this.cards).includes(cardKey)) return;
+        if(this.cards[cardKey].quantity = Math.max(0, this.cards[cardKey].quantity + newQuant));
+    }
+
+    setCardQuantity(cardKey, newQuant){
+        if(!Object.keys(this.cards).includes(cardKey)) return;
+        if(this.cards[cardKey].quantity = Math.max(0, newQuant));
+    }
+
+    _getNextStatus(status){
+        if(status === null || !this.statusList.includes(status)){
+            return this.statusList[0];
+        }
+
+        const nextStatus = this.statusList.indexOf(status) + 1;
+        if(nextStatus >= this.statusList.length){
+            return this.statusList[0];
+        }
+        return this.statusList[nextStatus];
     }
 
     _loadSetKeys(){
@@ -175,7 +213,7 @@ class CardList{
 
         var params = {
             'index': 0,
-            'callback': (p) => this._processQueueStep(p),
+            'callback': (params) => this._processQueueStep(params),
         };
         if(stepCallback){
             params['stepCallback'] = (p) => stepCallback(p);
@@ -304,6 +342,13 @@ class CardList{
             html.push(this.cards[cardKey].drawSetSelect(this.sets));
         }
         return html.join('\n');
+    }
+
+    redrawCard(cardKey){
+        if(!Object.keys(this.cards).includes(cardKey)) return null;
+        const element = document.querySelector(`.${CardList.modeOuterClass[this.cardMode]}[card_key="${cardKey}"]`);
+        if(element === null) return null;
+        element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.cardMode);
     }
 
     setCardSelectedSet(cardKey, setCode){

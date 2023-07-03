@@ -249,3 +249,8 @@
     border-width: 2px;
     border-color: #e6a902;
 }
+
+.table-card-status-button{
+    height: 100%;
+    border-width: 0px;
+}
