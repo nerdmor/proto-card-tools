@@ -283,21 +283,27 @@ class CardList{
         this.cardQueue = [];
     }
 
-    draw(){
+    draw(drawMode = null){
         var html = [];
+        drawMode = drawMode || this.cardMode;
+
+        if(drawMode == 'sets'){
+            return this._drawSetSelect();
+        }
+
         for(const cardKey of Object.keys(this.cards)){
             html.push(this.cards[cardKey].draw(this.sets, this.cardMode));
         }
-        return html.join('');
+        return html.join('\n');
     }
 
-    drawSetSelect(){
+    _drawSetSelect(){
         if(this.hasNullSets()) return null;
         var html = [];
         for(const cardKey of Object.keys(this.cards)){
             html.push(this.cards[cardKey].drawSetSelect(this.sets));
         }
-        return html.join('');
+        return html.join('\n');
     }
 
     setCardSelectedSet(cardKey, setCode){

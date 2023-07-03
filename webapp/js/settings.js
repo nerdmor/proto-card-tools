@@ -1,3 +1,5 @@
 window.settings = {
-	'cardImgQuality': 'normal'
+    'cardImgQuality': 'normal',
+    'deleteCooldown': 1000,
+    'enabledStatus': ['🔄', '❓', '✅', '❌']
 };

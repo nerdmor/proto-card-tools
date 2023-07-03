@@ -1,0 +1,29 @@
+* layouts:
+	* token
+	* meld
+	* leveler
+	* modal_dfc
+	* emblem
+	* transform
+	* split
+	* planar
+	* flip
+	* host
+	* saga
+	* normal
+	* augment
+	* vanguard
+	* double_faced_token
+	* class
+	* art_series
+	* scheme
+	* adventure
+	* prototype
+* faces_layouts:
+	* art_series
+	* split
+	* flip
+	* adventure
+	* double_faced_token
+	* modal_dfc
+	* transform

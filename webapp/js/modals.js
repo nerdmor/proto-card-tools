@@ -24,7 +24,6 @@ class ProtoModal{
     dismiss(callback=null){
         if(callback) this.hiddenCallback = callback;
         this.modal.hide();
-        // this.modal.dispose();
     }
 
     async _afterHidden(){
@@ -67,11 +66,15 @@ class LoadingCardsModal extends ProtoModal{
     loading <strong>%%cardname%%</strong>
     `;
 
-    constructor(domElement, title=null, starterText=null){
+    constructor(domElement){
         super(domElement);
+        this.options = {'backdrop': 'static', 'focus': true, 'keyboard': false};
+    }
+
+    call(title=null, starterText=null){
         this.title = title || 'Loading cards';
         this.starterText = starterText || 'loading...';
-        this.options = {'backdrop': 'static', 'focus': true, 'keyboard': false};
+        super.call();
     }
 
     draw(){
@@ -128,16 +131,18 @@ class ArchidektFileImportModal extends ProtoModal {
     </div>
     `;
 
-    constructor(domElement, categories, confirmCallback, cancelCallback){
-        super(domElement);
-        this.title = 'Archidekt File Import';
+    constructor(domElement){
         this.options = {'focus': true};
+        super(domElement);
+    }
+
+    call(categories, confirmCallback, cancelCallback, title=null){
+        this.title = title || 'Archidekt File Import';
         this.categories = categories;
         this.categoryList = Object.keys(this.categories);
         this.cancelCallback = cancelCallback;
         this.confirmCallback = confirmCallback;
-
-        console.log(this.categoryList);
+        super.call()
     }
 
     draw(){
@@ -217,10 +222,13 @@ class CardSetSelectionModal extends ProtoModal {
     </div>
     `;
 
-    constructor(domElement, cardBody, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass ,confirmCallback, cancelCallback){
-        super(domElement);
-        this.title = 'Select card set/version';
+    constructor(domElement){
         this.options = {'focus': true};
+        super(domElement);
+    }
+
+    call(cardBody, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass ,confirmCallback, cancelCallback, title=null){
+        this.title = title || 'Select card set/version';
         this.cardBody = cardBody;
         this.selectedSet = null;
 
@@ -230,6 +238,7 @@ class CardSetSelectionModal extends ProtoModal {
         this.selectedClass = selectedClass;
         this.cancelCallback = cancelCallback;
         this.confirmCallback = confirmCallback;
+        super.call();
     }
 
     draw(){

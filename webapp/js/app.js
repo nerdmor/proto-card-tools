@@ -3,9 +3,18 @@
  **************************************************************************** */
 document.addEventListener('DOMContentLoaded', function () {
     window.listElement = document.querySelector('#second-row');
+
+    // global managers
     window.scryfall = new Scryfall();
     window.listManager = new CardList();
-    window.listManager.setCardMode('find');
+    window.listManager.setCardMode('table');
+
+    // modal handlers
+    window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
+    window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
+    window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
+    window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
+
 }, false);
 
 
@@ -13,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
  * Loading-modal handling functions
  **************************************************************************** */
 window.loadQueueFromScryfallModalHandler = async function(){
-    window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
     window.loadingCardsModal.call();
     await delay(500);
 
@@ -32,8 +40,7 @@ window.loadSetsModalHandler = async function(callback){
         callback();
         return;
     };
-    window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'), 'Loading sets');
-    window.loadingSetsModal.call();
+    window.loadingSetsModal.call('Loading Sets');
     await delay(500);
     window.listManager.loadSetData(
         window.scryfall,
@@ -46,7 +53,7 @@ window.loadSetsModalHandler = async function(callback){
 };
 
 window.cardSetSelectModalHandler = async function(cardKey, confirmCallback, cancelCallback){
-    const cardBody = window.listManager.drawSetSelect();
+    const cardBody = window.listManager.draw('sets');
     if(cardBody === null){
         window.loadSetsModalHandler(() => {
             window.cardSetSelectModalHandler(cardKey, confirmCallback, cancelCallback)
@@ -54,9 +61,7 @@ window.cardSetSelectModalHandler = async function(cardKey, confirmCallback, canc
         return;
     }
 
-    console.log('cardbody was OK, calling the modal!');
-    window.cardSetSelectionModal = new CardSetSelectionModal(
-        document.querySelector('#select-card-version-modal'), // domElement
+    window.cardSetSelectionModal.call(
         cardBody,
         '.card-select-image', //selectionElementQuery
         'set_code', //selectionElementPropName
@@ -67,14 +72,12 @@ window.cardSetSelectModalHandler = async function(cardKey, confirmCallback, canc
             confirmCallback(setCode);}, //confircallback
         () => {cancelCallback()} // cancelCallback
     );
-    window.cardSetSelectionModal.call();
 };
 
 /* *****************************************************************************
  * Drawing a list of cards
  **************************************************************************** */
 window.drawCardList = async function(element){
-    window.listManager.setCardMode('table'); // debug
     window.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
 }
 
@@ -114,26 +117,29 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
 
-
+    // load cards from text area
     document.querySelector('#list-import-form').addEventListener('click', function(e){
         window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
         window.loadQueueFromScryfallModalHandler();
+        // TODO: add error handling
     });
 
+    // load archidekt file
+    // TODO: add handling of other kinds of files. Split logic from cardlist
     document.querySelector('#archidekt-file').addEventListener('change',
         function(e){
             window.listManager.ingestArchidektFile(
                 this.files,
                 (cat, confCall, canCall) => {
                     confCall.params.okCallback = () => {window.loadQueueFromScryfallModalHandler()};
-                    window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'), cat, confCall, canCall);
-                    window.archidektFileImportModal.call();
+                    window.archidektFileImportModal.call(cat, confCall, canCall);
                 }
             );
         },
         false
     );
 
+    // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
         if(!event.target.matches('.table-card-trash') && !event.target.parentElement.matches('.table-card-trash')){
             return;
@@ -146,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function(){
             });
         }
 
-
         setTimeout((element) => {
             if(element.getAttribute('mouse_down') == '1'){
                 var parentElement = element.parentElement;
@@ -158,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     window.drawCardList(window.listElement);
                 }
             }
-        }, 1000, event.target)
+        }, window.settings.deleteCooldown, event.target)
 
     });
 
