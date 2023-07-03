@@ -1,0 +1,32 @@
+.loading-cards-modal-text{
+/*	display: inline;*/
+}
+
+.loading-cards-modal-spinner{
+/*	display: inline;*/
+}
+
+.card-select-icon-group{
+/*	display: inline-block;*/
+}
+
+.card-select-body{
+  padding: 0.1em 0.5em 0.5em 0.5em;;
+}
+
+.card-select-image{
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.card-select-set-icon{
+}
+
+.card-select-set-icon img{
+  max-width: 3em;
+  max-height: 3em;
+}
+
+.card-select-set-name h3{
+	size: 1em;
+}
