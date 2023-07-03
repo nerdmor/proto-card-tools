@@ -7,12 +7,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // global managers
     window.scryfall = new Scryfall();
     window.listManager = new CardList(window.settings.enabledStatus, 'table');
+    window.mainController = new MainController();
 
     // modal handlers
     window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
     window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
+    window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
 
 }, false);
 
@@ -85,43 +87,39 @@ window.drawCardList = async function(element){
  * Bindings
  **************************************************************************** */
 document.addEventListener('DOMContentLoaded', function(){
-    // call card version selector from click in the correct elements
-    document.querySelector('body').addEventListener('click', (evt) => {
-        if(!matchElementAndParent(evt.target, ['.card-select-set'])) return;
+    document.querySelector('body').addEventListener('click', (event) => {
+        // call set selector
+        if(matchElementAndParent(event.target, ['.card-select-set'])) return window.mainController.callSetSelect(event);
 
-        var parentElement = evt.target.parentElement;
-        while(!parentElement.hasAttribute('card_key')){
-            parentElement = parentElement.parentElement;
-            if(parentElement.tagName == 'BODY'){
-                parentElement = null;
-                break;
-            }
-        }
+        // next status
+        if(matchElementAndParent(event.target, ['.card-status-button'])) return window.mainController.nextStatus(event);
 
-        if(!parentElement){
-            return;
-        }
+        // card quantity buttons
+        if(matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus'])) return window.mainController.cardQuantityButtons(event);
 
-        const cardKey = parentElement.getAttribute('card_key');
-        window.cardSetSelectModalHandler(
-            cardKey,
-            (setCode) => { // confirmCallback
-                window.listManager.setCardSelectedSet(cardKey, setCode);
-                window.drawCardList(window.listElement);
-            },
-            () => {} //cancelCallback
-        );
+        // card details
+        if(matchElementAndParent(event.target, ['.table-card-details'])) return window.mainController.callCardDetails(event);
+    });
+
+    // card deletion, with cooldown :)
+    document.querySelector('body').addEventListener('mousedown', function(event){
+        if(matchElementAndParent(event.target, ['.table-card-trash'])) return window.mainController.deleteCardFromList(event);
+    });
+
+    // card quantity form
+    document.querySelector('body').addEventListener('submit', function(event){
+        if(matchElementAndParent(event.target, ['.table-card-quantity-form'])) return window.mainController.formCardQuantitySubmit(event);
     });
 
 
-    // load cards from text area
+    // DEBUG load cards from text area
     document.querySelector('#list-import-form').addEventListener('click', function(e){
         window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
         window.loadQueueFromScryfallModalHandler();
         // TODO: add error handling
     });
 
-    // load archidekt file
+    // DEBUG load archidekt file
     // TODO: add handling of other kinds of files. Split logic from cardlist
     document.querySelector('#archidekt-file').addEventListener('change',
         function(e){
@@ -135,80 +133,6 @@ document.addEventListener('DOMContentLoaded', function(){
         },
         false
     );
-
-    // card deletion, with cooldown :)
-    document.querySelector('body').addEventListener('mousedown', function(event){
-        if(!matchElementAndParent(event.target, ['.table-card-trash'])) return;
-
-        event.target.setAttribute('mouse_down', '1');
-        if(!event.target.hasAttribute('mouse_down')){
-            event.target.addEventListener('mouseup',  function(evt){
-                this.setAttribute('mouse_down', '0');
-            });
-        }
-
-        setTimeout((element) => {
-            if(element.getAttribute('mouse_down') == '1'){
-                const cardKey = getCardKeyFromParent(event.target);
-                if(cardKey){
-                    window.listManager.removeCard(cardKey);
-                    // TODO: change this to remove the element, not redraw the whole list
-                    window.drawCardList(window.listElement);
-                }
-            }
-        }, window.settings.deleteCooldown, event.target)
-
-    });
-
-    // next status
-    document.querySelector('body').addEventListener('click', function(event){
-        if(!matchElementAndParent(event.target, ['.card-status-button'])) return;
-
-        const cardKey = getCardKeyFromParent(event.target);
-        if(cardKey === null){
-            return;
-        }
-
-        window.listManager.setCardStatus(cardKey, 'next');
-        window.listManager.redrawCard(cardKey);
-    });
-
-    // card quantity buttons
-    document.querySelector('body').addEventListener('click', function(event){
-        if(!matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus'])) return;
-
-        const cardKey = getCardKeyFromParent(event.target);
-        if(cardKey === null){ return; }
-
-        if(matchElementAndParent(event.target, '.table-card-minus')){
-            window.listManager.addCardQuantity(cardKey, -1);
-        }else{
-            window.listManager.addCardQuantity(cardKey, 1)
-        }
-
-        window.listManager.redrawCard(cardKey);
-    });
-
-    // card quantity form
-    document.querySelector('body').addEventListener('submit', function(event){
-        if(!matchElementAndParent(event.target, ['.table-card-quantity-form'])) return;
-        event.preventDefault();
-
-        const cardKey = getCardKeyFromParent(event.target);
-        if(cardKey === null){ return; }
-
-        const quantityElement = event.target.querySelector('input.table-card-row-quantity');
-        if(!quantityElement) return;
-        var newQuantity = null;
-        try {
-            newQuantity = parseInt(quantityElement.value);
-        } catch(e) {
-            console.log(e);
-            return;
-        }
-        window.listManager.setCardQuantity(cardKey, newQuantity);
-        window.listManager.redrawCard(cardKey);
-    });
 
 
 // end of bindings

@@ -62,7 +62,7 @@ class ProtoCard{
             <button type="button" class="btn btn-sm btn-outline-secondary card-status-button table-card-status-button">%%cardstatus%%</button>
           </div>
           <div class="col-2 table-card-control">
-            <button type="button" class="btn btn-sm table-card-details"><i class="bi bi-three-dots"></i></button>
+            <button type="button" class="btn btn-sm btn-light table-card-details"><i class="bi bi-three-dots"></i></button>
             <button type="button" class="btn btn-sm table-card-trash"><i class="bi bi-trash"></i></button>
           </div>
         `,
@@ -100,32 +100,34 @@ class ProtoCard{
     static detailsModels = {
         cardModel: `
             <div class="row card-details-body">
-              <div class="col-md-5 col-sm-12">
+              <div class="col-md-5 col-sm-12 card-details-image-wrapper">
                 <img src="%%cardimageurl%%" alt="%%cardname%%">
               </div>
-              <div class="col-md-7 col-sm-12">
+              <div class="col-md-7 col-sm-12 card-details-description">
                 <div class="row card-details-row card-details-top">
                   <div class="col-6 card-details-name">%%cardname%%</div>
                   <div class="col-6 card-details-cost">%%cardcost%%</div>
                 </div>
                 <div class="row card-details-row card-details-type">%%typeline%%</div>
                 <div class="row card-details-row card-details-body">%%oracletext%%</div>
-                <div class="row card-details-row card-details-stats">%%cardstats%%</div>
+                <div class="row card-details-row card-details-stats">
+                    <span class="card-details-stats-wrapper">%%cardstats%%</span>
+                </div>
                 <div class="row card-details-row card-details-links">
                   <div class="col-1">
-                    <a class="btn btn-secondary card-details-scryfall-link" target="_blank" href="%%scryfallurl%%">
+                    <a class="btn btn-outline-secondary card-details-scryfall-link" target="_blank" href="%%scryfallurl%%">
                       <svg focusable="false" aria-hidden="true" width="460" height="460" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-60 -58)" fill="none" fill-rule="evenodd"><circle fill="#000" opacity=".09" cx="290" cy="288" r="230"></circle><path fill="#BC979D" d="M279.508 112.547l-.028 361.84 43.137 6.808 56.715-13.23 28.54-72.547-28.044-178.926-31.887-113.004"></path><path fill="#AE7F9C" d="M281.57 100.633l-2.457 383.13-67.972-21.888 13.9-355.852"></path><path d="M207.05 113.316v344.032S87.364 394.5 93.388 283.043C99.41 171.586 207.05 113.316 207.05 113.316z" fill="#786076"></path><path d="M237.375 107.21l-30.603 4.35s-20.682 10.42-37.922 25.5c-75.19 167.948 108.332 115.1-12.725 286.69 50.647 47.86 72.293 41.137 72.293 41.137l8.957-357.676z" fill="#947A92"></path><path d="M343.058 89.985c-109.36-29.303-221.77 35.597-251.073 144.957-29.303 109.36 35.597 221.77 144.957 251.073 109.36 29.303 221.77-35.597 251.073-144.957 29.303-109.36-35.597-221.77-144.957-251.073zM256.342 451.95l.276.71c1.172 3.187 3.562 5.776 6.644 7.2 3.082 1.422 6.603 1.562 9.788.387l48.355-17.774c3.184-1.175 6.706-1.035 9.787.388 3.082 1.424 5.472 4.013 6.644 7.2l.19.56c2.105 5.852-.304 12.37-5.71 15.448-93.23 22.17-187.912-30.724-217.912-121.736s14.67-189.84 102.81-227.453c5.144.502 9.544 3.91 11.32 8.762 2.578 6.977 10.317 10.55 17.3 7.99l15.73-5.803c3.186-1.176 6.707-1.036 9.79.387 3.08 1.423 5.47 4.012 6.643 7.198l.19.56c1.174 3.185 1.034 6.706-.39 9.788-1.422 3.082-4.01 5.472-7.197 6.644l-109.46 40.366c-3.187 1.172-5.777 3.562-7.2 6.644-1.422 3.082-1.562 6.603-.388 9.788l.19.56c1.172 3.186 3.562 5.775 6.643 7.198 3.082 1.423 6.603 1.563 9.788.388l80.06-29.483c3.184-1.174 6.705-1.034 9.787.388 3.082 1.423 5.472 4.013 6.644 7.2l.19.56c1.173 3.184 1.034 6.705-.39 9.787-1.422 3.08-4.01 5.47-7.197 6.643l-127.814 47.08c-3.186 1.17-5.776 3.56-7.2 6.643-1.42 3.082-1.56 6.603-.387 9.788l.19.56c1.172 3.186 3.562 5.775 6.643 7.198 3.08 1.423 6.602 1.563 9.787.388L297.72 226.4c3.184-1.175 6.705-1.036 9.787.387 3.082 1.423 5.472 4.012 6.644 7.198l.467 1.27c1.174 3.186 1.035 6.707-.388 9.79-1.424 3.08-4.014 5.47-7.2 6.643l-113 41.54c-3.187 1.172-5.777 3.562-7.2 6.644-1.422 3.08-1.562 6.603-.387 9.787l.19.56c1.17 3.185 3.56 5.775 6.643 7.198 3.08 1.423 6.603 1.562 9.787.388l51.798-19.06c3.186-1.174 6.707-1.034 9.79.39 3.08 1.422 5.47 4.01 6.643 7.197l.19.56c1.174 3.185 1.034 6.706-.39 9.788-1.422 3.083-4.01 5.473-7.197 6.644l-89.085 32.754c-3.185 1.17-5.774 3.56-7.197 6.643-1.423 3.083-1.562 6.604-.388 9.79l.19.56c1.17 3.185 3.56 5.775 6.643 7.197 3.082 1.423 6.603 1.563 9.788.388L304.563 336.3c3.185-1.173 6.706-1.034 9.788.39 3.083 1.422 5.473 4.01 6.644 7.197l.19.56c1.174 3.185 1.035 6.706-.388 9.788s-4.013 5.472-7.198 6.644l-74.954 27.54c-3.186 1.17-5.776 3.56-7.2 6.643-1.422 3.082-1.56 6.603-.387 9.788l.19.56c1.172 3.187 3.562 5.777 6.643 7.2 3.082 1.422 6.603 1.562 9.788.387l94.147-34.537c3.185-1.175 6.706-1.035 9.788.388s5.472 4.012 6.644 7.198c2.428 6.58-.893 13.887-7.447 16.384l-86.903 33.168c-3.18 1.18-5.764 3.574-7.18 6.658-1.414 3.083-1.547 6.603-.367 9.784l-.018-.09z" fill="#FFF"></path></g></svg>
                     </a>
                   </div>
                   <div class="col-1">
-                    <a class="btn btn-secondary card-details-edhrec-link" target="_blank" href="%%edhrecurl%%">
+                    <a class="btn btn-outline-secondary card-details-edhrec-link" target="_blank" href="%%edhrecurl%%">
                       <svg focusable="false" aria-hidden="true" width="386" height="351" viewBox="0 0 386 351" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero" fill="#000"><path d="M192.8 87.7L155.5 105l-27.7 12.8.2 147.2 64.8-30.3 64.8 30.3V117.7l-38-17.6"></path><path d="M126.3 43.2l10.7-5 29.3 62.8-10.8 5M248.8 38.2l10.5 5.1-29.1 62.7-10.6-4.9"></path><circle cx="124.2" cy="24.7" r="19.1"></circle><circle cx="261.8" cy="24.7" r="19.1"></circle><path d="M104.3 177.6l-80.8 37.6v98.6l80.8-37.7M281.7 177.5l80.9 37.7v98.5l-80.9-37.6M.1 350.6L193 260.7l192.8 89.7M142.6 39.9l60.7-33.2-.9 14.8L256.6.7l-60.5 33.1 1.2-13.5"></path></g></svg>
                     </a>
                   </div>
 
                   <div class="col-1">
-                    <a class="btn btn-secondary card-details-liga-link" target="_blank" href="%%ligamagicurl%%">
-                      <img src="https://www.lmcorp.com.br/arquivos/img/apple-touch-icon-01-152x152.png">
+                    <a class="btn btn-outline-secondary card-details-liga-link" target="_blank" href="%%ligamagicurl%%">
+                      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512" xml:space="preserve"> <defs>  <style type="text/css">   .st0{fill:#CA4F1C;}   .st1{fill:#DC8B6A;}   .st2{fill:#FEFEFE;}  </style> </defs> <path class="st0" d="M512.1,236.1v41c-1.1,7-1,14.1-1.7,21.2c-1.5,16.2-6.2,31.7-11.8,46.8c-11,29.6-26.5,56.7-47.4,80.4  c-21.1,23.9-45.4,43.9-73.8,58.7c-20.9,11.1-43.2,19.3-66.3,24.4c-10.3,2.2-20.8,2.2-31.2,3c-1.3,0.1-2.7-0.4-3.8,0.5h-41  c-7-1.1-14.2-1-21.2-1.7c-16.2-1.5-31.7-6.2-46.8-11.8c-29.6-11-56.7-26.5-80.4-47.4c-23.9-21.1-43.9-45.4-58.7-73.8  C17,356.5,8.7,334.2,3.6,311.1c-2.2-10.1-2.1-20.4-3-30.7c-0.1-1.1,0.4-2.3-0.5-3.3v-42c1.1-7,1-14.2,1.7-21.2  c1.5-16.1,6.1-31.4,11.6-46.4C23.3,140.8,36.9,116,55,93.9c22.6-27.4,49.1-50,80.8-66.4c20.2-10.6,41.7-18.6,64-23.6  c12.4-2.7,25-3,37.7-3.3c3.2-0.3,6.4,0.6,9.6-0.5h29c7.4,1,14.8,1,22.2,1.7c16.2,1.5,31.7,6.2,46.8,11.8  c29.6,11,56.7,26.5,80.3,47.5c24,21.2,44.1,45.6,58.9,74.2c11,20.8,19.1,42.9,24.2,65.9c2.2,10.3,2.2,20.8,3,31.2  C511.7,233.5,511.2,234.9,512.1,236.1z"/> <path class="st1" d="M236.9,1c0.1-0.3,0.2-0.6,0.2-0.9h10C243.8,1.6,240.4,1.3,236.9,1z"/> <path class="st2" d="M134.9,340.1c4.2-8.3,8.2-16.3,12.2-24.3c6-11.9,11.8-23.8,18-35.6c1.5-2.8,1.1-4.7-0.9-7  c-17.2-19.7-32.4-41-45.4-63.6c-13.4-23.4-24-47.9-27.2-74.9c-1.9-15.8,1-30.7,13.5-42c7.6-6.9,17.2-9.3,27.2-9.6  c20.2-0.6,39.2,4.7,57.5,12.6c31.8,13.6,59.4,33.8,86.1,55.3c31.3,25.2,59.5,54,84.3,85.7c18.5,23.6,35.2,48.4,47.4,75.9  c8.3,18.8,14.2,38.2,13.7,59.3c-0.6,23.9-16.2,40.3-40.3,41.1c-20.2,0.7-39.2-4.6-57.6-12.4c-32.3-13.8-60.4-34.1-87.2-56.3  c-3.1-2.7-7.1-4.2-11.2-4.1c-28.5,0.2-57,0.1-85.5,0.1C138.2,340.3,136.9,340.2,134.9,340.1z"/> <path class="st0" d="M258,340.3c11.7,0,23.7-0.3,35.6,0.1c4.8,0.2,7.4-1.2,9.5-5.7c5.2-11.3,11-22.3,17-34.2H209.8  c5.5-10.8,10.5-20.9,15.6-30.9c14.3-28.3,28.7-56.6,43-84.9c4-7.8,8-15.7,11.9-23.6c1.3-2.8,2.2-2.3,4.2-0.6  c20.8,17.5,40,36.6,57.6,57.3c19.4,22.9,36.9,47.1,50.4,73.9c10.5,20.8,18.5,42.4,16.7,66.4c-1.4,18.3-14.6,31.5-32.8,32.9  c-20.5,1.7-39.5-4-57.9-12.2c-21.5-9.6-40.9-22.7-59.8-36.6C258,342,257.6,341.2,258,340.3C258,340.4,258,340.3,258,340.3z"/> <path class="st0" d="M174.1,261.5c-21.5-26.7-40.9-53.8-53-85.4c-5.3-13.8-8.7-27.9-8.4-42.8c0.4-24.5,14.5-38.7,39-38.8  c18.6-0.1,36.1,5.3,52.9,13c26,12,49.1,28.4,71.2,46.4c0.2,0.2,0.3,0.5,0.7,1.5h-15.4c-9.7,0-19.3,0.1-29-0.1  c-2.9,0-4.4,0.8-5.8,3.4c-14.4,28.5-28.8,56.9-43.2,85.3C180.2,249.6,177.4,255.2,174.1,261.5z"/> </svg>
                     </a>
                   </div>
 
@@ -135,7 +137,7 @@ class ProtoCard{
             </div>
         `,
         loyaltyModel: `<i class="ms %%loyaltydirection%% ms-loyalty-%%loyalty%%"></i>`,
-        defenseModel: `<i class="ms ms-defense ms-defense-print ms-defense-%%defense%%"></i>`
+        defenseModel: `<i class="ms ms-defense ms-defense-print ms-defense-%%defense%%"></i>`,
         sagaModel: `<i class="ms ms-saga ms-saga-%%chapter%%"></i>`
     };
 
@@ -370,10 +372,12 @@ class ProtoCard{
         var stats = '';
         if(this.statType == 'p/t') stats = this.stats;
         else if(this.statType == 'defense') stats = ProtoCard.detailsModels.defenseModel.replaceAll('%%defense%%', this.stats);
-        else if(this.statType == 'loyalty') stats = ProtoCard.detailsModels.loyaltyModel.replaceAll('%%loyaltydirection%%', '').replaceAll('%%loyalty%%', this.stats);
+        else if(this.statType == 'loyalty') stats = ProtoCard.detailsModels.loyaltyModel.replaceAll('%%loyaltydirection%%', 'ms-loyalty-start').replaceAll('%%loyalty%%', this.stats);
 
         var oracleText = this.oracleText.split('\n');
         var tmpText = [];
+        var matches = null
+        var tmpLine = '';
         if(this.typeLine.indexOf('Planeswalker') > -1){
             for(const line of oracleText){
                 matches = line.match(/^([\+\-−]?)(\d+)/i);
@@ -384,11 +388,11 @@ class ProtoCard{
 
                 tmpLine = ProtoCard.detailsModels.loyaltyModel;
                 if(matches[1] == '-' || matches[1] == '−'){
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-down').replaceAll('%%loyalty%%', this.matches[2]);
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-down').replaceAll('%%loyalty%%', matches[2]);
                 }else if(matches[1] == '+'){
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-up').replaceAll('%%loyalty%%', this.matches[2]);
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-up').replaceAll('%%loyalty%%', matches[2]);
                 }else{
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', '').replaceAll('%%loyalty%%', this.matches[2]);
+                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-zero').replaceAll('%%loyalty%%', matches[2]);
                 }
 
                 tmpText.push(`<p>${line.replaceAll(matches[0], tmpLine)}</p>`);

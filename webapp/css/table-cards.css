@@ -244,13 +244,73 @@
     background-color: var(--tbl-crd-bg-colorless);
 }
 
-.select-card-selected{
-    border-style: solid;
-    border-width: 2px;
-    border-color: #e6a902;
-}
-
 .table-card-status-button{
     height: 100%;
     border-width: 0px;
+}
+
+.table-card-rarity-span{
+  display: inline;
+}
+
+.table-card-status-symbol{
+  display: inline;
+  text-align: center;
+}
+
+.table-card-status-symbol button{
+  width: 100%;
+}
+
+.table-card-name{
+  font-weight: 600;
+  display: inline;
+}
+
+.table-card-control{
+  text-align: right;
+}
+
+.table-card-trash{
+  display: inline-block;
+  padding: 0.1em;
+  font-size: 1.1em;
+  font-weight: 400;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #dc3546;
+  vertical-align: middle;
+  transition: all 1s;
+  position: relative;
+  border-radius: 4px;
+  width: 50%;
+  color: #fff;
+  z-index: 1;
+}
+
+.table-card-trash::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-color: #dc3546;
+}
+
+.table-card-trash::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: #b02a37;
+  transition: all 1s;
+  z-index: -1;
+}
+
+.table-card-trash:active::before{
+  width: 100%;
 }

@@ -293,3 +293,35 @@ class CardSetSelectionModal extends ProtoModal {
         this.dismiss();
     }
 }
+
+class CardDetailsModal extends ProtoModal{
+    static modalModel = `
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Card Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body container">
+            %%modalbody%%
+        </div>
+      </div>
+    </div>
+    `;
+
+    constructor(domElement){
+        super(domElement);
+        this.options = {'focus': true};
+        this.cardBody = null;
+    }
+
+    call(cardBody){
+        this.cardBody = cardBody;
+        super.call();
+    }
+
+    draw(){
+        this.html = CardDetailsModal.modalModel.replaceAll('%%modalbody%%', this.cardBody);
+        super.draw();
+    }
+}

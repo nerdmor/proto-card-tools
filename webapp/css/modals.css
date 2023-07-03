@@ -27,22 +27,39 @@
   max-height: 3em;
 }
 
+.select-card-selected{
+    border-style: solid;
+    border-width: 2px;
+    border-color: #e6a902;
+}
+
 .card-select-set-name h3{
 	size: 1em;
 }
 
+.card-details-description{
+	height: 100%;
+}
+
+.card-details-links{
+}
+
 .card-details-links a{
-	max-height: 3em;
+	max-height: 2.5em;
+}
+
+.card-details-links .col-1{
+	margin-right: 1em;
 }
 
 .card-details-links img{
-	max-width: 2em;
-	max-height: 2em;
+	max-width: 1.8em;
+	max-height: 1.8em;
 }
 
 .card-details-links svg{
-	max-width: 2em;
-	max-height: 2em;
+	max-width: 1.8em;
+	max-height: 1.8em;
 }
 
 .card-details-cost{
@@ -51,4 +68,32 @@
 
 .card-details-stats{
 	text-align: right;
+	display: block;
+	font-size: 110%;
+}
+
+
+.card-details-image-wrapper img{
+    max-width: 100%;
+}
+
+.card-details-row{
+    margin-top: 0.4em;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-color: #070707;
+    padding-bottom: 0.3em;
+}
+
+.card-details-row:last-child{
+    border-bottom-style: none;
+}
+
+.card-details-name{
+    font-weight: 650;
+    font-size: 1.5em;
+}
+
+.card-details-type{
+    font-weight: 500;
 }

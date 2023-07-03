@@ -351,6 +351,11 @@ class CardList{
         element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.cardMode);
     }
 
+    drawCardDetails(cardKey){
+        if(!Object.keys(this.cards).includes(cardKey)) return null;
+        return this.cards[cardKey].drawDetails();
+    }
+
     setCardSelectedSet(cardKey, setCode){
         if(!Object.keys(this.cards).includes(cardKey)){
             return;
