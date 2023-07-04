@@ -5,7 +5,7 @@ class MainController{
 	callSetSelect(event){
 		const cardKey = getCardKeyFromParent(event.target);
 		if(!cardKey) return false;
-		window.cardSetSelectModalHandler(
+		window.mainController.cardSetSelectModalHandler(
 		    cardKey,
 		    (setCode) => { // confirmCallback
 		        window.listManager.setCardSelectedSet(cardKey, setCode);
@@ -92,5 +92,62 @@ class MainController{
 		window.listManager.redrawCard(cardKey);
 		return true;
 	}
+
+
+	/* *****************************************************************************
+	 * Loading-modal handling functions
+	 **************************************************************************** */
+	loadQueueFromScryfallModalHandler = async function(){
+	    window.loadingCardsModal.call();
+	    await delay(500);
+
+	    window.listManager.setScryfallClient(window.scryfall);
+	    window.listManager.loadQueueFromScryfall(
+	        window.scryfall,
+	        (p) => {window.loadingCardsModal.update(p.typedName)},
+	        async (p) => {
+	            window.loadingCardsModal.dismiss(()=>window.drawCardList(window.listElement));
+	        }
+	    );
+	};
+
+	loadSetsModalHandler = async function(callback){
+	    if(!window.listManager.hasNullSets()){
+	        callback();
+	        return;
+	    };
+	    window.loadingSetsModal.call('Loading Sets');
+	    await delay(500);
+	    window.listManager.loadSetData(
+	        window.scryfall,
+	        (setCode) => {window.loadingSetsModal.update(`set ${setCode.toUpperCase()}`)},
+	        async () => {
+	            await delay(200);
+	            window.loadingSetsModal.dismiss(callback());
+	        }
+	    );
+	};
+
+	cardSetSelectModalHandler = async function(cardKey, confirmCallback, cancelCallback){
+	    const cardBody = window.listManager.drawSetSelect(cardKey);
+	    if(cardBody === null){
+	        window.mainController.loadSetsModalHandler(() => {
+	            window.mainController.cardSetSelectModalHandler(cardKey, confirmCallback, cancelCallback)
+	        });
+	        return;
+	    }
+
+	    window.cardSetSelectionModal.call(
+	        cardBody,
+	        '.card-select-image', //selectionElementQuery
+	        'set_code', //selectionElementPropName
+	        '.select-card-wrapper', //wrapperElementQuery
+	        'select-card-selected', //selectedClass
+	        (setCode) => {
+	            console.log(`callback called with setCode = ${setCode}`);
+	            confirmCallback(setCode);}, //confircallback
+	        () => {cancelCallback()} // cancelCallback
+	    );
+	};
 
 }

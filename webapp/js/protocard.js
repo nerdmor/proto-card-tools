@@ -409,15 +409,15 @@ class ProtoCard{
 
 
 
-        return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images[window.settings.cardImgQuality])
-                                                    .replaceAll('%%cardname%%', this.name)
-                                                    .replaceAll('%%cardcost%%', this._makeCostIcons())
-                                                    .replaceAll('%%typeline%%', this.typeLine)
-                                                    .replaceAll('%%oracletext%%', oracleText)
-                                                    .replaceAll('%%cardstats%%', stats)
-                                                    .replaceAll('%%scryfallurl%%', this.urls.scryfall)
-                                                    .replaceAll('%%edhrecurl%%', this.urls.edhrec)
-                                                    .replaceAll('%%ligamagicurl%%', this.urls.ligamagic);
+        return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images['normal'])
+                                                .replaceAll('%%cardname%%', this.name)
+                                                .replaceAll('%%cardcost%%', this._makeCostIcons())
+                                                .replaceAll('%%typeline%%', this.typeLine)
+                                                .replaceAll('%%oracletext%%', oracleText)
+                                                .replaceAll('%%cardstats%%', stats)
+                                                .replaceAll('%%scryfallurl%%', this.urls.scryfall)
+                                                .replaceAll('%%edhrecurl%%', this.urls.edhrec)
+                                                .replaceAll('%%ligamagicurl%%', this.urls.ligamagic);
     }
 
     buildFromParams(params, calculate=false){

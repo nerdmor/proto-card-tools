@@ -1,0 +1,72 @@
+#header-menu li{
+	margin-right: 1em;
+}
+
+#main-header{
+	border-bottom-style: solid;
+	border-width: 1px;
+	border-color: #7f6105;
+}
+
+#header-toggle .form-check{
+	padding-left: 0px;
+	margin-right: 0.4em;
+	margin-left: 0.4em;
+}
+
+#header-display-toggle{
+	margin-left: 0px;
+}
+
+.filter-wrapper{
+	max-width: 90%;
+}
+
+.filter-check{
+	margin-left: -1.2em !important;
+}
+
+.header-filter-title{
+	margin-right: 0.5em;
+	vertical-align: middle;
+	color: #C0C0C0;
+}
+
+.filter-check-group{
+	margin-right: 0.6rem !important;
+}
+
+.filter-spacer{
+	color: #7f6105;
+	margin-left: 0.4rem;
+	margin-right: 0.4rem;
+}
+
+.filter-check-group .ms-2x{
+	font-size: 1.4em;
+}
+
+.ms-rare{
+	color: #101010;
+	background: linear-gradient(0deg, #c8913b 0%, #ecc65a 100%);
+}
+
+.ms-common{
+	color: #fff;
+	background: linear-gradient(0deg, #242424 0%, #747474 100%);
+}
+
+.ms-uncommon{
+	color: #101010;
+	background: linear-gradient(0deg, #999999 0%, #dedede 100%);
+}
+
+.ms-mythic{
+	color: #101010;
+	background: linear-gradient(0deg, #b2560a 0%, #FF7A0E 100%);
+}
+
+.btn-extra-small{
+	padding-top: 0px;
+	padding-bottom: 0px;
+}

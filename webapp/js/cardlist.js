@@ -325,23 +325,16 @@ class CardList{
         var html = [];
         drawMode = drawMode || this.cardMode;
 
-        if(drawMode == 'sets'){
-            return this._drawSetSelect();
-        }
-
         for(const cardKey of Object.keys(this.cards)){
             html.push(this.cards[cardKey].draw(this.sets, this.cardMode));
         }
         return html.join('\n');
     }
 
-    _drawSetSelect(){
+    drawSetSelect(cardKey){
+        if(!Object.keys(this.cards).includes(cardKey)) return null;
         if(this.hasNullSets()) return null;
-        var html = [];
-        for(const cardKey of Object.keys(this.cards)){
-            html.push(this.cards[cardKey].drawSetSelect(this.sets));
-        }
-        return html.join('\n');
+        return this.cards[cardKey].drawSetSelect(this.sets);
     }
 
     redrawCard(cardKey){

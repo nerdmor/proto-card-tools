@@ -19,67 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
 }, false);
 
 
-/* *****************************************************************************
- * Loading-modal handling functions
- **************************************************************************** */
-window.loadQueueFromScryfallModalHandler = async function(){
-    window.loadingCardsModal.call();
-    await delay(500);
 
-    window.listManager.setScryfallClient(window.scryfall);
-    window.listManager.loadQueueFromScryfall(
-        window.scryfall,
-        (p) => {window.loadingCardsModal.update(p.typedName)},
-        async (p) => {
-            window.loadingCardsModal.dismiss(()=>window.drawCardList(window.listElement));
-        }
-    );
-};
-
-window.loadSetsModalHandler = async function(callback){
-    if(!window.listManager.hasNullSets()){
-        callback();
-        return;
-    };
-    window.loadingSetsModal.call('Loading Sets');
-    await delay(500);
-    window.listManager.loadSetData(
-        window.scryfall,
-        (setCode) => {window.loadingSetsModal.update(`set ${setCode.toUpperCase()}`)},
-        async () => {
-            await delay(200);
-            window.loadingSetsModal.dismiss(callback());
-        }
-    );
-};
-
-window.cardSetSelectModalHandler = async function(cardKey, confirmCallback, cancelCallback){
-    const cardBody = window.listManager.draw('sets');
-    if(cardBody === null){
-        window.loadSetsModalHandler(() => {
-            window.cardSetSelectModalHandler(cardKey, confirmCallback, cancelCallback)
-        });
-        return;
-    }
-
-    window.cardSetSelectionModal.call(
-        cardBody,
-        '.card-select-image', //selectionElementQuery
-        'set_code', //selectionElementPropName
-        '.select-card-wrapper', //wrapperElementQuery
-        'select-card-selected', //selectedClass
-        (setCode) => {
-            console.log(`callback called with setCode = ${setCode}`);
-            confirmCallback(setCode);}, //confircallback
-        () => {cancelCallback()} // cancelCallback
-    );
-};
 
 /* *****************************************************************************
  * Drawing a list of cards
  **************************************************************************** */
 window.drawCardList = async function(element){
-    window.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
+    window.mainController.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
 }
 
 
@@ -115,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function(){
     // DEBUG load cards from text area
     document.querySelector('#list-import-form').addEventListener('click', function(e){
         window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
-        window.loadQueueFromScryfallModalHandler();
+        window.mainController.loadQueueFromScryfallModalHandler();
         // TODO: add error handling
     });
 
@@ -126,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function(){
             window.listManager.ingestArchidektFile(
                 this.files,
                 (cat, confCall, canCall) => {
-                    confCall.params.okCallback = () => {window.loadQueueFromScryfallModalHandler()};
+                    confCall.params.okCallback = () => {window.mainController.loadQueueFromScryfallModalHandler()};
                     window.archidektFileImportModal.call(cat, confCall, canCall);
                 }
             );
