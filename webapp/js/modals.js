@@ -43,7 +43,7 @@ class ProtoModal{
 
 class LoadingCardsModal extends ProtoModal{
     static modalModel = `
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5">%%modal-title%%</h1>

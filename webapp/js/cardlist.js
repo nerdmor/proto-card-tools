@@ -5,17 +5,75 @@ class CardList{
         'table': 'table-card-row'
     };
 
+    static filterModels = {
+        'statusNullModel': `
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-status-null" class="form-check-input filter-check filter-check-status" type="checkbox" value="null">
+              <label class="form-check-label" for="filters-status-null" aria-label="no status"><i class="bi bi-border"></i></label>
+            </div>
+        `,
+        'statusModel': `
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check filter-check-status" type="checkbox" value="%%statusindex%%">
+              <label class="form-check-label" for="filters-status-%%statusindex%%" aria-label="no status">%%statusicon%%</label>
+            </div>
+        `,
+        'buttonModel': `
+            <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+        `
+    };
+
 
     constructor(statusList=null, cardMode=null){
         this.cardMode = cardMode || Cardlist.allowedModes[0];
-        this.cardIndex = [];
         this.cardQueue = [];
         this.cards = {};
         this.sets = {};
         this.statusList = statusList || [];
+        this.filters = {
+            'color': [],
+            'rarity': [],
+            'status': []
+        };
+        this.filteredCards = [];
 
         this.errors = [];
         this.scryfallClient = null;
+    }
+
+    _filterCards(){
+        this.filteredCards = [];
+        for(const cardKey of Object.keys(this.cards)){
+            if(this.cards[cardKey].matchesFilters(this.filters)){
+                this.filteredCards.push(cardKey);
+            }
+        }
+    }
+
+    resetFilters(){
+        this.filters = {
+            'color': [],
+            'rarity': [],
+            'status': []
+        };
+    }
+
+    addFilter(filterType, value){
+        if(Object.hasOwn(this.filters, filterType)){
+            if(value === 'null') this.filters[filterType].push(null);
+            else this.filters[filterType].push(value);
+        }
+    }
+
+    removeFilter(filterType, value){
+        if(!Object.hasOwn(this.filters, filterType)) return;
+        if(!this.filters[filterType].includes(value)) return;
+
+        var tmp = [];
+        for(const e of this.filters[filterType]){
+            if(e != value) tmp.push(e);
+        }
+        this.filters[filterType] = tmp;
     }
 
     setScryfallClient(client){
@@ -30,7 +88,7 @@ class CardList{
     }
 
     setCardStatus(cardKey, status){
-        if(!this.statusList.includes(status) && status != 'next') return null;
+        if(!this.statusList.includes(status) && status != 'next' && card.status !== null) return null;
         if(!Object.keys(this.cards).includes(cardKey)) return null;
 
         if(status === 'next'){
@@ -56,7 +114,7 @@ class CardList{
 
         const nextStatus = this.statusList.indexOf(status) + 1;
         if(nextStatus >= this.statusList.length){
-            return this.statusList[0];
+            return null;
         }
         return this.statusList[nextStatus];
     }
@@ -325,7 +383,10 @@ class CardList{
         var html = [];
         drawMode = drawMode || this.cardMode;
 
-        for(const cardKey of Object.keys(this.cards)){
+        this._filterCards();
+
+        // for(const cardKey of Object.keys(this.cards)){
+        for(const cardKey of this.filteredCards){
             html.push(this.cards[cardKey].draw(this.sets, this.cardMode));
         }
         return html.join('\n');
@@ -347,6 +408,17 @@ class CardList{
     drawCardDetails(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         return this.cards[cardKey].drawDetails();
+    }
+
+    drawStatusFilters(){
+        var html = [CardList.filterModels.statusNullModel];
+        for (var i = 0; i < this.statusList.length; i++) {
+            html.push(CardList.filterModels.statusModel.replaceAll('%%statusindex%%', i)
+                                                       .replaceAll('%%statusicon%%', this.statusList[i])
+                     );
+        }
+        // html.push(CardList.filterModels.buttonModel);
+        return html.join('\n');
     }
 
     setCardSelectedSet(cardKey, setCode){

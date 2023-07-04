@@ -1,5 +1,7 @@
 window.settings = {
     'cardImgQuality': 'normal',
     'deleteCooldown': 1000,
-    'enabledStatus': ['🔄', '❓', '✅', '❌']
+    'enabledStatus': ['🔄', '❓', '✅', '❌'],
+    'sldIsSpecial': true,
+    'applyFiltersOnFilterChange': true
 };

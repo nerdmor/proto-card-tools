@@ -33,8 +33,13 @@
     border-color: #e6a902;
 }
 
+.card-select-set-name{
+    max-height: 2rem;
+    overflow: hidden;
+}
+
 .card-select-set-name h3{
-	size: 1em;
+	font-size: 1em;
 }
 
 .card-details-description{

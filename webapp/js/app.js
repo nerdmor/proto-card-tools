@@ -2,7 +2,9 @@
  * Starters
  **************************************************************************** */
 document.addEventListener('DOMContentLoaded', function () {
-    window.listElement = document.querySelector('#second-row');
+    // common elements
+    window.listElement = document.querySelector('#second-row');  // debug
+    window.statusFilterElement = document.querySelector('#filter-status-wrapper');
 
     // global managers
     window.scryfall = new Scryfall();
@@ -16,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
     window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
 
+
+    // drawing/setting dynamic things
+    window.mainController.redrawStatusFilters(window.statusFilterElement);
 }, false);
 
 
@@ -47,6 +52,11 @@ document.addEventListener('DOMContentLoaded', function(){
         if(matchElementAndParent(event.target, ['.table-card-details'])) return window.mainController.callCardDetails(event);
     });
 
+    document.querySelector('body').addEventListener('change', (event) => {
+        // filters checkboxes
+        if(event.target.matches('.filter-check')) return window.mainController.processFilterChange(event.target);
+    });
+
     // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
         if(matchElementAndParent(event.target, ['.table-card-trash'])) return window.mainController.deleteCardFromList(event);
@@ -55,6 +65,17 @@ document.addEventListener('DOMContentLoaded', function(){
     // card quantity form
     document.querySelector('body').addEventListener('submit', function(event){
         if(matchElementAndParent(event.target, ['.table-card-quantity-form'])) return window.mainController.formCardQuantitySubmit(event);
+    });
+
+    // filters 'select all'
+    document.querySelector('#filters-color-all').addEventListener('click', function(){
+        window.mainController.filterSelectAll('color');
+    });
+    document.querySelector('#filters-rarity-all').addEventListener('click', function(){
+        window.mainController.filterSelectAll('rarity');
+    });
+    document.querySelector('#filters-status-all').addEventListener('click', function(){
+        window.mainController.filterSelectAll('status');
     });
 
 

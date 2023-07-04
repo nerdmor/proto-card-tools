@@ -12,7 +12,7 @@ class ProtoCard{
         innerModel : `
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
-                  <div class="icon-group">%%rarity-icons%%</div>
+                  <div class="icon-group">%%rarityicons%%</div>
                   <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group">
                     <a class="btn btn-outline-secondary btn-sm py-2 link-body-emphasis text-decoration-none card-quantity">%%quantity%%</a>
                     <a class="btn btn-outline-secondary btn-sm py-2 link-body-emphasis text-decoration-none card-burger-menu" href="#"><i class="bi bi-three-dots"></i></a>
@@ -72,7 +72,8 @@ class ProtoCard{
             </div>
         `,
         costItemModel: `<i class="ms ms-%%costclass%% ms-cost ms-shadow cost-icon"></i>`,
-        rarityIconModel: `<img src="img/mtg_%%rarityletter%%.png" class="table-card-rarity-icon" alt="%%alt%%">`
+        rarityIconModel: `<span class="table-card-rarity-icon" alt="%%alt%%"> <i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-%%rarityletter%%"></i> </span>`,
+        statusNullModel: `<i class="bi bi-border"></i>`
     };
 
     static selectModels = {
@@ -195,6 +196,55 @@ class ProtoCard{
         return JSON.stringify(this);
     }
 
+    matchesFilters(filters){
+        var result = true;
+        if(Object.hasOwn(filters, 'color') && filters.color.length > 0){
+            result = false;
+            for(const colorKey of filters.color){
+                if(this.colors.includes(colorKey)){
+                    result = true;
+                    break;
+                }
+                if(colorKey == 'multi' && this.isMulticolor){
+                    result = true;
+                    break;
+                }
+                if(colorKey == 'c' && this.isColorless){
+                    result = true;
+                    break;
+                }
+                if(colorKey == 'land' && this.isLand){
+                    result = true;
+                    break;
+                }
+            }
+            if(result === false) return false;
+        }
+
+
+        if(Object.hasOwn(filters, 'rarity') && filters.rarity.length > 0){
+            result = false;
+            for(const rarityKey of filters.rarity){
+                if(this.rarities.includes(rarityKey)){
+                    result = true;
+                    break;
+                }
+            }
+            if(result === false) return false;
+        }
+
+        if(Object.hasOwn(filters, 'status') && filters.status.length > 0){
+            if(filters.status.includes(this.status)){
+                result = true;
+            }else{
+                result = false;
+            }
+            if(result === false) return false;
+        }
+
+        return result;
+    }
+
     makeKey(){
         this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}-${this.foil?'foil':'nonfoil'}`);
     }
@@ -243,7 +293,7 @@ class ProtoCard{
             }
         }
         rarityIcons = rarityIcons.join('');
-        html = html.replaceAll('%%rarity-icons%%', rarityIcons);
+        html = html.replaceAll('%%rarityicons%%', rarityIcons);
         return html;
     }
 
@@ -286,7 +336,11 @@ class ProtoCard{
         var rarityIcons = [];
         for (const e of this.rarities) {
             if(window.constants.rarities.includes(e)){
-                rarityIcons.push(ProtoCard.tableModels.rarityIconModel.replaceAll('%%rarityletter%%', e.charAt(0).toLowerCase()));
+                rarityIcons.push(ProtoCard.tableModels.rarityIconModel.replaceAll('%%rarityletter%%', e.toLowerCase())
+                                                                      .replaceAll('%%alt%%', e)
+                                );
+            }else{
+                console.log(`${e} is not a rarity, it seems`);
             }
         }
         rarityIcons = rarityIcons.join('');
@@ -297,7 +351,7 @@ class ProtoCard{
                                                    .replaceAll('%%rarityicons%%', rarityIcons)
                                                    .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                    .replaceAll('%%setname%%', setData[this.selectedSet].name)
-                                                   .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status);;
+                                                   .replaceAll('%%cardstatus%%', this.status === null ? ProtoCard.tableModels.statusNullModel : this.status);
 
         return html;
     }
@@ -407,8 +461,6 @@ class ProtoCard{
         }
         oracleText = oracleText.join('\n');
 
-
-
         return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images['normal'])
                                                 .replaceAll('%%cardname%%', this.name)
                                                 .replaceAll('%%cardcost%%', this._makeCostIcons())
@@ -448,6 +500,14 @@ class ProtoCard{
         }
         params = {...params, 'page': 0, 'index':this.index};
         client.cardsNamed(this.typedName, (d, p) => {this._scryFallCardsNamed(d, p)}, params);
+    }
+
+    _addRarity(rarity, setCode){
+        if(setCode == 'sld' && window.settings.sldIsSpecial == true){
+            this.rarities.push('special');
+            return;
+        }
+        this.rarities.push(rarity.toLowerCase());
     }
 
     async _scryFallCardsNamed(data, params){
@@ -529,7 +589,7 @@ class ProtoCard{
                 'images': firstFace.image_uris
             }
 
-            this.rarities.push(scrycard.rarity.toLowerCase());
+            this._addRarity(scrycard.rarity, scrycard['set']);
         }
 
 
@@ -569,7 +629,7 @@ class ProtoCard{
                 return;
             }
 
-            this.rarities.push(scrycard.rarity.toLowerCase());
+            this._addRarity(scrycard.rarity, scrycard['set']);
 
             if(!Object.hasOwn(scrycard, 'card_faces')){
                 scrycard.card_faces = [scrycard];
@@ -600,7 +660,15 @@ class ProtoCard{
             params['page'] += 1;
             await this.scryfallClient.cardsSearch(`!"${this.name}"`, {'unique': 'prints', 'page': params.page}, (d, p) => this._scryFallCardsSearch(d, p), params);
         }else{
-            this.rarities = onlyUnique(this.rarities);
+            // ordering and setting rarities
+            var tmp = [];
+            for(const rar of window.constants.rarities){
+                if(this.rarities.includes(rar)){
+                    tmp.push(rar);
+                }
+            }
+            this.rarities = tmp;
+
             this.names.faces = onlyUnique(this.names.faces);
             this.names.compiled = this.names.faces.join(' // ');
             this.urls.ligamagic = `https://www.ligamagic.com.br/?view=cards/card&card=${this.names.compiled}`;
@@ -617,7 +685,6 @@ class ProtoCard{
                 params['callback'](params);
             }
         }
-
     }
 
 

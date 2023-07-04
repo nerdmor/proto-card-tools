@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,18 +24,16 @@
     <!-- End of Modals -->
 
     <!-- Main Header -->
-    <header id="main-header" class="py-2 text-bg-dark sticky-top">
+    <header id="main-header" class="py-2 text-bg-dark fixed-top">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
-          </a>
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none logo-link">PTC LOGO</a>
 
           <ul id="header-menu" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li>
               <div class="dropdown">
                 <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
-                <ul class="dropdown-menu" data-bs-theme="dark">
+                <ul class="dropdown-menu header-dropdown" data-bs-theme="dark">
                   <li><a id="header-list-new" class="dropdown-item" href="#"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</a></li>
                   <li><a id="header-list-import" class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down-fill"></i>&nbsp;Import</a></li>
                   <li><a id="header-list-export" class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-up-fill"></i>&nbsp;Export</a></li>
@@ -46,7 +44,7 @@
             <li>
               <div class="dropdown">
                 <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
-                <ul class="dropdown-menu" data-bs-theme="dark">
+                <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
                   <li><a id="header-help-how" class="dropdown-item" href="#"><i class="bi bi-question-square"></i>&nbsp;How to use</a></li>
                   <li><a id="header-help-about" class="dropdown-item" href="#"><i class="bi bi-info-square"></i>&nbsp;About</a></li>
                   <li><a id="header-help-faq" class="dropdown-item" href="#"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</a></li>
@@ -77,78 +75,86 @@
     <!-- End of Main Header -->
 
     <!-- Filter Header -->
-    <header id="filter-header" class="py-1 mb-4 text-bg-dark sticky-top border-bottom">
+    <header id="filter-header" class="py-1 mb-4 text-bg-dark sticky-top border-bottom align-items-left">
       <div class="container d-flex flex-wrap filter-wrapper">
-        <span class="header-filter-title">Filters:</span>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-white" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-white" aria-label="white mana symbol"><i class="ms ms-w ms-cost ms-shadow"></i> </label>
+        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+          <span class="header-filter-title">Filters</span>
         </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-blue" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-blue" aria-label="blue mana symbol"><i class="ms ms-u ms-cost ms-shadow"></i> </label>
+        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-white" class="form-check-input filter-check-color filter-check" type="checkbox" value="w">
+            <label class="form-check-label" for="filters-white" aria-label="white mana symbol"><i class="ms ms-w ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-blue" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
+            <label class="form-check-label" for="filters-blue" aria-label="blue mana symbol"><i class="ms ms-u ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-black" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
+            <label class="form-check-label" for="filters-black" aria-label="black mana symbol"><i class="ms ms-b ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-red" class="form-check-input filter-check-color filter-check" type="checkbox" value="r">
+            <label class="form-check-label" for="filters-red" aria-label="red mana symbol"><i class="ms ms-r ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-green" class="form-check-input filter-check-color filter-check" type="checkbox" value="g">
+            <label class="form-check-label" for="filters-green" aria-label="green mana symbol"><i class="ms ms-g ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-golden" class="form-check-input filter-check-color filter-check" type="checkbox" value="multi">
+            <label class="form-check-label" for="filters-golden" aria-label="golden mana symbol"><i class="ms ms-multicolor ms-duo ms-duo-color ms-grad ms-2x"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-colorless" class="form-check-input filter-check-color filter-check" type="checkbox" value="c">
+            <label class="form-check-label" for="filters-colorless" aria-label="colorless mana symbol"><i class="ms ms-c ms-cost ms-shadow"></i> </label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-land" class="form-check-input filter-check-color filter-check" type="checkbox" value="land">
+            <label class="form-check-label" for="filters-land" aria-label="land mana symbol"><i class="ms ms-c ms-cost ms-shadow ms-land"></i> </label>
+          </div>
+          <button id="filters-color-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
         </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-black" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-black" aria-label="black mana symbol"><i class="ms ms-b ms-cost ms-shadow"></i> </label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-red" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-red" aria-label="red mana symbol"><i class="ms ms-r ms-cost ms-shadow"></i> </label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-green" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-green" aria-label="green mana symbol"><i class="ms ms-g ms-cost ms-shadow"></i> </label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-golden" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-golden" aria-label="golden mana symbol"><i class="ms ms-multicolor ms-duo ms-duo-color ms-grad ms-2x"></i> </label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-colorless" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-colorless" aria-label="colorless mana symbol"><i class="ms ms-c ms-cost ms-shadow"></i> </label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-land" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-land" aria-label="land mana symbol"><i class="ms ms-c ms-cost ms-shadow ms-land"></i> </label>
-        </div>
-        <button id="filters-color-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
-        <!-- spacer -->
-        <div class="filter-spacer">|</div>
-        <!-- spacer -->
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-rarity-common" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-rarity-common" aria-label="common rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-common"></i></label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-rarity-uncommon" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-rarity-uncommon" aria-label="uncommon rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-uncommon"></i></label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-rarity-rare" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-rarity-rare" aria-label="rare rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-rare"></i></label>
-        </div>
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-rarity-mythic" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-rarity-mythic" aria-label="mythic rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-mythic"></i></label>
-        </div>
-        <button id="filters-rarity-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
 
-        <!-- spacer -->
-        <div class="filter-spacer">|</div>
-        <!-- spacer -->
+        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
 
-        <div class="form-check form-check-inline filter-check-group">
-          <input id="filters-status-null" class="form-check-input filter-check" type="checkbox" value="option1">
-          <label class="form-check-label" for="filters-status-null" aria-label="no status"><i class="bi bi-border"></i></label>
+        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-rarity-common" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="common">
+            <label class="form-check-label" for="filters-rarity-common" aria-label="common rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-common"></i></label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-rarity-uncommon" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="uncommon">
+            <label class="form-check-label" for="filters-rarity-uncommon" aria-label="uncommon rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-uncommon"></i></label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-rarity-rare" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="rare">
+            <label class="form-check-label" for="filters-rarity-rare" aria-label="rare rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-rare"></i></label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-rarity-mythic" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="mythic">
+            <label class="form-check-label" for="filters-rarity-mythic" aria-label="mythic rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-mythic"></i></label>
+          </div>
+          <div class="form-check form-check-inline filter-check-group">
+            <input id="filters-rarity-special" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="special">
+            <label class="form-check-label" for="filters-rarity-special" aria-label="special rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-special"></i></label>
+          </div>
+          <button id="filters-rarity-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
         </div>
-        <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
 
-        <!-- spacer -->
-        <div class="filter-spacer">|</div>
-        <!-- spacer -->
+        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
 
-        <button id="filters-apply" type="button" class="btn btn-sm btn-outline-warning btn-extra-small">Apply</i></button>
+
+        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+          <div id="filter-status-wrapper"></div>
+          <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+        </div>
+
+        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+          <button id="filters-apply" type="button" class="btn btn-sm btn-outline-warning btn-extra-small">Apply</i></button>
+        </div>
       </div>
     </header>
     <!-- End of Filter Header -->
