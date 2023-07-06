@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
     window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
+    // window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'));
 
 
     // drawing/setting dynamic things

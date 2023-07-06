@@ -325,3 +325,24 @@ class CardDetailsModal extends ProtoModal{
         super.draw();
     }
 }
+
+class SettingsModal extends ProtoModal{
+    constructor(domElement){
+        super(domElement)
+        this.options = {'focus': true};
+    }
+
+    draw(){return;}
+
+    async _afterHidden(){
+        if(this.hiddenCallback){
+            if(this.hiddenCallback.constructor.name === 'AsyncFunction'){
+                await this.hiddenCallback();
+            }else{
+                this.hiddenCallback();
+            }
+        }
+        this.hiddenCallback = null;
+        this.element.style.display = 'none';
+    }
+}

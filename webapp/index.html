@@ -21,144 +21,251 @@
     <div id="archidekt-file-import-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
     <div id="select-card-version-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
     <div id="card-details-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
+    <div id="settings-modal" class="modal fade" aria-hidden="true">
+      
+
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body container-fluid ">
+              <div class="row">
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-applyFiltersOnStatusChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnStatusChange" role="switch">
+                    <label class="form-check-label" for="settings-applyFiltersOnStatusChange">Apply status filters on card status change</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, filters will be applied whenever you change a card's status</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-applyFiltersOnFilterChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnFilterChange" role="switch">
+                    <label class="form-check-label" for="settings-applyFiltersOnFilterChange">Apply filters on filter change</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, filters will be applied whenever you change a card's status. Deactivate to save on resources</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-sldIsSpecial" class="form-check-input settings-checkbox" type="checkbox" setting_name="sldIsSpecial" role="switch">
+                    <label class="form-check-label" for="settings-sldIsSpecial">Secret Lair is special</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, the rarity of cards in Secret Lairs will be counted as "Special" (purple) instead of whatever they appear as in the Secret Lair.</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-group">
+                    <label class="form-label" for="settings-cardImgQuality">Card image quality</label>
+                    <select id="settings-cardImgQuality" class="form-select form-select-sm settings-select" setting_name="cardImgQuality">
+                      <option value="small">Small</option>
+                      <option value="normal">Normal</option>
+                      <option value="large">Large</option>
+                      <option value="png">PNG</option>
+                      <option value="art_crop">Art crop</option>
+                      <option value="border_crop">Border crop</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>Choose the quality in which your images will be shown.</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-group">
+                    <label class="form-label" for="settings-deleteCooldown">Delete timer</label>
+                    <input id="settings-deleteCooldown" setting_name="deleteCooldown" class="form-control settings-text" type="text">
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>Amount of time, in seconds, for which you have to press the delete button before the card is removed from tyhe list</p>
+                </div>
+
+
+
+
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+
+
+
+    </div>
     <!-- End of Modals -->
 
+    <!-- Headers start -->
     <!-- Main Header -->
-    <header id="main-header" class="py-2 text-bg-dark fixed-top">
-      <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none logo-link">PTC LOGO</a>
+    <div class="sticky-top">
+      <nav id="main-header" class="py-2 text-bg-dark">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none logo-link">PCT LOGO</a>
 
-          <ul id="header-menu" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li>
-              <div class="dropdown">
-                <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
-                <ul class="dropdown-menu header-dropdown" data-bs-theme="dark">
-                  <li><a id="header-list-new" class="dropdown-item" href="#"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</a></li>
-                  <li><a id="header-list-open" class="dropdown-item" href="#"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</a></li>
-                  <li><a id="header-list-import" class="dropdown-item" href="#"><i class="bi bi-upload"></i>&nbsp;Import</a></li>
-                  <li><a id="header-list-export" class="dropdown-item" href="#"><i class="bi bi-download"></i>&nbsp;Export</a></li>
-                </ul>
-              </div>
-            </li>
-            <li><a id="header-settings" href="#" class="nav-link px-2 text-white">Settings</a></li>
-            <li>
-              <div class="dropdown">
-                <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
-                <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
-                  <li><a id="header-help-how" class="dropdown-item" href="#"><i class="bi bi-question-square"></i>&nbsp;How to use</a></li>
-                  <li><a id="header-help-about" class="dropdown-item" href="#"><i class="bi bi-info-square"></i>&nbsp;About</a></li>
-                  <li><a id="header-help-faq" class="dropdown-item" href="#"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</a></li>
-                </ul>
-              </div>
-            </li>
-            <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li> -->
-            <!-- <li><a href="#" class="nav-link px-2 text-white">About</a></li> -->
-          </ul>
+            <ul id="header-menu" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li>
+                <div class="dropdown">
+                  <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
+                  <ul class="dropdown-menu header-dropdown" data-bs-theme="dark">
+                    <li><a id="header-list-new" class="dropdown-item" href="#"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</a></li>
+                    <li><a id="header-list-open" class="dropdown-item" href="#"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</a></li>
+                    <li><a id="header-list-import" class="dropdown-item" href="#"><i class="bi bi-upload"></i>&nbsp;Import</a></li>
+                    <li><a id="header-list-export" class="dropdown-item" href="#"><i class="bi bi-download"></i>&nbsp;Export</a></li>
+                  </ul>
+                </div>
+              </li>
+              <li><a id="header-settings" href="#" class="nav-link px-2 text-white" data-bs-toggle="modal" data-bs-target="#settings-modal">Settings</a></li>
+              <li>
+                <div class="dropdown">
+                  <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
+                  <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
+                    <li><a id="header-help-how" class="dropdown-item" href="#"><i class="bi bi-question-square"></i>&nbsp;How to use</a></li>
+                    <li><a id="header-help-about" class="dropdown-item" href="#"><i class="bi bi-info-square"></i>&nbsp;About</a></li>
+                    <li><a id="header-help-faq" class="dropdown-item" href="#"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</a></li>
+                  </ul>
+                </div>
+              </li>
+              <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li> -->
+              <!-- <li><a href="#" class="nav-link px-2 text-white">About</a></li> -->
+            </ul>
 
-          <div id="header-toggle" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <span class="form-check-label">table</span>
-            <div class="form-check form-switch">
-              <input id="header-display-toggle" class="form-check-input" type="checkbox" role="switch">
+
+
+            <div class="text-end">
+              <button id="header-account-login" type="button" class="btn btn-outline-warning">Login/Sign-up</button>
+              <button id="header-account-account" type="button" class="btn btn-outline-warning" aria-label="my account"><i class="bi bi-person-fill"></i></button>
             </div>
-            <span class="form-check-label">finder</span>
-          </div>
-
-
-
-          <div class="text-end">
-            <button id="header-account-login" type="button" class="btn btn-outline-warning">Login/Sign-up</button>
-            <button id="header-account-account" type="button" class="btn btn-outline-warning" aria-label="my account"><i class="bi bi-person-fill"></i></button>
           </div>
         </div>
-      </div>
-    </header>
-    <!-- End of Main Header -->
+      </nav>
+      <!-- End of Main Header -->
 
-    <!-- Filter Header -->
-    <header id="filter-header" class="py-1 mb-4 text-bg-dark sticky-top border-bottom align-items-left">
-      <div class="container d-flex flex-wrap filter-wrapper">
-        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
-          <span class="header-filter-title">Filters</span>
+      <!-- Filter Header -->
+
+      <header id="filter-header" class="py-1 text-bg-dark border-bottom align-items-left">
+        <div class="container d-flex flex-wrap filter-wrapper">
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <span class="header-filter-title">Filters</span>
+          </div>
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-white" class="form-check-input filter-check-color filter-check" type="checkbox" value="w">
+              <label class="form-check-label" for="filters-white" aria-label="white mana symbol"><i class="ms ms-w ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-blue" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
+              <label class="form-check-label" for="filters-blue" aria-label="blue mana symbol"><i class="ms ms-u ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-black" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
+              <label class="form-check-label" for="filters-black" aria-label="black mana symbol"><i class="ms ms-b ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-red" class="form-check-input filter-check-color filter-check" type="checkbox" value="r">
+              <label class="form-check-label" for="filters-red" aria-label="red mana symbol"><i class="ms ms-r ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-green" class="form-check-input filter-check-color filter-check" type="checkbox" value="g">
+              <label class="form-check-label" for="filters-green" aria-label="green mana symbol"><i class="ms ms-g ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-golden" class="form-check-input filter-check-color filter-check" type="checkbox" value="multi">
+              <label class="form-check-label" for="filters-golden" aria-label="golden mana symbol"><i class="ms ms-multicolor ms-duo ms-duo-color ms-grad ms-2x"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-colorless" class="form-check-input filter-check-color filter-check" type="checkbox" value="c">
+              <label class="form-check-label" for="filters-colorless" aria-label="colorless mana symbol"><i class="ms ms-c ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-land" class="form-check-input filter-check-color filter-check" type="checkbox" value="land">
+              <label class="form-check-label" for="filters-land" aria-label="land mana symbol"><i class="ms ms-c ms-cost ms-shadow ms-land"></i> </label>
+            </div>
+            <button id="filters-color-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-common" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="common">
+              <label class="form-check-label" for="filters-rarity-common" aria-label="common rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-common"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-uncommon" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="uncommon">
+              <label class="form-check-label" for="filters-rarity-uncommon" aria-label="uncommon rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-uncommon"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-rare" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="rare">
+              <label class="form-check-label" for="filters-rarity-rare" aria-label="rare rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-rare"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-mythic" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="mythic">
+              <label class="form-check-label" for="filters-rarity-mythic" aria-label="mythic rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-mythic"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-special" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="special">
+              <label class="form-check-label" for="filters-rarity-special" aria-label="special rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-special"></i></label>
+            </div>
+            <button id="filters-rarity-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div id="filter-status-wrapper"></div>
+            <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <button id="filters-apply" type="button" class="btn btn-sm btn-outline-warning btn-extra-small">Apply</i></button>
+          </div>
         </div>
-        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-white" class="form-check-input filter-check-color filter-check" type="checkbox" value="w">
-            <label class="form-check-label" for="filters-white" aria-label="white mana symbol"><i class="ms ms-w ms-cost ms-shadow"></i> </label>
+      </header>
+      <!-- End of Filter Header -->
+
+
+      <header id="control-header" class="py-1 mb-4 text-bg-dark border-bottom align-items-left">
+        <div class="container d-flex flex-wrap filter-wrapper">
+
+          <div id="header-input" class="py-1 nav col-12 col-lg-auto me-lg-auto align-items-left">
+            <form id="header-quick-add-form" class="input-group input-group-sm">
+              <input id="header-quick-add" type="text" class="form-control form-control-sm" aria-label="quick add" aria-describedby="header-quick-add-btn">
+              <button class="input-group-text" id="header-quick-add-btn">Quick add</button>
+            </form>
           </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-blue" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
-            <label class="form-check-label" for="filters-blue" aria-label="blue mana symbol"><i class="ms ms-u ms-cost ms-shadow"></i> </label>
+
+          <div id="header-toggle" class="nav text-end">
+            <div id="header-toggle-wrapper" class="form-group d-flex">
+              <span class="form-text ">table</span>
+              <div class="form-check form-switch form-check-inline">
+                <input id="header-display-toggle" class="form-check-input" type="checkbox" role="switch">
+              </div>
+              <span class="form-text">finder</span>
+            </div>
           </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-black" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
-            <label class="form-check-label" for="filters-black" aria-label="black mana symbol"><i class="ms ms-b ms-cost ms-shadow"></i> </label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-red" class="form-check-input filter-check-color filter-check" type="checkbox" value="r">
-            <label class="form-check-label" for="filters-red" aria-label="red mana symbol"><i class="ms ms-r ms-cost ms-shadow"></i> </label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-green" class="form-check-input filter-check-color filter-check" type="checkbox" value="g">
-            <label class="form-check-label" for="filters-green" aria-label="green mana symbol"><i class="ms ms-g ms-cost ms-shadow"></i> </label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-golden" class="form-check-input filter-check-color filter-check" type="checkbox" value="multi">
-            <label class="form-check-label" for="filters-golden" aria-label="golden mana symbol"><i class="ms ms-multicolor ms-duo ms-duo-color ms-grad ms-2x"></i> </label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-colorless" class="form-check-input filter-check-color filter-check" type="checkbox" value="c">
-            <label class="form-check-label" for="filters-colorless" aria-label="colorless mana symbol"><i class="ms ms-c ms-cost ms-shadow"></i> </label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-land" class="form-check-input filter-check-color filter-check" type="checkbox" value="land">
-            <label class="form-check-label" for="filters-land" aria-label="land mana symbol"><i class="ms ms-c ms-cost ms-shadow ms-land"></i> </label>
-          </div>
-          <button id="filters-color-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+
         </div>
-
-        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
-
-        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-rarity-common" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="common">
-            <label class="form-check-label" for="filters-rarity-common" aria-label="common rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-common"></i></label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-rarity-uncommon" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="uncommon">
-            <label class="form-check-label" for="filters-rarity-uncommon" aria-label="uncommon rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-uncommon"></i></label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-rarity-rare" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="rare">
-            <label class="form-check-label" for="filters-rarity-rare" aria-label="rare rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-rare"></i></label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-rarity-mythic" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="mythic">
-            <label class="form-check-label" for="filters-rarity-mythic" aria-label="mythic rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-mythic"></i></label>
-          </div>
-          <div class="form-check form-check-inline filter-check-group">
-            <input id="filters-rarity-special" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="special">
-            <label class="form-check-label" for="filters-rarity-special" aria-label="special rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-special"></i></label>
-          </div>
-          <button id="filters-rarity-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
-        </div>
-
-        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+      </header>
 
 
-        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
-          <div id="filter-status-wrapper"></div>
-          <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
-        </div>
-
-        <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
-
-        <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
-          <button id="filters-apply" type="button" class="btn btn-sm btn-outline-warning btn-extra-small">Apply</i></button>
-        </div>
-      </div>
-    </header>
-    <!-- End of Filter Header -->
+  </div>
+  <!-- End of Headers -->
 
 
 

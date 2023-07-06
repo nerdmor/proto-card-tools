@@ -13,7 +13,16 @@
 }
 
 #filter-header{
-	margin-top: 3.6em;
+/*	margin-top: 3.6em;*/
+}
+
+#header-toggle-wrapper{
+	float: right;
+	padding-top: 0.4em;
+}
+
+#header-toggle-wrapper span{
+	margin-top: 0.1em;
 }
 
 #header-toggle .form-check{

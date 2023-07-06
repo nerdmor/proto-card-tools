@@ -102,3 +102,12 @@
 .card-details-type{
     font-weight: 500;
 }
+
+#settings-modal label{
+    color: #fafafa;
+}
+
+#settings-modal p{
+    font-size: 85%;
+    font-family: 'Courier New', monospace;
+}

@@ -3,5 +3,6 @@ window.settings = {
     'deleteCooldown': 1000,
     'enabledStatus': ['🔄', '❓', '✅', '❌'],
     'sldIsSpecial': true,
-    'applyFiltersOnFilterChange': true
+    'applyFiltersOnFilterChange': true,
+    'applyFiltersOnStatusChange': false
 };
