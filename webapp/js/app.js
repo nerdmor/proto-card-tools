@@ -2,13 +2,16 @@
  * Starters
  **************************************************************************** */
 document.addEventListener('DOMContentLoaded', function () {
+    // settings
+    window.settings = new SettingsManager();
+
     // common elements
-    window.listElement = document.querySelector('#second-row');  // debug
+    window.listElement = document.querySelector('#second-row');  // DEBUG
     window.statusFilterElement = document.querySelector('#filter-status-wrapper');
 
     // global managers
     window.scryfall = new Scryfall();
-    window.listManager = new CardList(window.settings.enabledStatus, 'table');
+    window.listManager = new CardList(window.settings.enabledStatus, 'table'); // TODO: change the list print type
     window.mainController = new MainController();
 
     // modal handlers
@@ -17,7 +20,13 @@ document.addEventListener('DOMContentLoaded', function () {
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
     window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
-    // window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'));
+    window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'), {
+        'cardImgQuality': document.querySelector('#settings-select-cardImgQuality'),
+        'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
+        'sldIsSpecial': document.querySelector('#settings-checkbox-sldIsSpecial'),
+        'applyFiltersOnFilterChange': document.querySelector('#settings-checkbox-applyFiltersOnFilterChange'),
+        'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange')
+    });
 
 
     // drawing/setting dynamic things
@@ -77,6 +86,16 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     document.querySelector('#filters-status-all').addEventListener('click', function(){
         window.mainController.filterSelectAll('status');
+    });
+
+    // change draw type
+    document.querySelector('#header-display-toggle').addEventListener('change', function(event){
+        window.mainController.changeDrawType(event.target);
+    });
+
+    // settings button
+    document.querySelector('#header-settings').addEventListener('click', function(event){
+        window.settingsModal.call();
     });
 
 

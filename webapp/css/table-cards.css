@@ -33,6 +33,7 @@
 }
 
 .table-card-row-quantity{
+    min-width: 2em;
     width: 2em;
 }
 

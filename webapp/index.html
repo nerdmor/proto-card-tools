@@ -22,7 +22,6 @@
     <div id="select-card-version-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
     <div id="card-details-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
     <div id="settings-modal" class="modal fade" aria-hidden="true">
-      
 
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content">
@@ -34,8 +33,8 @@
               <div class="row">
                 <div class="col-md-6 col-lg-3">
                   <div class="form-check form-switch">
-                    <input id="settings-applyFiltersOnStatusChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnStatusChange" role="switch">
-                    <label class="form-check-label" for="settings-applyFiltersOnStatusChange">Apply status filters on card status change</label>
+                    <input id="settings-checkbox-applyFiltersOnStatusChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnStatusChange" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-applyFiltersOnStatusChange">Apply status filters on card status change</label>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -44,8 +43,8 @@
 
                 <div class="col-md-6 col-lg-3">
                   <div class="form-check form-switch">
-                    <input id="settings-applyFiltersOnFilterChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnFilterChange" role="switch">
-                    <label class="form-check-label" for="settings-applyFiltersOnFilterChange">Apply filters on filter change</label>
+                    <input id="settings-checkbox-applyFiltersOnFilterChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnFilterChange" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-applyFiltersOnFilterChange">Apply filters on filter change</label>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -54,8 +53,8 @@
 
                 <div class="col-md-6 col-lg-3">
                   <div class="form-check form-switch">
-                    <input id="settings-sldIsSpecial" class="form-check-input settings-checkbox" type="checkbox" setting_name="sldIsSpecial" role="switch">
-                    <label class="form-check-label" for="settings-sldIsSpecial">Secret Lair is special</label>
+                    <input id="settings-checkbox-sldIsSpecial" class="form-check-input settings-checkbox" type="checkbox" setting_name="sldIsSpecial" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-sldIsSpecial">Secret Lair is special</label>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
@@ -64,13 +63,12 @@
 
                 <div class="col-md-6 col-lg-3">
                   <div class="form-group">
-                    <label class="form-label" for="settings-cardImgQuality">Card image quality</label>
-                    <select id="settings-cardImgQuality" class="form-select form-select-sm settings-select" setting_name="cardImgQuality">
+                    <label class="form-label" for="settings-select-cardImgQuality">Card image quality</label>
+                    <select id="settings-select-cardImgQuality" class="form-select form-select-sm settings-select" setting_name="cardImgQuality">
                       <option value="small">Small</option>
                       <option value="normal">Normal</option>
                       <option value="large">Large</option>
                       <option value="png">PNG</option>
-                      <option value="art_crop">Art crop</option>
                       <option value="border_crop">Border crop</option>
                     </select>
                   </div>
@@ -80,30 +78,22 @@
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                  <div class="form-group">
-                    <label class="form-label" for="settings-deleteCooldown">Delete timer</label>
-                    <input id="settings-deleteCooldown" setting_name="deleteCooldown" class="form-control settings-text" type="text">
-                  </div>
+                  <form class="form-group">
+                    <label class="form-label" for="settings-text-deleteCooldown">Delete timer</label>
+                    <input id="settings-text-deleteCooldown" setting_name="deleteCooldown" class="form-control settings-text" type="text">
+                  </form>
                 </div>
                 <div class="col-md-6 col-lg-3">
                   <p>Amount of time, in seconds, for which you have to press the delete button before the card is removed from tyhe list</p>
                 </div>
 
-
-
-
-
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+            <div class="modal-footer align-items-right">
+              changes to settings are saved automatically
             </div>
           </div>
         </div>
-
-
-
     </div>
     <!-- End of Modals -->
 
@@ -127,7 +117,8 @@
                   </ul>
                 </div>
               </li>
-              <li><a id="header-settings" href="#" class="nav-link px-2 text-white" data-bs-toggle="modal" data-bs-target="#settings-modal">Settings</a></li>
+              <!-- <li><a id="header-settings" href="#" class="nav-link px-2 text-white" data-bs-toggle="modal" data-bs-target="#settings-modal">Settings</a></li> -->
+              <li><a id="header-settings" href="#" class="nav-link px-2 text-white">Settings</a></li>
               <li>
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>

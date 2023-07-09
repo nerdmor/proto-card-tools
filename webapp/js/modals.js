@@ -14,10 +14,12 @@ class ProtoModal{
     }
 
     call(){
-        if(this.html == ''){
+        if(this.html == '' || this.html === null){
             this.draw();
         }
-        this.modal = new bootstrap.Modal(this.element, this.options);
+        if(this.modal === null){
+            this.modal = new bootstrap.Modal(this.element, this.options);
+        }
         this.modal.show();
     }
 
@@ -63,7 +65,7 @@ class LoadingCardsModal extends ProtoModal{
     `;
 
     static cardNameModel = `
-    loading <strong>%%cardname%%</strong>
+        loading <strong>%%cardname%%</strong>
     `;
 
     constructor(domElement){
@@ -76,6 +78,8 @@ class LoadingCardsModal extends ProtoModal{
         this.starterText = starterText || 'loading...';
         super.call();
     }
+
+
 
     draw(){
         this.html = LoadingCardsModal.modalModel.replaceAll('%%modal-title%%', this.title)
@@ -244,7 +248,7 @@ class CardSetSelectionModal extends ProtoModal {
     draw(){
         this.html = CardSetSelectionModal.modalModel.replaceAll('%%modaltitle%%', this.title)
                                                     .replaceAll('%%modalbody%%', this.cardBody);
-        super.draw();
+        super.draw()
         this.bind();
     }
 
@@ -327,12 +331,77 @@ class CardDetailsModal extends ProtoModal{
 }
 
 class SettingsModal extends ProtoModal{
-    constructor(domElement){
+    constructor(domElement, keyElements){
         super(domElement)
         this.options = {'focus': true};
+        this.keyElements = keyElements;
+        this.settingsKeys = Object.keys(this.keyElements);
+        this.globalSettingsKeys = Object.keys(SettingsManager.keys);
+        this._bind();
     }
 
-    draw(){return;}
+    _bind(){
+        for(const key of this.settingsKeys){
+            if(!this.globalSettingsKeys.includes(key)) continue;
+            if(SettingsManager.keys[key].type == 'boolean'){ // binds all the boolean checkboxes
+                this.keyElements[key].addEventListener('change', (event) => {
+                    window.settings.setValue(key, event.target.checked);
+                });
+                continue;
+            }
+
+            if(key ==  'cardImgQuality'){
+                this.keyElements[key].addEventListener('change', (event) => {
+                    if(!SettingsManager.keys.cardImgQuality.possibleValues.includes(event.target.value)) return;
+                    window.settings.setValue('cardImgQuality', event.target.value);
+                });
+                continue;
+            }
+
+            if(key == 'deleteCooldown'){
+                var formElement = this.keyElements[key].parentElement;
+                formElement.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    try {
+                        const newValue = parseFloat(this.keyElements[key].value) * 1000.0;
+                        window.settings.setValue('deleteCooldown', newValue);
+                    } catch(e) {
+                        console.log(e);
+                        return;
+                    }
+                });
+                continue;
+            }
+        }
+    }
+
+    call(){
+        this.html = null;
+        super.call();
+    }
+
+    draw(){
+        for(const key of this.settingsKeys){
+            console.log(key);
+            if(!this.globalSettingsKeys.includes(key)) continue;
+            if(SettingsManager.keys[key].type == 'boolean'){
+                this.keyElements[key].checked = window.settings[key];
+                continue;
+            }
+
+            if(key ==  'cardImgQuality'){
+                this.keyElements[key].value = window.settings.cardImgQuality;
+                continue;
+            }
+
+            if(key == 'deleteCooldown'){
+                this.keyElements[key].value = String(window.settings.deleteCooldown/1000);
+                continue;
+            }
+
+
+        }
+    }
 
     async _afterHidden(){
         if(this.hiddenCallback){

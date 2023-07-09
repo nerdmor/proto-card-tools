@@ -229,4 +229,10 @@ class MainController{
         }
     }
 
+    changeDrawType(element){
+        const drawType = element.checked ? 'find': 'table';
+        window.listManager.setCardMode(drawType);
+        window.drawCardList(window.listElement);
+    }
+
 }

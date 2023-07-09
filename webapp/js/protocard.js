@@ -35,33 +35,33 @@ class ProtoCard{
 
     static tableModels = {
         innerModel: `
-          <div class="col-1 table-card-quantity">
+          <div class="col-6 col-md-1 table-card-quantity">
               <form class="table-card-quantity-form input-group" role="group">
                 <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-minus"><i class="bi bi-dash-lg"></i></button>
                 <input type="text" class="form-control form-control-sm table-card-row-quantity table-card-quantity-control" value="%%quantity%%">
                 <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-plus"><i class="bi bi-plus-lg"></i></button>
               </form>
           </div>
-          <div class="col-3 align-middle">
+          <div class="col-6 col-md-3 align-middle">
             <span class="table-card-name align-middle">%%name%%</span>
           </div>
-          <div class="col-2 table-card-cost">%%cardcost%%</div>
-          <div class="col-1 table-card-set">
+          <div class="col-6 col-md-2 table-card-cost">%%cardcost%%</div>
+          <div class="col-6 col-md-1 table-card-set">
             <div class="table-card-set-span">
               <button type="button" class="btn btn-sm btn-light card-select-set">
                 <img src="%%seticonurl%%" class="table-card-set-icon card-select-set" alt="%%setname%%">
               </button>
             </div>
           </div>
-          <div class="col-2 table-card-rarity">
+          <div class="col-4 col-md-2 table-card-rarity">
             <div class="table-card-rarity-span align-middle">
               %%rarityicons%%
             </div>
           </div>
-          <div class="col-1 table-card-status-symbol align-middle">
+          <div class="col-4 col-md-1 table-card-status-symbol align-middle">
             <button type="button" class="btn btn-sm btn-outline-secondary card-status-button table-card-status-button">%%cardstatus%%</button>
           </div>
-          <div class="col-2 table-card-control">
+          <div class="col-4 col-md-2 table-card-control">
             <button type="button" class="btn btn-sm btn-light table-card-details"><i class="bi bi-three-dots"></i></button>
             <button type="button" class="btn btn-sm table-card-trash"><i class="bi bi-trash"></i></button>
           </div>
