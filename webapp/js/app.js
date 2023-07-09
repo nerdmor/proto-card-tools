@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // drawing/setting dynamic things
     window.mainController.redrawStatusFilters(window.statusFilterElement);
     document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
+    window.mainController.setInterfaceFilters();
 
 
 
@@ -95,6 +96,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // settings button
     document.querySelector('#header-settings').addEventListener('click', function(event){
         window.settingsModal.call();
+    });
+
+    // quickadd
+    document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){
+        const quickValue = document.querySelector('#header-quick-add-txt').value;
+        if(quickValue.length < 4) return;
+        window.listManager.ingestText(quickValue);
+        window.mainController.loadQueueFromScryfallModalHandler();
     });
 
 

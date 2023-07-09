@@ -88,6 +88,9 @@ function matchElementAndParent(element, filters){
     return false;
 }
 
+function makeName(){
+    return `${window.constants.adjectives[Math.floor(Math.random() * window.constants.adjectives.length)]} ${window.constants.nouns[Math.floor(Math.random() * window.constants.nouns.length)]}`;
+}
 
 
 // md5 ugly block

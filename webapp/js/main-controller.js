@@ -176,26 +176,32 @@ class MainController{
         );
     }
 
-    async filterSelectAll(filterType, suppressLoad=false){
+    async filterSelectAll(filterType, suppressLoad=false, forceValue=null){
         if(filterType == 'all'){
-            await this.filterSelectAll('color', true);
-            await this.filterSelectAll('rarity', true);
+            await this.filterSelectAll('color', true, forceValue);
+            await this.filterSelectAll('rarity', true, forceValue);
             filterType = 'status';
         }
 
         const targets = document.querySelectorAll(`.filter-check-${filterType}`);
         if(!targets) return;
+
         var allChecked = true;
-        for(const element of targets){
-            if(!element.checked){
-                allChecked = false;
-                break;
+        if(forceValue === null){
+            for(const element of targets){
+                if(!element.checked){
+                    allChecked = false;
+                    break;
+                }
             }
+        }else{
+            allChecked = !forceValue;
         }
 
         for(const element of targets){
             element.checked = !allChecked;
         }
+
         if(!suppressLoad) this.loadFiltersFromInterface()
     }
 
@@ -229,6 +235,26 @@ class MainController{
 
         if(window.settings.applyFiltersOnFilterChange){
             window.drawCardList(window.listElement);
+        }
+    }
+
+    async setInterfaceFilters(){
+        var targetElement = null;
+        for(const filterType of Object.keys(window.listManager.filters)){
+            if(window.listManager.filters[filterType].length == 0){
+                await this.filterSelectAll(filterType, false, true);
+            }else{
+                await this.filterSelectAll(filterType, false, false);
+                for(const filterValue of window.listManager.filters[filterType]){
+                    console.log(`.filter-check-${filterType}[value="${filterValue}"]`);
+                    targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
+                    if(targetElement){
+                        targetElement.checked = true;
+                    }
+                }
+            }
+
+
         }
     }
 

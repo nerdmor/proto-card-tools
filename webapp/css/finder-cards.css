@@ -31,6 +31,11 @@
     font-size: 120%;
 }
 
+.finder-card-quantity-control{
+  padding: 0px 0.2em 0px 0.2em;
+}
+
+
 .finder-card-set-icon{
     width: 1.5em;
     height: 1.5em;

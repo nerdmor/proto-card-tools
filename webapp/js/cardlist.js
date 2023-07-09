@@ -26,19 +26,18 @@ class CardList{
 
     constructor(statusList=null, cardMode=null){
         this.cardMode = cardMode || Cardlist.allowedModes[0];
+        this.name = null;
         this.cardQueue = [];
         this.cards = {};
         this.sets = {};
         this.statusList = statusList || [];
-        this.filters = {
-            'color': [],
-            'rarity': [],
-            'status': []
-        };
+        this.filters = {};
         this.filteredCards = [];
 
         this.errors = [];
         this.scryfallClient = null;
+
+        this.resetFilters();
     }
 
     _filterCards(){
