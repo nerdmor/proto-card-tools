@@ -12,11 +12,23 @@ class ProtoCard{
         innerModel : `
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
-                  <div class="icon-group">%%rarityicons%%</div>
-                  <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group">
-                    <a class="btn btn-outline-secondary btn-sm py-2 link-body-emphasis text-decoration-none card-quantity">%%quantity%%</a>
-                    <a class="btn btn-outline-secondary btn-sm py-2 link-body-emphasis text-decoration-none card-burger-menu" href="#"><i class="bi bi-three-dots"></i></a>
-                  </nav>
+                  <div class="col-4 finder-icon-group">%%rarityicons%%</div>
+                  <form class="finder-card-quantity-form col-3 d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group">
+                    <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-minus"><i class="bi bi-dash-lg"></i></button>
+                    <input type="text" class="form-control form-control-sm finder-card-quantity finder-card-quantity-control card-quantity-control" value="%%quantity%%">
+                    <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-plus"><i class="bi bi-plus-lg"></i></button>
+                  </form>
+                  <div class="col-3 py-1 finder-card-control-col">
+                    <div class="btn-group finder-card-control-group">
+                      <button type="button" class="btn btn-sm btn-light py-1 card-select-set">
+                        <img src="%%seticonurl%%" class="table-card-set-icon card-select-set" alt="%%setname%%">
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm py-1 finder-card-details" href="#"><i class="bi bi-three-dots"></i></button>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <button type="button" class="btn btn-sm finder-card-trash"><i class="bi bi-trash"></i></button>
+                  </div>
                 </div>
                 <div class="card-body finder-card-body">
                   <img class="finder-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
@@ -28,9 +40,7 @@ class ProtoCard{
                 %%inner-model%%
             </div>
             `,
-        baseRarityModel : `
-            <span class="rarity-icon-wrapper"><img src="img/mtg_%%rarity%%.png" class="rarity-icon"></span>
-            `
+        rarityIconModel: `<span class="finder-card-rarity-icon" alt="%%alt%%"> <i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-%%rarityletter%%"></i> </span>`,
     };
 
     static tableModels = {
@@ -38,7 +48,7 @@ class ProtoCard{
           <div class="col-6 col-md-1 table-card-quantity">
               <form class="table-card-quantity-form input-group" role="group">
                 <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-minus"><i class="bi bi-dash-lg"></i></button>
-                <input type="text" class="form-control form-control-sm table-card-row-quantity table-card-quantity-control" value="%%quantity%%">
+                <input type="text" class="form-control form-control-sm table-card-row-quantity table-card-quantity-control card-quantity-control" value="%%quantity%%">
                 <button type="button" class="btn btn-sm btn-secondary table-card-quantity-control table-card-plus"><i class="bi bi-plus-lg"></i></button>
               </form>
           </div>
@@ -110,7 +120,7 @@ class ProtoCard{
                   <div class="col-6 card-details-cost">%%cardcost%%</div>
                 </div>
                 <div class="row card-details-row card-details-type">%%typeline%%</div>
-                <div class="row card-details-row card-details-body">%%oracletext%%</div>
+                %%oracleblock%%
                 <div class="row card-details-row card-details-stats">
                     <span class="card-details-stats-wrapper">%%cardstats%%</span>
                 </div>
@@ -137,6 +147,7 @@ class ProtoCard{
               </div>
             </div>
         `,
+        oracleModel: `<div class="row card-details-row card-details-body">%%oracletext%%</div>`,
         loyaltyModel: `<i class="ms %%loyaltydirection%% ms-loyalty-%%loyalty%%"></i>`,
         defenseModel: `<i class="ms ms-defense ms-defense-print ms-defense-%%defense%%"></i>`,
         sagaModel: `<i class="ms ms-saga ms-saga-%%chapter%%"></i>`
@@ -281,15 +292,22 @@ class ProtoCard{
         throw new Error('Invalid printmode');
     }
 
-    _drawInnerFind(){
+    _drawInnerFind(setData){
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
                                                   .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet].images[window.settings.cardImgQuality])
-                                                  .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status);
+                                                  .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status)
+                                                  .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
+                                                  .replaceAll('%%setname%%', setData[this.selectedSet].name)
+                                                  ;
         var rarityIcons = [];
         for (const e of this.rarities) {
             if(window.constants.rarities.includes(e)){
-                rarityIcons.push(ProtoCard.findModels.baseRarityModel.replaceAll('%%rarity%%', e.charAt(0).toLowerCase()));
+                rarityIcons.push(
+                    // ProtoCard.findModels.baseRarityModel.replaceAll('%%rarity%%', e.charAt(0).toLowerCase())
+                    ProtoCard.findModels.rarityIconModel.replaceAll('%%rarityletter%%', e.toLowerCase())
+                                                        .replaceAll('%%alt%%', e)
+                );
             }
         }
         rarityIcons = rarityIcons.join('');
@@ -428,44 +446,49 @@ class ProtoCard{
         else if(this.statType == 'defense') stats = ProtoCard.detailsModels.defenseModel.replaceAll('%%defense%%', this.stats);
         else if(this.statType == 'loyalty') stats = ProtoCard.detailsModels.loyaltyModel.replaceAll('%%loyaltydirection%%', 'ms-loyalty-start').replaceAll('%%loyalty%%', this.stats);
 
-        var oracleText = this.oracleText.split('\n');
         var tmpText = [];
         var matches = null
         var tmpLine = '';
-        if(this.typeLine.indexOf('Planeswalker') > -1){
-            for(const line of oracleText){
-                matches = line.match(/^([\+\-−]?)(\d+)/i);
-                if(!matches){
-                    tmpText.push(`<p>${line}</p>`);
-                    continue;
-                }
-
-                tmpLine = ProtoCard.detailsModels.loyaltyModel;
-                if(matches[1] == '-' || matches[1] == '−'){
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-down').replaceAll('%%loyalty%%', matches[2]);
-                }else if(matches[1] == '+'){
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-up').replaceAll('%%loyalty%%', matches[2]);
-                }else{
-                    tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-zero').replaceAll('%%loyalty%%', matches[2]);
-                }
-
-                tmpText.push(`<p>${line.replaceAll(matches[0], tmpLine)}</p>`);
-            }
-            oracleText = tmpText;
+        var oracleText = this.oracleText.split('\n');
+        if(this.oracleText.length == 0){
+            oracleText = '';
         }else{
-            var tmpText = [];
-            for(const line of oracleText){
-                tmpText.push(`<p>${line}</p>`);
+            if(this.typeLine.indexOf('Planeswalker') > -1){
+                for(const line of oracleText){
+                    matches = line.match(/^([\+\-−]?)(\d+)/i);
+                    if(!matches){
+                        tmpText.push(`<p>${line}</p>`);
+                        continue;
+                    }
+
+                    tmpLine = ProtoCard.detailsModels.loyaltyModel;
+                    if(matches[1] == '-' || matches[1] == '−'){
+                        tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-down').replaceAll('%%loyalty%%', matches[2]);
+                    }else if(matches[1] == '+'){
+                        tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-up').replaceAll('%%loyalty%%', matches[2]);
+                    }else{
+                        tmpLine = tmpLine.replaceAll('%%loyaltydirection%%', 'ms-loyalty-zero').replaceAll('%%loyalty%%', matches[2]);
+                    }
+
+                    tmpText.push(`<p>${line.replaceAll(matches[0], tmpLine)}</p>`);
+                }
+                oracleText = tmpText;
+            }else{
+                var tmpText = [];
+                for(const line of oracleText){
+                    tmpText.push(`<p>${line}</p>`);
+                }
+                oracleText = tmpText;
             }
-            oracleText = tmpText;
+            oracleText = oracleText.join('\n');
+            oracleText = ProtoCard.detailsModels.oracleModel.replaceAll('%%oracletext%%', oracleText);
         }
-        oracleText = oracleText.join('\n');
 
         return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images['normal'])
                                                 .replaceAll('%%cardname%%', this.name)
                                                 .replaceAll('%%cardcost%%', this._makeCostIcons())
                                                 .replaceAll('%%typeline%%', this.typeLine)
-                                                .replaceAll('%%oracletext%%', oracleText)
+                                                .replaceAll('%%oracleblock%%', oracleText)
                                                 .replaceAll('%%cardstats%%', stats)
                                                 .replaceAll('%%scryfallurl%%', this.urls.scryfall)
                                                 .replaceAll('%%edhrecurl%%', this.urls.edhrec)

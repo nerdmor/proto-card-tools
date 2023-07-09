@@ -24,6 +24,11 @@ class SettingsManager{
         'applyFiltersOnStatusChange': {
             'default': false,
             'type': 'boolean'
+        },
+        'displayMode': {
+            'default': 'find',
+            'type': 'string',
+            'possibleValues': ['find', 'table']
         }
     }
 
@@ -47,6 +52,5 @@ class SettingsManager{
         if(SettingsManager.keys[key].type == 'Array' && !Array.isArray(value)) return;
         if(SettingsManager.keys[key].type != typeof(value)) return;
         this[key] = value;
-        console.log(this);
     }
 }

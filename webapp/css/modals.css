@@ -50,7 +50,8 @@
 	height: 100%;
 }
 
-.card-details-links{
+.card-details-edhrec-link{
+    filter: invert(100%) sepia(4%) saturate(1031%) hue-rotate(197deg) brightness(116%) contrast(87%);
 }
 
 .card-details-links a{

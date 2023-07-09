@@ -1,7 +1,16 @@
 /* *****************************************************************************
- * Starters
+ * Draws a list of cards
  **************************************************************************** */
+window.drawCardList = async function(element){
+    window.mainController.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
+    /* *****************************************************************************
+     * Starters
+     **************************************************************************** */
+
     // settings
     window.settings = new SettingsManager();
 
@@ -11,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // global managers
     window.scryfall = new Scryfall();
-    window.listManager = new CardList(window.settings.enabledStatus, 'table'); // TODO: change the list print type
+    window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode); // TODO: change the list print type
     window.mainController = new MainController();
 
     // modal handlers
@@ -31,23 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // drawing/setting dynamic things
     window.mainController.redrawStatusFilters(window.statusFilterElement);
-}, false);
+    document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
 
 
 
-
-/* *****************************************************************************
- * Drawing a list of cards
- **************************************************************************** */
-window.drawCardList = async function(element){
-    window.mainController.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
-}
-
-
-/* *****************************************************************************
- * Bindings
- **************************************************************************** */
-document.addEventListener('DOMContentLoaded', function(){
+    /* *****************************************************************************
+     * Bindings
+     **************************************************************************** */
     document.querySelector('body').addEventListener('click', (event) => {
         // call set selector
         if(matchElementAndParent(event.target, ['.card-select-set'])) return window.mainController.callSetSelect(event);
@@ -56,10 +55,10 @@ document.addEventListener('DOMContentLoaded', function(){
         if(matchElementAndParent(event.target, ['.card-status-button'])) return window.mainController.nextStatus(event);
 
         // card quantity buttons
-        if(matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus'])) return window.mainController.cardQuantityButtons(event);
+        if(matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus', '.finder-card-minus', '.finder-card-plus'])) return window.mainController.cardQuantityButtons(event);
 
         // card details
-        if(matchElementAndParent(event.target, ['.table-card-details'])) return window.mainController.callCardDetails(event);
+        if(matchElementAndParent(event.target, ['.table-card-details', '.finder-card-details'])) return window.mainController.callCardDetails(event);
     });
 
     document.querySelector('body').addEventListener('change', (event) => {
@@ -74,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // card quantity form
     document.querySelector('body').addEventListener('submit', function(event){
-        if(matchElementAndParent(event.target, ['.table-card-quantity-form'])) return window.mainController.formCardQuantitySubmit(event);
+        if(matchElementAndParent(event.target, ['.table-card-quantity-form', '.finder-card-quantity-form'])) return window.mainController.formCardQuantitySubmit(event);
     });
 
     // filters 'select all'

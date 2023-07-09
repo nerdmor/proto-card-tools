@@ -76,7 +76,7 @@ class MainController{
         const cardKey = getCardKeyFromParent(event.target);
         if(cardKey === null) return false;
 
-        if(matchElementAndParent(event.target, '.table-card-minus')){
+        if(matchElementAndParent(event.target, ['.table-card-minus', '.finder-card-minus'])){
             window.listManager.addCardQuantity(cardKey, -1);
         }else{
             window.listManager.addCardQuantity(cardKey, 1)
@@ -97,12 +97,15 @@ class MainController{
     }
 
     formCardQuantitySubmit(event){
+        console.log('formCardQuantitySubmit called');
         event.preventDefault();
 
         const cardKey = getCardKeyFromParent(event.target);
+        console.log(`cardKey: ${cardKey}`);
         if(cardKey === null) return false;
 
-        const quantityElement = event.target.querySelector('input.table-card-row-quantity');
+        const quantityElement = event.target.querySelector('input.card-quantity-control');
+        console.log(quantityElement);
         if(!quantityElement) return;
         var newQuantity = null;
         try {
@@ -231,6 +234,7 @@ class MainController{
 
     changeDrawType(element){
         const drawType = element.checked ? 'find': 'table';
+        window.settings.setValue('displayMode', drawType);
         window.listManager.setCardMode(drawType);
         window.drawCardList(window.listElement);
     }
