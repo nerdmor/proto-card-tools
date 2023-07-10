@@ -14,7 +14,7 @@ class CardList{
         `,
         'statusModel': `
             <div class="form-check form-check-inline filter-check-group">
-              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check filter-check-status" type="checkbox" value="%%statusindex%%">
+              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check filter-check-status" type="checkbox" value="%%statusicon%%">
               <label class="form-check-label" for="filters-status-%%statusindex%%" aria-label="no status">%%statusicon%%</label>
             </div>
         `,
@@ -26,7 +26,7 @@ class CardList{
 
     constructor(statusList=null, cardMode=null){
         this.cardMode = cardMode || Cardlist.allowedModes[0];
-        this.name = null;
+        this.name = makeFunnyName();
         this.cardQueue = [];
         this.cards = {};
         this.sets = {};
@@ -51,9 +51,9 @@ class CardList{
 
     resetFilters(){
         this.filters = {
-            'color': [],
-            'rarity': [],
-            'status': []
+            'color': window.constants.colors.slice(),
+            'rarity': window.constants.rarities.slice(),
+            'status': [...this.statusList.slice(), null]
         };
     }
 
@@ -64,15 +64,24 @@ class CardList{
         }
     }
 
+    _addAllFilters(filterType){
+        if(filterType == 'status'){
+            this.filters.status = [...this.statusList.slice(), null];
+        }else if(filterType == 'color'){
+            this.filters.color = window.constants.colors.slice();
+        }else if(filterType == 'rarity'){
+            this.filters.rarity = window.constants.rarities.slice();
+        }
+    }
+
     removeFilter(filterType, value){
         if(!Object.hasOwn(this.filters, filterType)) return;
-        if(!this.filters[filterType].includes(value)) return;
+        if(this.filters[filterType].length == 0) return;
 
-        var tmp = [];
-        for(const e of this.filters[filterType]){
-            if(e != value) tmp.push(e);
-        }
-        this.filters[filterType] = tmp;
+        if(value === 'null') value = null;
+        const index = this.filters[filterType].indexOf(value);
+        if(index < 0) return;
+        this.filters[filterType].splice(index, 1);
     }
 
     setScryfallClient(client){

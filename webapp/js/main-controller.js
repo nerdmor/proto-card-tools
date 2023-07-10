@@ -222,14 +222,19 @@ class MainController{
     }
 
     async processFilterChange(element){
-        const filterValue = element.checked ? element.value : null;
+        const filterChecked = element.checked ? true : false;
+        const filterValue = element.value;
         const filterType = element.classList.contains('filter-check-color') ? 'color' :
                            element.classList.contains('filter-check-rarity') ? 'rarity' :
                            element.classList.contains('filter-check-status') ? 'status' : null;
         if(!filterType) return;
-        if(filterValue){
+
+
+        if(filterChecked){
+            console.log(`adding ${filterValue} to/from ${filterType}`);
             window.listManager.addFilter(filterType, filterValue);
         }else{
+            console.log(`removing ${filterValue} to/from ${filterType}`);
             window.listManager.removeFilter(filterType, filterValue);
         }
 
@@ -242,9 +247,9 @@ class MainController{
         var targetElement = null;
         for(const filterType of Object.keys(window.listManager.filters)){
             if(window.listManager.filters[filterType].length == 0){
-                await this.filterSelectAll(filterType, false, true);
+                await this.filterSelectAll(filterType, true, true);
             }else{
-                await this.filterSelectAll(filterType, false, false);
+                await this.filterSelectAll(filterType, true, false);
                 for(const filterValue of window.listManager.filters[filterType]){
                     console.log(`.filter-check-${filterType}[value="${filterValue}"]`);
                     targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);

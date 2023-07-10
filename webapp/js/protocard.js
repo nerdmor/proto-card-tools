@@ -209,7 +209,8 @@ class ProtoCard{
 
     matchesFilters(filters){
         var result = true;
-        if(Object.hasOwn(filters, 'color') && filters.color.length > 0){
+        if(Object.hasOwn(filters, 'color')){
+            if(filters.color.length == 0) return false;
             result = false;
             for(const colorKey of filters.color){
                 if(this.colors.includes(colorKey)){
@@ -233,7 +234,8 @@ class ProtoCard{
         }
 
 
-        if(Object.hasOwn(filters, 'rarity') && filters.rarity.length > 0){
+        if(Object.hasOwn(filters, 'rarity')){
+            if(filters.rarity.length == 0) return false;
             result = false;
             for(const rarityKey of filters.rarity){
                 if(this.rarities.includes(rarityKey)){
@@ -244,13 +246,9 @@ class ProtoCard{
             if(result === false) return false;
         }
 
-        if(Object.hasOwn(filters, 'status') && filters.status.length > 0){
-            if(filters.status.includes(this.status)){
-                result = true;
-            }else{
-                result = false;
-            }
-            if(result === false) return false;
+        if(Object.hasOwn(filters, 'status')){
+            if(filters.status.length == 0) return false;
+            if(!filters.status.includes(this.status)) return false;
         }
 
         return result;
