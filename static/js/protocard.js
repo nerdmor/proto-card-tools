@@ -36,7 +36,7 @@ class ProtoCard{
             </div>
             `,
         outerModel : `
-            <div class="finder-card col-md-4 col-sm-12" card_key="%%cardkey%%">
+            <div class="finder-card col-sm-12 col-xs-12 col-md-4 col-lg-4 col-xl-3 " card_key="%%cardkey%%">
                 %%inner-model%%
             </div>
             `,
