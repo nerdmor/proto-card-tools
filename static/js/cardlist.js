@@ -137,7 +137,7 @@ class CardList{
         }
     }
 
-    loadSetData(scryfallClient=null, stepCallback=null, finalCallback=null){
+    async loadSetData(scryfallClient=null, stepCallback=null, finalCallback=null){
         if(this.scryfallClient == null){
             if(scryfallClient === null){
                 throw new Error('a scryfallClient must be provided');
@@ -146,34 +146,22 @@ class CardList{
         }
         this._loadSetKeys();
 
-        this._processSetQueue(stepCallback, finalCallback);
-    }
-
-    async _processSetQueue(stepCallback=null, finalCallback=null){
+        // TODO: continue by replacing the line below
+        var response = null;
         for(const setCode of Object.keys(this.sets)){
             if(this.sets[setCode] === null){
                 await delay(100);
                 if(stepCallback) stepCallback(setCode);
-                this.scryfallClient.sets(setCode, (d, p) => this._processScryfallSet(d, p), {'setCode': setCode, stepCallback, finalCallback});
-                return; // avoids that we create a huge pile of requests all going at once
+                response = await this.scryfallClient.sets(setCode);
+                this.sets[setCode] = {
+                    'icon_svg_uri': response.icon_svg_uri,
+                    'name': response.name
+                }
             }
         }
 
         await delay(100);
         if(finalCallback) finalCallback();
-    }
-
-    _processScryfallSet(data, params){
-        this.sets[params.setCode] = {
-            'icon_svg_uri': data.icon_svg_uri,
-            'name': data.name
-        }
-        this._processSetQueue(params.stepCallback, params.finalCallback);
-    }
-
-    makeCardObject(index){
-        var newCard = new ProtoCard(index);
-        return newCard;
     }
 
     parseCardLine(text){
@@ -248,7 +236,7 @@ class CardList{
                 continue;
             }
 
-            newCard = this.makeCardObject(len(this.cardQueue));
+            newCard = new ProtoCard(len(this.cardQueue));
             newCard.buildFromParams({
                 typedName: parsedLine.typedName,
                 foil: parsedLine.foil,
@@ -273,25 +261,36 @@ class CardList{
         await delay(100);
 
         this.errors = [];
-        if(len(this.cardQueue) < 1){
+        if(this.cardQueue.length < 1){
             return;
         }
 
-        var params = {
-            'index': 0,
-            'callback': (params) => this._processQueueStep(params),
-        };
-        if(stepCallback){
-            params['stepCallback'] = (p) => stepCallback(p);
-        }
-        if(finalCallback){
-            params['finalCallback'] = (p) => finalCallback(p);
+        var newCard = null;
+        for (var i = 0; i < this.cardQueue.length; i++) {
+            if(stepCallback){
+                stepCallback(this.cardQueue[i]);
+            }
+
+            await this.cardQueue[i].buildFromScryFall(this.scryfallClient, {'index': i});
+
+            newCard = this.cardQueue[i];
+            console.log(`${newCard.name} : loaded = ${newCard.loaded}`);
+            if(newCard.loaded == 2){
+                if(Object.keys(this.cards).includes(newCard.key)){
+                    this.cards[newCard.key].quantity += newCard.quantity;
+                }else{
+                    this.cards[newCard.key] = newCard;
+                }
+            }else{
+                this.errors.push(newCard);
+            }
+
+            await delay(20);
         }
 
-        if(stepCallback){
-            stepCallback(this.cardQueue[0]);
+        if(finalCallback){
+            finalCallback(this.errors);
         }
-        this.cardQueue[0].buildFromScryFall(this.scryfallClient, params);
     }
 
     async _processQueueStep(params){
@@ -335,7 +334,7 @@ class CardList{
             if(row.length < 3) continue;
             match = row.match(reWithNum);
             if(match){
-                newCard = this.makeCardObject(0);
+                newCard = new ProtoCard(0);
                 newCard.buildFromParams({
                     typedName: match[2],
                     quantity: parseInt(match[1])
@@ -470,7 +469,7 @@ class CardList{
         for (var i = 0; i < keys.length; i++) {
             this.cards[keys[i]].makeKey();
             if(this.cards[keys[i]].key != keys[i]){
-                newCard = this.makeCardObject(i);
+                newCard = new ProtoCard(i);
                 newCard.buildFromParams(JSON.parse(this.cards[keys[i]].toString()), true);
 
                 delete this.cards[keys[i]];

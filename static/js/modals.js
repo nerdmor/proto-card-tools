@@ -382,7 +382,6 @@ class SettingsModal extends ProtoModal{
 
     draw(){
         for(const key of this.settingsKeys){
-            console.log(key);
             if(!this.globalSettingsKeys.includes(key)) continue;
             if(SettingsManager.keys[key].type == 'boolean'){
                 this.keyElements[key].checked = window.settings[key];

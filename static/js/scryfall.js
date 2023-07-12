@@ -5,34 +5,41 @@ class Scryfall{
     constructor(){
     }
 
-    async sets(setCode, callback, passthrough){
-        const url = `${Scryfall.host}/sets/${setCode}`;
-        await fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                callback(data, passthrough);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+    async _doFetch(url){
+        try {
+            const response = await fetch(url);
+            const json_result = response.json()
+            if(json_result) return json_result;
+        } catch(e) {
+            console.error('Error:', e);
+            return null;
+        }
+        console.error('Error: ', response);
+        return null;
     }
 
-    async cardsNamed(name, callback, passthrough, method='fuzzy'){
+    async sets(setCode, callback=null, passthrough=null){
+        const url = `${Scryfall.host}/sets/${setCode}`;
+        const response = await this._doFetch(url);
+        if(callback){
+            callback(response, passthrough);
+        }
+        return response;
+    }
+
+    async cardsNamed(name, method='fuzzy', callback=null, passthrough=null){
         if(!Scryfall.searchMethods.includes(method)){
             throw new Error('invalid value for search method');
         }
         let url = `${Scryfall.host}/cards/named?` + new URLSearchParams({[method]: name});
-        await fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                callback(data, passthrough);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        const response = await this._doFetch(url);
+        if(callback){
+            callback(response, passthrough);
+        }
+        return response;
     }
 
-    async cardsSearch(query, options, callback, passthrough){
+    async cardsSearch(query, options, callback=null, passthrough=null){
         var url = `${Scryfall.host}/cards/search?`;
         var opts = {'q': query};
 
@@ -60,13 +67,10 @@ class Scryfall{
         }
 
         url = url + new URLSearchParams(opts);
-        await fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                callback(data, passthrough);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        const response = await this._doFetch(url);
+        if(callback){
+            callback(response, passthrough);
+        }
+        return response;
     }
 }

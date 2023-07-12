@@ -36,7 +36,7 @@ class ProtoCard{
             </div>
             `,
         outerModel : `
-            <div class="finder-card col-sm-12 col-xs-12 col-md-4 col-lg-4 col-xl-3 " card_key="%%cardkey%%">
+            <div class="finder-card col-sm-12 col-xs-12 col-md-4 col-lg-4" card_key="%%cardkey%%">
                 %%inner-model%%
             </div>
             `,
@@ -505,7 +505,7 @@ class ProtoCard{
         }
     }
 
-    buildFromScryFall(client=null, params=null){
+    async buildFromScryFall(client=null, params=null){
         if(this.typedName === null){
             throw new Error('cannot build from Scryfall with an empty name');
         }
@@ -520,19 +520,10 @@ class ProtoCard{
             params = {};
         }
         params = {...params, 'page': 0, 'index':this.index};
-        client.cardsNamed(this.typedName, (d, p) => {this._scryFallCardsNamed(d, p)}, params);
-    }
 
-    _addRarity(rarity, setCode){
-        if(setCode == 'sld' && window.settings.sldIsSpecial == true){
-            this.rarities.push('special');
-            return;
-        }
-        this.rarities.push(rarity.toLowerCase());
-    }
+        var scryData = await this.scryfallClient.cardsNamed(this.typedName);
 
-    async _scryFallCardsNamed(data, params){
-        const responseStatus = data.status || 200;
+        const responseStatus = scryData.status || 200;
         if(responseStatus != 200){
             console.log(`error finding ${this.typedName}: ${data.details}`);
             this.errors.push(`error finding ${this.typedName}: ${data.details}`);
@@ -540,19 +531,19 @@ class ProtoCard{
         }
 
         var hasMore = false;
-        if(data.object == 'card'){
-            data = [data];
-        }else if(data.object == 'list'){
-            if(data.has_more == true){
+        if(scryData.object == 'card'){
+            scryData = [scryData];
+        }else if(scryData.object == 'list'){
+            if(scryData.has_more == true){
                 hasMore = true;
             }
-            data = data.data;
+            scryData = scryData.data;
         }
 
         var firstFace = {};
         var scrycard = {};
-        for (var i = 0; i < data.length; i++) {
-            scrycard = data[i];
+        for (var i = 0; i < scryData.length; i++) {
+            scrycard = scryData[i];
 
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
@@ -573,7 +564,7 @@ class ProtoCard{
                 this.cmc = scrycard.cmc;
                 this.name = firstFace.name;
                 this.names.main = firstFace.name;
-                this.data = scrycard;
+                // this.data = scrycard;
                 this.urls.scryfall = scrycard.scryfall_uri;
                 if(Object.hasOwn(scrycard, 'related_uris')){
                     if (Object.hasOwn(scrycard.related_uris, 'edhrec')){
@@ -620,10 +611,18 @@ class ProtoCard{
         await this.scryfallClient.cardsSearch(`!"${this.name}"`, {'unique': 'prints'}, (d, p) => this._scryFallCardsSearch(d, p), params);
     }
 
+    _addRarity(rarity, setCode){
+        if(setCode == 'sld' && window.settings.sldIsSpecial == true){
+            this.rarities.push('special');
+            return;
+        }
+        this.rarities.push(rarity.toLowerCase());
+    }
+
     async _scryFallCardsSearch(data, params){
         const responseStatus = data.status || 200;
         if(responseStatus != 200){
-            console.log(`error finding ${this.typedName}: ${data.details}`);
+            console.error(`error finding ${this.typedName}: ${data.details}`);
             this.errors.push(`error finding ${this.typedName}: ${data.details}`);
             return;
         }

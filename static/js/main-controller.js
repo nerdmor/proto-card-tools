@@ -97,15 +97,12 @@ class MainController{
     }
 
     formCardQuantitySubmit(event){
-        console.log('formCardQuantitySubmit called');
         event.preventDefault();
 
         const cardKey = getCardKeyFromParent(event.target);
-        console.log(`cardKey: ${cardKey}`);
         if(cardKey === null) return false;
 
         const quantityElement = event.target.querySelector('input.card-quantity-control');
-        console.log(quantityElement);
         if(!quantityElement) return;
         var newQuantity = null;
         try {
@@ -170,7 +167,6 @@ class MainController{
             '.select-card-wrapper', //wrapperElementQuery
             'select-card-selected', //selectedClass
             (setCode) => {
-                console.log(`callback called with setCode = ${setCode}`);
                 confirmCallback(setCode);}, //confircallback
             () => {cancelCallback()} // cancelCallback
         );
@@ -231,10 +227,8 @@ class MainController{
 
 
         if(filterChecked){
-            console.log(`adding ${filterValue} to/from ${filterType}`);
             window.listManager.addFilter(filterType, filterValue);
         }else{
-            console.log(`removing ${filterValue} to/from ${filterType}`);
             window.listManager.removeFilter(filterType, filterValue);
         }
 
@@ -251,7 +245,6 @@ class MainController{
             }else{
                 await this.filterSelectAll(filterType, true, false);
                 for(const filterValue of window.listManager.filters[filterType]){
-                    console.log(`.filter-check-${filterType}[value="${filterValue}"]`);
                     targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
                     if(targetElement){
                         targetElement.checked = true;
