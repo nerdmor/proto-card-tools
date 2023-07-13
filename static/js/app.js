@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if(matchElementAndParent(event.target, ['.card-select-set'])) return window.mainController.callSetSelect(event);
 
         // next status
-        if(matchElementAndParent(event.target, ['.card-status-button'])) return window.mainController.nextStatus(event);
+        if(matchElementAndParent(event.target, ['.card-status-button', '.finder-card-image', '.finder-card-status'])) return window.mainController.nextStatus(event);
 
         // card quantity buttons
         if(matchElementAndParent(event.target, ['.table-card-minus', '.table-card-plus', '.finder-card-minus', '.finder-card-plus'])) return window.mainController.cardQuantityButtons(event);
@@ -69,10 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
-        if(matchElementAndParent(event.target, ['.table-card-trash', '.finder-card-trash'])){
-            console.log("mousedown felt");
-            return window.mainController.deleteCardFromList(event);
-        }
+        if(matchElementAndParent(event.target, ['.table-card-trash', '.finder-card-trash'])) return window.mainController.deleteCardFromList(event);
     });
 
     // card quantity form

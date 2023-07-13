@@ -10,6 +10,13 @@
   aspect-ratio: 1 / 1;
 }
 
+.finder-card-status{
+  font-size: 14em;
+  margin-top: -24rem;
+  text-align: center;
+  cursor: default;
+}
+
 .finder-card-quantity{
   min-width: 2.5em;
   border-radius: 0px 0px 0px 0px;

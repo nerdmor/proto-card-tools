@@ -32,6 +32,7 @@ class ProtoCard{
                 </div>
                 <div class="card-body finder-card-body">
                   <img class="finder-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
+                  <div class="finder-card-status">%%cardstatus%%</div>
                 </div>
             </div>
             `,
@@ -327,6 +328,7 @@ class ProtoCard{
         const smallRegex = /{(\d+)}/i;
         var subm = '';
         var colorElement = '';
+
         for(const cost of this.manaCosts){
             singleCost = [];
             for(const symbol of cost.match(bigRegex)){
@@ -340,6 +342,10 @@ class ProtoCard{
             }
 
             totalCost.push(singleCost.join(''));
+        }
+
+        if(totalCost.length == 0){
+          return '&nbsp;';
         }
 
         return totalCost.join('&nbsp;//&nbsp;');
@@ -688,6 +694,8 @@ class ProtoCard{
                 }
             }
             this.rarities = tmp;
+
+            this.manaCosts = this.manaCosts.filter((cost) => cost.length > 0);
 
             this.names.faces = onlyUnique(this.names.faces);
             this.names.compiled = this.names.faces.join(' // ');

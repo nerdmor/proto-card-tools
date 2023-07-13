@@ -102,6 +102,7 @@ class CardList{
         if(status === 'next'){
             status = this._getNextStatus(this.cards[cardKey].status);
         }
+        console.log(`${cardKey}: ${status}`);
         this.cards[cardKey].status = status;
     }
 

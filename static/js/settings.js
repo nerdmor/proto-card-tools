@@ -10,7 +10,7 @@ class SettingsManager{
             'type': 'number'
         },
         'enabledStatus': {
-            'default': ['🔄', '❓', '✅', '❌'],
+            'default': ['✅', '❌', '🔄', '❓'],
             'type': 'Array'
         },
         'sldIsSpecial': {
