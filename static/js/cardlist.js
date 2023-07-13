@@ -102,7 +102,6 @@ class CardList{
         if(status === 'next'){
             status = this._getNextStatus(this.cards[cardKey].status);
         }
-        console.log(`${cardKey}: ${status}`);
         this.cards[cardKey].status = status;
     }
 
@@ -275,7 +274,6 @@ class CardList{
             await this.cardQueue[i].buildFromScryFall(this.scryfallClient, {'index': i});
 
             newCard = this.cardQueue[i];
-            console.log(`${newCard.name} : loaded = ${newCard.loaded}`);
             if(newCard.loaded == 2){
                 if(Object.keys(this.cards).includes(newCard.key)){
                     this.cards[newCard.key].quantity += newCard.quantity;

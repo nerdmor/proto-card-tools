@@ -362,7 +362,7 @@ class ProtoCard{
                                                                       .replaceAll('%%alt%%', e)
                                 );
             }else{
-                console.log(`${e} is not a rarity, it seems`);
+                console.warning(`${e} is not a rarity, it seems`);
             }
         }
         rarityIcons = rarityIcons.join('');
@@ -531,7 +531,7 @@ class ProtoCard{
 
         const responseStatus = scryData.status || 200;
         if(responseStatus != 200){
-            console.log(`error finding ${this.typedName}: ${data.details}`);
+            console.error(`error finding ${this.typedName}: ${data.details}`);
             this.errors.push(`error finding ${this.typedName}: ${data.details}`);
             return;
         }
@@ -553,7 +553,7 @@ class ProtoCard{
 
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
-                console.log(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
+                console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
                 this.errors.push(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
                 return;
             }
@@ -650,7 +650,7 @@ class ProtoCard{
 
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
-                console.log(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
+                console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
                 this.errors.push(`invalid layout for ${this.typedName}: ${scrycard.layout}`)
                 return;
             }
