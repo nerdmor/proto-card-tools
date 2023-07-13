@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
-        if(matchElementAndParent(event.target, ['.table-card-trash'])) return window.mainController.deleteCardFromList(event);
+        if(matchElementAndParent(event.target, ['.table-card-trash', '.finder-card-trash'])){
+            console.log("mousedown felt");
+            return window.mainController.deleteCardFromList(event);
+        }
     });
 
     // card quantity form
