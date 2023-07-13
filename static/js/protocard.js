@@ -12,13 +12,13 @@ class ProtoCard{
         innerModel : `
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
-                  <div class="col-4 finder-icon-group">%%rarityicons%%</div>
-                  <form class="finder-card-quantity-form col-3 d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group">
+                  <div class="col finder-icon-group">%%rarityicons%%</div>
+                  <form class="col finder-card-quantity-form d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group d-none d-lg-flex">
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-minus"><i class="bi bi-dash-lg"></i></button>
                     <input type="text" class="form-control form-control-sm finder-card-quantity finder-card-quantity-control card-quantity-control" value="%%quantity%%">
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-plus"><i class="bi bi-plus-lg"></i></button>
                   </form>
-                  <div class="col-3 py-1 finder-card-control-col">
+                  <div class="col py-1 finder-card-control-col">
                     <div class="btn-group finder-card-control-group">
                       <button type="button" class="btn btn-sm btn-light py-1 card-select-set">
                         <img src="%%seticonurl%%" class="table-card-set-icon card-select-set" alt="%%setname%%">
@@ -26,7 +26,7 @@ class ProtoCard{
                       <button type="button" class="btn btn-outline-secondary btn-sm py-1 finder-card-details" href="#"><i class="bi bi-three-dots"></i></button>
                     </div>
                   </div>
-                  <div class="col-2">
+                  <div class="col">
                     <button type="button" class="btn btn-sm finder-card-trash"><i class="bi bi-trash"></i></button>
                   </div>
                 </div>
