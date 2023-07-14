@@ -18,11 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.listElement = document.querySelector('#second-row');  // DEBUG
     window.statusFilterElement = document.querySelector('#filter-status-wrapper');
 
-    // global managers
-    window.scryfall = new Scryfall();
-    window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode); // TODO: change the list print type
-    window.mainController = new MainController();
-
     // modal handlers
     window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
     window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
@@ -34,15 +29,20 @@ document.addEventListener('DOMContentLoaded', function () {
         'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
         'sldIsSpecial': document.querySelector('#settings-checkbox-sldIsSpecial'),
         'applyFiltersOnFilterChange': document.querySelector('#settings-checkbox-applyFiltersOnFilterChange'),
-        'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange')
+        'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
+        'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
     });
 
+    // global managers
+    window.wakeLock = new WakeLockController();
+    window.scryfall = new Scryfall();
+    window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
+    window.mainController = new MainController();
 
     // drawing/setting dynamic things
     window.mainController.redrawStatusFilters(window.statusFilterElement);
     document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
     window.mainController.setInterfaceFilters();
-
 
 
     /* *****************************************************************************

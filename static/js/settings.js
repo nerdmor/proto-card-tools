@@ -29,11 +29,17 @@ class SettingsManager{
             'default': 'find',
             'type': 'string',
             'possibleValues': ['find', 'table']
+        },
+        'useWakeLock': {
+            'default': true,
+            'type': 'boolean'
         }
     }
 
     constructor(values=null){
         this.validKeys = Object.keys(SettingsManager.keys);
+        this.changeTriggers = {};
+
         if(values===null){
             values = {};
         }
@@ -52,5 +58,23 @@ class SettingsManager{
         if(SettingsManager.keys[key].type == 'Array' && !Array.isArray(value)) return;
         if(SettingsManager.keys[key].type != typeof(value)) return;
         this[key] = value;
+        if(Object.keys(this.changeTriggers).includes(key)){
+            for(const callback of this.changeTriggers[key]){
+                callback(value);
+            }
+        }
+        if(Object.keys(this.changeTriggers).includes('all')){
+            for(const callback of this.changeTriggers['all']){
+                callback(value);
+            }
+        }
     }
+
+    registerTrigger(key, callback){
+        if(!this.validKeys.includes(key) && key != 'all') return;
+        if(!Object.keys(this.changeTriggers).includes(key)) this.changeTriggers[key] = [];
+        this.changeTriggers[key].push(callback);
+    }
+
+
 }

@@ -1,24 +1,10 @@
 class MainController{
-    static filterModels = {
-        'statusNullModel': `
-            <div class="form-check form-check-inline filter-check-group">
-              <input id="filters-status-null" class="form-check-input filter-check" type="checkbox" value="null">
-              <label class="form-check-label" for="filters-status-null" aria-label="no status"><i class="bi bi-border"></i></label>
-            </div>
-        `,
-        'statusModel': `
-            <div class="form-check form-check-inline filter-check-group">
-              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check" type="checkbox" value="%%statusindex%%">
-              <label class="form-check-label" for="filters-status-%%statusindex%%" aria-label="no status">%%statusicon%%</label>
-            </div>
-        `,
-        'buttonModel': `
-            <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
-        `
-    };
+
 
 
     constructor(){
+        // registering listeners
+        window.settings.registerTrigger('useWakeLock', (value) => window.wakeLock.setActive(value));
     }
 
     redrawStatusFilters(element){
