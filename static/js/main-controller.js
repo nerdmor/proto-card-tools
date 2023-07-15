@@ -249,4 +249,9 @@ class MainController{
         window.drawCardList(window.listElement);
     }
 
+    ingestTextFromModal(textValue){
+        window.listManager.ingestText(textValue);
+        this.loadQueueFromScryfallModalHandler();
+    }
+
 }

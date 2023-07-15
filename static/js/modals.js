@@ -414,3 +414,22 @@ class SettingsModal extends ProtoModal{
         this.element.style.display = 'none';
     }
 }
+
+class TextLoadModal extends ProtoModal{
+    constructor(domElement, confirmCallback){
+        super(domElement);
+        this.confirmCallback = confirmCallback;
+        this._bind();
+    }
+
+    _bind(){
+        document.querySelector('#text-entry-modal-save').addEventListener('click', () =>  this.onSubmit());
+    }
+
+    draw(){}
+
+    onSubmit(){
+        this.hiddenCallback = () => {this.confirmCallback(document.querySelector('#text-entry-textarea').value)};
+        this.modal.hide();
+    }
+}

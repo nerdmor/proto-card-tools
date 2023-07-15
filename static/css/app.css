@@ -115,3 +115,7 @@
 	margin-right: 0.2em;
 	margin-left: 0em !important;
 }
+
+#menu-container{
+	max-width: 90%;
+}

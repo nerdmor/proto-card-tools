@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
         'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
     });
+    window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
 
     // global managers
     window.wakeLock = new WakeLockController();
@@ -47,7 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* *****************************************************************************
      * Bindings
-     **************************************************************************** */
+     * ************************************************************************** */
+
+    // future element bindings
     document.querySelector('body').addEventListener('click', (event) => {
         // call set selector
         if(matchElementAndParent(event.target, ['.card-select-set'])) return window.mainController.callSetSelect(event);
@@ -67,15 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if(event.target.matches('.filter-check')) return window.mainController.processFilterChange(event.target);
     });
 
-    // card deletion, with cooldown :)
     document.querySelector('body').addEventListener('mousedown', function(event){
+        // card deletion, with cooldown :)
         if(matchElementAndParent(event.target, ['.table-card-trash', '.finder-card-trash'])) return window.mainController.deleteCardFromList(event);
     });
 
-    // card quantity form
     document.querySelector('body').addEventListener('submit', function(event){
+        // card quantity form
         if(matchElementAndParent(event.target, ['.table-card-quantity-form', '.finder-card-quantity-form'])) return window.mainController.formCardQuantitySubmit(event);
     });
+
+
+    // fixed element bindings **************************************************
 
     // filters 'select all'
     document.querySelector('#filters-color-all').addEventListener('click', function(){
@@ -98,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
         window.settingsModal.call();
     });
 
+    // call text load modal
+    document.querySelector('#header-import-text').addEventListener('click', function(event){
+        window.textLoadModal.call();
+    });
+
     // quickadd
     document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){
         const quickValue = document.querySelector('#header-quick-add-txt').value;
@@ -109,8 +120,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // DEBUG load cards from text area
     document.querySelector('#list-import-form').addEventListener('click', function(e){
-        window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
-        window.mainController.loadQueueFromScryfallModalHandler();
+        // window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
+        // window.mainController.loadQueueFromScryfallModalHandler();
         // TODO: add error handling
     });
 
