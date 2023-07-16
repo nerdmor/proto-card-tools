@@ -34,10 +34,17 @@ class CardList{
         this.filters = {};
         this.filteredCards = [];
 
+        // modals
+        this.loadingCardsModal = null
+
         this.errors = [];
         this.scryfallClient = null;
 
         this.resetFilters();
+    }
+
+    initModals(loadingCardsModalElement){
+        this.loadingCardsModal = new LoadingCardsModal(loadingCardsModalElement);
     }
 
     _filterCards(){
@@ -250,7 +257,7 @@ class CardList{
         return false;
     }
 
-    async loadQueueFromScryfall(scryfallClient=null, stepCallback=null, finalCallback=null){
+    async loadQueueFromScryfall(scryfallClient=null, successCallBack=null, errorCallBack=null){
         if(this.scryfallClient === null){
             if(scryfallClient === null){
                 throw new Error('a scryfallClient must be provided');
@@ -258,20 +265,23 @@ class CardList{
             this.scryfallClient = scryfallClient;
         }
 
-        await delay(100);
 
         this.errors = [];
         if(this.cardQueue.length < 1){
             return;
         }
 
+        this.loadingCardsModal.call();
+        const startTimestamp = new Date().getTime();
+        await delay(100);
+
         var newCard = null;
         for (var i = 0; i < this.cardQueue.length; i++) {
-            if(stepCallback){
-                stepCallback(this.cardQueue[i]);
-            }
+
+            this.loadingCardsModal.update(this.cardQueue[i].typedName);
 
             await this.cardQueue[i].buildFromScryFall(this.scryfallClient, {'index': i});
+            await delay(20);
 
             newCard = this.cardQueue[i];
             if(newCard.loaded == 2){
@@ -287,32 +297,23 @@ class CardList{
             await delay(20);
         }
 
-        if(finalCallback){
-            finalCallback(this.errors);
+        const elapsedTime = new Date().getTime() - startTimestamp;
+        if(elapsedTime < 2000){
+            await delay(2000 - elapsedTime);
         }
-    }
 
-    async _processQueueStep(params){
-        var newCard = this.cardQueue[0];
-        if(newCard.loaded == 2){
-            if(Object.keys(this.cards).includes(newCard.key)){
-                this.cards[newCard.key].quantity += newCard.quantity;
-            }else{
-                this.cards[newCard.key] = newCard;
-            }
+        if(this.errors.length > 0){
+            this.loadingCardsModal.dismiss(() => {
+                console.log('calling errorCallBack');
+                errorCallBack(this.errors)
+            });
         }else{
-            this.errors.push(newCard);
+            this.loadingCardsModal.dismiss(() => {
+                console.log('calling successCallBack');
+                successCallBack()
+            });
         }
-        this.cardQueue.shift();
 
-        var finalCallback = Object.hasOwn(params, 'finalCallback') ? params['finalCallback'] : null;
-        if(len(this.cardQueue) > 0){
-            await delay(50);
-            var stepCallback = Object.hasOwn(params, 'stepCallback') ? params['stepCallback'] : null;
-            this.loadQueueFromScryfall(this.scryfallClient, stepCallback, finalCallback);
-        }else if(finalCallback){
-            finalCallback(this.errors);
-        }
     }
 
     ingestArchidektFile(fileList, categoryCallback){

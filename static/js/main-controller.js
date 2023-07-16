@@ -107,15 +107,15 @@ class MainController{
      * Loading-modal handling functions
      **************************************************************************** */
     async loadQueueFromScryfallModalHandler(){
-        window.loadingCardsModal.call();
-        await delay(500);
-
-        window.listManager.setScryfallClient(window.scryfall);
         window.listManager.loadQueueFromScryfall(
-            window.scryfall,
-            (p) => {window.loadingCardsModal.update(p.typedName)},
-            async (p) => {
-                window.loadingCardsModal.dismiss(()=>window.drawCardList(window.listElement));
+            null,
+            () => {  // successCallback
+                this.loadSetsModalHandler(() => {
+                    window.listElement.innerHTML = window.listManager.draw()
+                });
+            },
+            (err) => {  // errorCallbacl
+                console.log(err);
             }
         );
     }
