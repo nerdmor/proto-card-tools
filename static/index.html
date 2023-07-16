@@ -15,12 +15,43 @@
   </head>
   <body>
     <!-- Modals -->
-    <div id="alert-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
-    <div id="loading-cards-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
-    <div id="loading-sets-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
-    <div id="archidekt-file-import-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
-    <div id="select-card-version-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
-    <div id="card-details-modal" class="modal fade" tabindex="-1" aria-hidden="true"></div>
+    <div id="alert-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="loading-cards-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="loading-sets-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="archidekt-file-import-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="select-card-version-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="card-details-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="import-error-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Errors</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="import-error-body modal-body">
+            <h5>We had problems loading the following cards. Please check their spelling.</h5>
+            <table class="table">
+              <thead>
+                 <tr>
+                   <th scope="col">#</th>
+                   <th scope="col">Typed row</th>
+                   <th scope="col">Error</th>
+                 </tr>
+               </thead>
+               <tbody id="import-error-table-body">
+               </tbody>
+            </table>
+            <textarea id="import-error-text" class="display-none form-control" rows="1"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button id="import-error-copy" type="button" class="btn btn-outline-warning" aria-label="Copy errors to clipboard" alt="Copy errors to clipboard">
+              <i class="bi bi-clipboard2-plus-fill"></i>
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="settings-modal" class="modal fade" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content">

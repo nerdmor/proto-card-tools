@@ -113,10 +113,13 @@ class MainController{
                     async () => {window.listElement.innerHTML = window.listManager.draw()}
                 );
             },
-            (err) => {  // errorCallback
-                console.log(err);
-            }
+            (err) => {}  // errorCallback
         );
+    }
+
+    ingestTextFromModal(textValue){
+        window.listManager.ingestText(textValue);
+        this.loadQueueFromScryfallModalHandler();
     }
 
     async filterSelectAll(filterType, suppressLoad=false, forceValue=null){
@@ -208,11 +211,6 @@ class MainController{
         window.settings.setValue('displayMode', drawType);
         window.listManager.setCardMode(drawType);
         window.drawCardList(window.listElement);
-    }
-
-    ingestTextFromModal(textValue){
-        window.listManager.ingestText(textValue);
-        this.loadQueueFromScryfallModalHandler();
     }
 
 }

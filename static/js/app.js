@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // modal handlers
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
+    window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
     window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'), {
         'cardImgQuality': document.querySelector('#settings-select-cardImgQuality'),
         'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
@@ -28,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
         'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
         'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
     });
-    window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
 
     // global managers
     window.wakeLock = new WakeLockController();
@@ -36,10 +36,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
     window.listManager.initModals(
-        document.querySelector('#loading-cards-modal'),
-        document.querySelector('#loading-sets-modal'),
-        document.querySelector('#select-card-version-modal'),
-        document.querySelector('#card-details-modal')
+        new LoadingCardsModal(document.querySelector('#loading-cards-modal')),
+        new LoadingCardsModal(document.querySelector('#loading-sets-modal')),
+        new CardSetSelectionModal(document.querySelector('#select-card-version-modal')),
+        new CardDetailsModal(document.querySelector('#card-details-modal')),
+        new LoadErrorModal(document.querySelector('#import-error-modal'),
+                           document.querySelector('#import-error-table-body'),
+                           document.querySelector('#import-error-text'),
+                           document.querySelector('#import-error-copy')
+                          )
     );
     window.listManager.setScryfallClient(window.scryfall);
 
@@ -122,13 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
         window.mainController.loadQueueFromScryfallModalHandler();
     });
 
-
-    // DEBUG load cards from text area
-    document.querySelector('#list-import-form').addEventListener('click', function(e){
-        // window.listManager.ingestText(document.querySelector('#list-input-textarea').value);
-        // window.mainController.loadQueueFromScryfallModalHandler();
-        // TODO: add error handling
-    });
 
     // DEBUG load archidekt file
     // TODO: add handling of other kinds of files. Split logic from cardlist

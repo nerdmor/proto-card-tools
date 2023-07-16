@@ -537,8 +537,8 @@ class ProtoCard{
 
         const responseStatus = scryData.status || 200;
         if(responseStatus != 200){
-            console.error(`error finding ${this.typedName}: ${data.details}`);
-            this.errors.push(`error finding ${this.typedName}: ${data.details}`);
+            console.error(`error finding ${this.typedName}: ${scryData.details}`);
+            this.errors.push({'typedName': this.typedName, 'error': scryData.details});
             return;
         }
 
@@ -560,7 +560,7 @@ class ProtoCard{
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
                 console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
-                this.errors.push(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
+                this.errors.push({'typedName': this.typedName, 'error': 'invalid layout'});
                 return;
             }
 
@@ -635,7 +635,7 @@ class ProtoCard{
         const responseStatus = data.status || 200;
         if(responseStatus != 200){
             console.error(`error finding ${this.typedName}: ${data.details}`);
-            this.errors.push(`error finding ${this.typedName}: ${data.details}`);
+            this.errors.push({'typedName': this.typedName, 'error': data.details});
             return;
         }
 
@@ -657,7 +657,7 @@ class ProtoCard{
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
                 console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
-                this.errors.push(`invalid layout for ${this.typedName}: ${scrycard.layout}`)
+                this.errors.push({'typedName': this.typedName, 'error': 'invalid layout'});
                 return;
             }
 

@@ -439,3 +439,61 @@ class TextLoadModal extends ProtoModal{
         this.modal.hide();
     }
 }
+
+class LoadErrorModal extends ProtoModal{
+    static errorRowModel = `
+    <tr>
+      <th scope="row">%%rownum%%</th>
+      <td>%%typedname%%</td>
+      <td>%%error%%</td>
+    </tr>
+    `;
+
+
+    constructor(domElement, errorTableElement, errorTextElement, errorCopyElement){
+        super(domElement);
+        this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+
+        this.errorTableElement = errorTableElement;
+        this.errorTextElement = errorTextElement;
+        this.errorCopyElement = errorCopyElement;
+        this._bind();
+    }
+
+    _bind(){
+        this.errorCopyElement.addEventListener('click', () => {
+            var copyText = this.errorTextElement;
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+        });
+    }
+
+    draw(errorArray){
+        var html = [];
+        var txt = [];
+        for (var i = 0; i < errorArray.length; i++) {
+            html.push(LoadErrorModal.errorRowModel.replaceAll('%%rownum%%', i)
+                                                 .replaceAll('%%typedname%%', errorArray[i].typedName)
+                                                 .replaceAll('%%error%%', errorArray[i].error)
+                     );
+            txt.push(errorArray[i].typedName);
+        }
+
+        this.errorTableElement.innerHTML = html.join('\n');
+        this.errorTextElement.value = txt.join('\n');
+        this.html = 'html ok';  // this dodges super.call() trying to call draw()
+    }
+
+    call(errorArray){
+        this.draw(errorArray);
+        super.call();
+    }
+
+
+    onSubmit(){
+        this.hiddenCallback = () => {this.confirmCallback(document.querySelector('#text-entry-textarea').value)};
+        this.modal.hide();
+    }
+}

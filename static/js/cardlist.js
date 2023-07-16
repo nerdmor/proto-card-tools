@@ -39,6 +39,7 @@ class CardList{
         this.loadingSetsModal = null;
         this.cardSetSelectionModal = null;
         this.cardDetailsModal = null;
+        this.loadErrorModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -46,11 +47,12 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModalElement, loadingSetsModalElement, cardSetSelectionModalElement, cardDetailsModalElement){
-        this.loadingCardsModal = new LoadingCardsModal(loadingCardsModalElement);
-        this.loadingSetsModal = new LoadingCardsModal(loadingSetsModalElement);
-        this.cardSetSelectionModal = new CardSetSelectionModal(cardSetSelectionModalElement);
-        this.cardDetailsModal = new CardDetailsModal(cardDetailsModalElement);
+    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal){
+        this.loadingCardsModal = loadingCardsModal;
+        this.loadingSetsModal = loadingSetsModal;
+        this.cardSetSelectionModal = cardSetSelectionModal;
+        this.cardDetailsModal = cardDetailsModal;
+        this.loadErrorModal = loadErrorModal;
     }
 
     async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
@@ -284,7 +286,7 @@ class CardList{
             }
             parsedLine = this.parseCardLine(typedList[i]);
             if(!parsedLine){
-                this.errors.push(typedList[i]);
+                this.errors.push({'typedName': typedList[i], 'error': 'could not parse text'});
                 continue;
             }
 
@@ -336,7 +338,11 @@ class CardList{
                     this.cards[newCard.key] = newCard;
                 }
             }else{
-                this.errors.push(newCard);
+                if(newCard.errors.length > 0){
+                    this.errors = this.errors.concat(newCard.errors);
+                }else{
+                    this.errors.push({'typedName': newCard.typedName, 'error': 'could not load card from Scryfall'});
+                }
             }
 
             await delay(20);
@@ -348,7 +354,10 @@ class CardList{
         }
 
         if(this.errors.length > 0){
-            this.loadingCardsModal.dismiss(() => {errorCallBack(this.errors)});
+            this.loadingCardsModal.dismiss(() => {
+                errorCallBack(this.errors)
+                this.loadErrorModal.call(this.errors);
+            });
         }else{
             this.loadingCardsModal.dismiss(() => {successCallBack()});
         }

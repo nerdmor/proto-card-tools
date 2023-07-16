@@ -116,3 +116,12 @@
     font-size: 85%;
     font-family: 'Courier New', monospace;
 }
+
+.import-error-body h5{
+    font-size: 100%;
+    font-weight: 600;
+}
+
+#import-error-text{
+    display: none;
+}
