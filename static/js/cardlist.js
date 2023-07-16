@@ -37,6 +37,7 @@ class CardList{
         // modals
         this.loadingCardsModal = null;
         this.loadingSetsModal = null;
+        this.cardSetSelectionModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -44,9 +45,30 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModalElement, loadingSetsModalElement){
+    initModals(loadingCardsModalElement, loadingSetsModalElement, cardSetSelectionModalElement){
         this.loadingCardsModal = new LoadingCardsModal(loadingCardsModalElement);
         this.loadingSetsModal = new LoadingCardsModal(loadingSetsModalElement);
+        this.cardSetSelectionModal = new CardSetSelectionModal(cardSetSelectionModalElement);
+    }
+
+    async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
+        const cardBody = this.drawSetSelect(cardKey);
+        if(cardBody === null){
+            await this.loadSetData();
+        }
+
+        this.cardSetSelectionModal.call(
+            cardBody,
+            selectionElementQuery,
+            selectionElementPropName,
+            wrapperElementQuery,
+            selectedClass,
+            (setCode) => {
+                this.setCardSelectedSet(cardKey, setCode);
+                confirmCallback();
+            }, //confirmCallback
+            () => {cancelCallback()} // cancelCallback
+        );
     }
 
     _filterCards(){

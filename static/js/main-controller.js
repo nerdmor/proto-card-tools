@@ -14,12 +14,13 @@ class MainController{
     callSetSelect(event){
         const cardKey = getCardKeyFromParent(event.target);
         if(!cardKey) return false;
-        window.mainController.cardSetSelectModalHandler(
+        window.listManager.callCardSelectModal(
             cardKey,
-            (setCode) => { // confirmCallback
-                window.listManager.setCardSelectedSet(cardKey, setCode);
-                window.drawCardList(window.listElement);
-            },
+            '.card-select-image', //selectionElementQuery
+            'set_code', //selectionElementPropName
+            '.select-card-wrapper', //wrapperElementQuery
+            'select-card-selected', //selectedClass
+            (setCode) => {window.drawCardList(window.listElement);}, // confirmCallback
             () => {} //cancelCallback
         );
         return true;
@@ -108,13 +109,13 @@ class MainController{
      **************************************************************************** */
     async loadQueueFromScryfallModalHandler(){
         window.listManager.loadQueueFromScryfall(
-            null,
+            null,  // scryfallClient
             () => {  // successCallback
                 this.loadSetsModalHandler(() => {
                     window.listElement.innerHTML = window.listManager.draw()
                 });
             },
-            (err) => {  // errorCallbacl
+            (err) => {  // errorCallback
                 console.log(err);
             }
         );
@@ -124,27 +125,6 @@ class MainController{
         window.listManager.loadSetData(
             null, //scryfallClient
             async () => {callback();}
-        );
-    }
-
-    async cardSetSelectModalHandler(cardKey, confirmCallback, cancelCallback){
-        const cardBody = window.listManager.drawSetSelect(cardKey);
-        if(cardBody === null){
-            window.mainController.loadSetsModalHandler(() => {
-                window.mainController.cardSetSelectModalHandler(cardKey, confirmCallback, cancelCallback)
-            });
-            return;
-        }
-
-        window.cardSetSelectionModal.call(
-            cardBody,
-            '.card-select-image', //selectionElementQuery
-            'set_code', //selectionElementPropName
-            '.select-card-wrapper', //wrapperElementQuery
-            'select-card-selected', //selectedClass
-            (setCode) => {
-                confirmCallback(setCode);}, //confircallback
-            () => {cancelCallback()} // cancelCallback
         );
     }
 
