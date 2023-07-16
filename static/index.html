@@ -21,6 +21,52 @@
     <div id="archidekt-file-import-modal" class="modal fade" aria-hidden="true"></div>
     <div id="select-card-version-modal" class="modal fade" aria-hidden="true"></div>
     <div id="card-details-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="list-properties-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">List properties</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="list-properties-alert" class="row alert alert-warning start-hidden" role="alert fade show"></div>
+            <div class="row list-properties-name-wrapper">
+              <label for="list-properties-name" class="col-3 col-form-label">Name</label>
+              <div class="col-9">
+                <input id="list-properties-name" class="form-control form-control-lg formless-input" type="text" >
+              </div>
+            </div>
+            <div class="row form-check form-switch">
+              <input id="list-properties-public" class="form-check-input" type="checkbox" role="switch">
+              <label class="form-check-label" for="list-properties-public">list is public for view</label>
+            </div>
+            <div class="row">
+              <label for="list-properties-last-update" class="col-2 col-form-label">Last update</label>
+              <div class="col-10">
+                <input id="list-properties-last-update" class="form-control" type="text" disabled>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-2">
+                Status list
+              </div>
+              <div id="list-properties-status-list-wrapper" class="col-10">
+                <div id="list-properties-status-list">
+                </div>
+                <form id="list-properties-new-status-form" class="input-group">
+                  <input id="list-properties-new-status-input" type="text" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="hover focus" class="form-control status-button-input">
+                  <button id="list-properties-new-status-btn" type="submit" class="input-group-text"><i class="bi bi-plus-circle"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="list-properties-save" type="button" class="btn btn-warning">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="import-error-modal" class="modal fade" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -220,10 +266,10 @@
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
                   <ul class="dropdown-menu header-dropdown">
-                    <li><a id="header-list-new" class="dropdown-item" href="#"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</a></li>
-                    <li><a id="header-list-open" class="dropdown-item" href="#"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</a></li>
-                    <!-- <li><a id="header-list-import" class="dropdown-item" href="#"><i class="bi bi-upload"></i>&nbsp;Import</a></li> -->
-                    <li><a id="header-list-export" class="dropdown-item" href="#"><i class="bi bi-download"></i>&nbsp;Export</a></li>
+                    <li><button id="header-list-properties" class="dropdown-item"><i class="bi bi-x-diamond-fill"></i>&nbsp;Properties</button></li>
+                    <li><button id="header-list-new" class="dropdown-item"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</button></li>
+                    <li><button id="header-list-open" class="dropdown-item"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</button></li>
+                    <li><button id="header-list-export" class="dropdown-item"><i class="bi bi-download"></i>&nbsp;Export</button></li>
                   </ul>
                 </div>
               </li>

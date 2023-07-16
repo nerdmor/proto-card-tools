@@ -125,3 +125,46 @@
 #import-error-text{
     display: none;
 }
+
+#list-properties-modal .form-switch{
+    padding-left: 3rem;
+}
+
+#list-properties-modal .row{
+    padding-top: 0.4rem;
+    border-top: #495057 solid 1px;
+    margin-bottom: 0.4rem;
+}
+
+.list-properties-name-wrapper{
+    padding-top: 0rem !important;
+    border-top-style: none !important;
+}
+
+.list-properties-name-wrapper label{
+    font-size: 120%;
+}
+
+.formless-input{
+  border-style: none;
+}
+
+.formless-input:hover{
+  border-style: solid;
+}
+
+.status-options-btn{
+    max-width: 5rem;
+}
+
+#list-properties-new-status-form{
+    max-width: 10.5rem;
+}
+
+/*.status-button-input{
+    border-style: solid;
+    border-color: var(--bs-btn-hover-border-color);
+    border-radius: ;
+}*/
+
+

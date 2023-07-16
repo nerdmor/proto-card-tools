@@ -33,6 +33,8 @@ class CardList{
         this.statusList = statusList || [];
         this.filters = {};
         this.filteredCards = [];
+        this.public = false;
+        this.lastUpdate = Math.floor((new Date()).getTime() / 1000);
 
         // modals
         this.loadingCardsModal = null;
@@ -40,6 +42,7 @@ class CardList{
         this.cardSetSelectionModal = null;
         this.cardDetailsModal = null;
         this.loadErrorModal = null;
+        this.listPropertiesModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -47,12 +50,18 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal){
+    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal){
         this.loadingCardsModal = loadingCardsModal;
         this.loadingSetsModal = loadingSetsModal;
         this.cardSetSelectionModal = cardSetSelectionModal;
         this.cardDetailsModal = cardDetailsModal;
         this.loadErrorModal = loadErrorModal;
+        this.listPropertiesModal = listPropertiesModal;
+        // TODO: register callbacks in listPropertiesModal
+    }
+
+    callPropertiesModal(){
+        this.listPropertiesModal.call(this);
     }
 
     async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){

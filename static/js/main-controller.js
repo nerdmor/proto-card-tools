@@ -7,6 +7,13 @@ class MainController{
         window.settings.registerTrigger('useWakeLock', (value) => window.wakeLock.setActive(value));
     }
 
+    quickadd(){
+        const quickValue = document.querySelector('#header-quick-add-txt').value;
+        if(quickValue.length < 4) return;
+        window.listManager.ingestText(quickValue);
+        window.mainController.loadQueueFromScryfallModalHandler();
+    }
+
     redrawStatusFilters(element){
         element.innerHTML = window.listManager.drawStatusFilters();
     }

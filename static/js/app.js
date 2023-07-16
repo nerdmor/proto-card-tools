@@ -44,7 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
                            document.querySelector('#import-error-table-body'),
                            document.querySelector('#import-error-text'),
                            document.querySelector('#import-error-copy')
-                          )
+                          ),
+        new ListPropertiesModal(document.querySelector('#list-properties-modal'),
+                                document.querySelector('#list-properties-name'),
+                                document.querySelector('#list-properties-public'),
+                                document.querySelector('#list-properties-last-update'),
+                                document.querySelector('#list-properties-status-list'),
+                                document.querySelector('#list-properties-new-status-form'),
+                                document.querySelector('#list-properties-new-status-input'),
+                                document.querySelector('#list-properties-alert')
+                               )
     );
     window.listManager.setScryfallClient(window.scryfall);
 
@@ -119,12 +128,15 @@ document.addEventListener('DOMContentLoaded', function () {
         window.textLoadModal.call();
     });
 
+    // list settings modal
+    document.querySelector('#header-list-properties').addEventListener('click', function(event){
+        window.listManager.callPropertiesModal();
+    });
+
     // quickadd
     document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){
-        const quickValue = document.querySelector('#header-quick-add-txt').value;
-        if(quickValue.length < 4) return;
-        window.listManager.ingestText(quickValue);
-        window.mainController.loadQueueFromScryfallModalHandler();
+        event.preventDefault();
+        window.mainController.quickAdd();
     });
 
 

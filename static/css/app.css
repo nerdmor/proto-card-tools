@@ -39,22 +39,6 @@
 	max-width: 90%;
 }
 
-/*.filter-wrapper .filter-block{
-	border-right: 1px solid #7f6105;
-}
-
-.filter-wrapper .filter-block:last-child{
-	border-right-style: none;
-}
-
-.filter-wrapper .filter-block:first-child{
-	border-right-style: none;
-}
-
-.filter-check{
-	margin-left: -1.2em !important;
-}*/
-
 .header-filter-title{
 	margin-right: 0.5em;
 	vertical-align: middle;
@@ -118,4 +102,8 @@
 
 #menu-container{
 	max-width: 90%;
+}
+
+.start-hidden{
+	display: none;
 }

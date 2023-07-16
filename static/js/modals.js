@@ -497,3 +497,162 @@ class LoadErrorModal extends ProtoModal{
         this.modal.hide();
     }
 }
+
+
+class ListPropertiesModal extends ProtoModal{
+    static statusElementModel = `
+    <div class="status-button-group-wrapper">
+      <div class="btn-group" role="group" status_value="%%status%%" status_index="%%statusindex%%">
+        <button type="button" class="btn btn-outline-secondary status-options-btn status-options-btn-display" disabled>%%status%%</button>
+        <button type="button" class="btn btn-outline-secondary status-options-btn status-options-btn-up"><i class="bi bi-arrow-up"></i></button>
+        <button type="button" class="btn btn-outline-secondary status-options-btn status-options-btn-down"><i class="bi bi-arrow-down"></i></button>
+        <button type="button" class="btn btn-outline-secondary status-options-btn status-options-btn-remove"><i class="bi bi-trash-fill"></i></button>
+      </div>
+    </div>
+    `;
+
+    static popOverModel = {
+        'title': 'Emoji Only. Suggestions:',
+        'button': `<button type="button" class="new-status-suggestion btn btn-sm btn-outline-secondary">%%emoji%%</button>`
+    };
+
+
+    constructor(domElement, listNameElement, listPropertiesPublicElement, listPropertiesLastUpdateElement, listPropertiesStatusListElement, listPropertiesNewStatusFormElement, listPropertiesNewStatusInputElement, listPropertiesAlertElement){
+        super(domElement);
+        this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+
+        this.listNameElement = listNameElement;
+        this.listPropertiesPublicElement = listPropertiesPublicElement;
+        this.listPropertiesLastUpdateElement = listPropertiesLastUpdateElement;
+        this.listPropertiesStatusListElement = listPropertiesStatusListElement;
+        this.listPropertiesNewStatusFormElement = listPropertiesNewStatusFormElement;
+        this.listPropertiesNewStatusInputElement = listPropertiesNewStatusInputElement;
+        this.listPropertiesAlertElement = listPropertiesAlertElement;
+
+        this.saveCallback = null;
+        this.statusList = null;
+
+        this._setPopOver();
+        this._bind();
+    }
+
+    registerCallbacks(saveCallback){
+        this.saveCallback = saveCallback;
+    }
+
+    _setPopOver(){
+        var html = [];
+        for(const emoji of window.constants.emojiSuggestions){
+            html.push(ListPropertiesModal.popOverModel.button.replaceAll('%%emoji%%', emoji));
+        }
+        const popover = new bootstrap.Popover(this.listPropertiesNewStatusInputElement, {
+            'html': true,
+            'sanitize': false,
+            'title': ListPropertiesModal.popOverModel.title,
+            'content': html.join('')
+        });
+    }
+
+    _bind(){
+        document.querySelector('body').addEventListener('click', (event) => {
+            if(matchElementAndParent(event.target, ['.new-status-suggestion'])){
+                this._addStatusToList(event.target.innerHTML);
+            }
+        });
+        this.listPropertiesNewStatusFormElement.addEventListener('submit', (event) => {
+            event.preventDefault();
+            this._addStatusToList(this.listPropertiesNewStatusInputElement.value);
+        });
+        this.listPropertiesStatusListElement.addEventListener('click', (event) => {
+            var buttonAction = null;
+            var parentElement = event.target.parentElement;
+            if(event.target.matches('.status-options-btn-up') || parentElement.matches('.status-options-btn-up')){
+                buttonAction = 'up';
+            }else if(event.target.matches('.status-options-btn-down') || parentElement.matches('.status-options-btn-down')){
+                buttonAction = 'down';
+            }else if(event.target.matches('.status-options-btn-remove') || parentElement.matches('.status-options-btn-remove')){
+                buttonAction = 'remove';
+            }
+            if(buttonAction === null) return;
+
+            var statusValue = null;
+            var statusIndex = null;
+            if(parentElement.hasAttribute('status_value')){
+                statusValue = parentElement.getAttribute('status_value');
+                statusIndex = parentElement.getAttribute('status_index');
+            }else{
+                statusValue = parentElement.parentElement.getAttribute('status_value');
+                statusIndex = parentElement.parentElement.getAttribute('status_index');
+            }
+
+            // DEBUG
+            console.log(`status[${statusIndex}] = '${statusValue}' : ${buttonAction}`);
+
+            this._updateStatusList(statusIndex, statusValue, buttonAction);
+        });
+    }
+
+    _updateStatusList(statusIndex, statusValue, buttonAction){
+        // TODO: change this.statusList based on action, index and value
+        this._drawStatusList();
+    }
+
+    _addStatusToList(newStatus){
+        if(this.statusList.includes(newStatus)){
+            this.listPropertiesNewStatusInputElement.value = '';
+            this._drawError('Status already exists');
+            return;
+        }
+        if(/\p{Emoji}/u.test(newStatus) == false){
+            this.listPropertiesNewStatusInputElement.value = '';
+            this._drawError('Status is not an emoji');
+            return;
+        }
+        this.listPropertiesNewStatusInputElement.value = '';
+        this.statusList.push(newStatus);
+        this._drawStatusList();
+    }
+
+    _drawError(err){
+        this.listPropertiesAlertElement.innerHTML = err;
+        this.listPropertiesAlertElement.classList.remove("start-hidden");
+        setTimeout(() => {
+            this.listPropertiesAlertElement.innerHTML = '';
+            this.listPropertiesAlertElement.classList.add("start-hidden");
+        }, 600);
+    }
+
+    _drawStatusList(){
+        var html = [];
+        for (var i = 0; i < this.statusList.length; i++) {
+            html.push(ListPropertiesModal.statusElementModel.replaceAll('%%status%%', this.statusList[i])
+                                                            .replaceAll('%%statusindex%%', i));
+        }
+        this.listPropertiesStatusListElement.innerHTML = html.join('\n');
+    }
+
+    draw(cardList){
+        this.listNameElement.value = cardList.name;
+        this.listPropertiesPublicElement.checked = cardList.public;
+
+        // I hate working with time
+        const lastUpdate = new Date(0);
+        lastUpdate.setUTCSeconds(cardList.lastUpdate);
+        const lastUpdateMonth = `${lastUpdate.getMonth() < 9 ? '0': ''}${lastUpdate.getMonth()+1}`;
+        const lastUpdateDay = `${lastUpdate.getDate() < 10 ? '0': ''}${lastUpdate.getDate()}`;
+        const lastUpdateHour = `${lastUpdate.getHours() < 10 ? '0': ''}${lastUpdate.getHours()}`;
+        const lastUpdateMinute = `${lastUpdate.getMinutes() < 10 ? '0': ''}${lastUpdate.getMinutes()}`;
+        const lastUpdateSecond = `${lastUpdate.getSeconds() < 10 ? '0': ''}${lastUpdate.getSeconds()}`;
+        this.listPropertiesLastUpdateElement.value = `${lastUpdate.getFullYear()}-${lastUpdateMonth}-${lastUpdateDay} ${lastUpdateHour}:${lastUpdateMinute}:${lastUpdateSecond}`;
+
+        this._drawStatusList();
+        this.html = 'html';
+    }
+
+    call(cardList){
+        this.statusList = cardList.statusList;
+        this.draw(cardList);
+        super.call();
+    }
+}
