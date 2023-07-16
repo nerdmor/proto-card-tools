@@ -96,22 +96,6 @@ function isEmoji(str){
     return false;
 }
 
-function isEmojiTest(str){
-    if(/^\d+$/u.test(str)){
-        console.log(`${str} matches as a number`);
-        return false;
-    }
-    if(/^\P{Emoji}+$/u.test(str)){
-        console.log(`${str} matches as a non-emoji`);
-        return false;
-    }
-    if(/^\p{Emoji}+$/u.test(str)){
-        return true;
-    }
-    console.log(`${str} does not match as emoji`);
-    return false;
-}
-
 function makeFunnyName(){
     return `${window.constants.adjectives[Math.floor(Math.random() * window.constants.adjectives.length)]} ${window.constants.nouns[Math.floor(Math.random() * window.constants.nouns.length)]}`;
 }

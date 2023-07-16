@@ -170,6 +170,7 @@ class ProtoCard{
             'faces': [],
             'compiled': null
         };
+        this.layout = null;
         this.rarities = [];
         this.img_urls = {};
         this.valid = false;
@@ -560,9 +561,10 @@ class ProtoCard{
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
                 console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
-                this.errors.push({'typedName': this.typedName, 'error': 'invalid layout'});
+                this.errors.push({'typedName': this.typedName, 'error': `invalid layout: ${scrycard.layout}`});
                 return;
             }
+            this.layout = scrycard.layout;
 
             if(Object.hasOwn(scrycard, 'card_faces') && scrycard.layout != 'split' && scrycard.layout != 'adventure'){
                 firstFace = scrycard.card_faces[0];
@@ -584,17 +586,24 @@ class ProtoCard{
                     }
                 }
 
-                for (var c = 0; c < firstFace.colors.length; c++) {
-                    this.colors.push(firstFace.colors[c].toLowerCase());
+                var colors = [];
+                if(Object.hasOwn(firstFace, 'colors')){
+                    colors = firstFace.colors;
+                }else{
+                    colors = scrycard.colors;
+                }
+
+                for(const c of colors){
+                    this.colors.push(c.toLowerCase());
                 }
                 if(this.colors.length > 1) this.isMulticolor = true;
                 else if(this.colors.length == 0) this.isColorless = true;
 
-
-                // this.typeLine = onlyUnique(firstFace.type_line.replaceAll(' // ', ' ').replaceAll(' - ', ' ').toLowerCase().split(' '));
                 this.typeLine = firstFace.type_line;
 
-                this.oracleText = firstFace.oracle_text;
+
+                // TODO: treat split card's oracle text
+                if(Object.hasOwn(firstFace, 'oracle_text')) this.oracleText = firstFace.oracle_text;
                 if(Object.hasOwn(firstFace, 'power')){
                     this.stats = `${firstFace.power}/${firstFace.toughness}`;
                     this.statType = 'p/t';
@@ -608,10 +617,14 @@ class ProtoCard{
 
                 if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
             }
-            this.sets[scrycard['set']] = {
-                'rarity': translateRarity(scrycard['rarity']),
-                'images': firstFace.image_uris
+
+            if(!Object.keys(this.sets).includes(scrycard['set'])){
+                this.sets[scrycard['set']] = {
+                    'rarity': translateRarity(scrycard['rarity']),
+                    'images': Object.hasOwn(firstFace, 'image_uris') ? firstFace.image_uris : scrycard.image_uris
+                };
             }
+
 
             this._addRarity(scrycard.rarity, scrycard['set']);
         }
@@ -670,7 +683,7 @@ class ProtoCard{
             for (var j = 0; j < scrycard.card_faces.length; j++) {
                 currentFace = scrycard.card_faces[j];
 
-                if(j == 0){
+                if(j == 0 && !Object.keys(this.sets).includes(scrycard['set'])){
                     this.sets[scrycard['set']] = {
                         'rarity': translateRarity(scrycard['rarity']),
                         'images': currentFace.image_uris
@@ -705,7 +718,9 @@ class ProtoCard{
 
             this.names.faces = onlyUnique(this.names.faces);
             this.names.compiled = this.names.faces.join(' // ');
-            this.urls.ligamagic = `https://www.ligamagic.com.br/?view=cards/card&card=${this.names.compiled}`;
+
+
+            this.urls.ligamagic = `https://www.ligamagic.com.br/?view=cards/card&card=${this._makeLigaName()}`;
             this.loaded = 2;
 
             if(this.selectedSet === null || !Object.keys(this.sets).includes(this.selectedSet)){
@@ -719,6 +734,12 @@ class ProtoCard{
                 params['callback'](params);
             }
         }
+    }
+
+    _makeLigaName(){
+      const compiledLayouts = ['split', 'flip'];
+      if(compiledLayouts.includes(this.layout)) return this.names.compiled;
+      return this.names.main;
     }
 
 
