@@ -153,6 +153,58 @@
         </div>
       </div>
     </div>
+    <div id="about-modal" class="modal fade">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">About</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body container-fluid">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <h2>General</h2>
+                <p>The site is © Felipe Raffani, 2023. The code is open source and can be found <a href="https://github.com/nerdmor/proto-card-tools" target="_blank">on Github</a></p>
+                <p>Card names, images, set, and color symbols are owned by Wizards of the Coast. Thank you for making this game.</p>
+                <p>Card search, icons, images and data are provided by <a href="https://scryfall.com" target="_blank">Scryfall</a>. Thank you, guys. The MtG world wouldn't be the same without you.</p>
+              </div>
+              <div class="col-12 col-md-6">
+                <h2>Privacy Policy</h2>
+                <p>This website uses cookies. They cannot be disabled. If you want to erase all the cookies that we have set, just click <a id="erase-cookies" href="#">here</a></p>
+                <p>Your behavior is not tracked inside this site. We only collect a small amount of information about your broswer to have an idea of how many people use this website.</p>
+                <p>Data that you decide to share with this site on creating/using an account may be used for website improvement.</p>
+                <p>No third parties get any data that you decide to share with this site. Not event Google Analytics here.</p>
+                <p>These are the cookies that we use:</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Cookie</th>
+                      <th scope="col">Expiration</th>
+                      <th scope="col">Use</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">pct_user</th>
+                      <td>365 days</td>
+                      <td>Unique session identifier. Used so we can have some idea of how many people use this website.</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">pct_jwt</th>
+                      <td>30 days</td>
+                      <td>Used to keep your login alive</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>In addition to these, any lists that you create are saved in local storage.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- End of Modals -->
 
     <!-- Headers start -->
@@ -192,9 +244,9 @@
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
                   <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
-                    <li><a id="header-help-how" class="dropdown-item" href="#"><i class="bi bi-question-square"></i>&nbsp;How to use</a></li>
-                    <li><a id="header-help-about" class="dropdown-item" href="#"><i class="bi bi-info-square"></i>&nbsp;About</a></li>
-                    <li><a id="header-help-faq" class="dropdown-item" href="#"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</a></li>
+                    <li><button id="header-help-howtouse" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-question-square"></i>&nbsp;How to use</button></li>
+                    <li><button id="header-help-about" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#about-modal"><i class="bi bi-info-square"></i>&nbsp;About</button></li>
+                    <li><button id="header-help-faq" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</button></li>
                   </ul>
                 </div>
               </li>
