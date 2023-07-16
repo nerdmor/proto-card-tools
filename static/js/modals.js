@@ -5,6 +5,7 @@ class ProtoModal{
         this.element = domElement;
         this.options = {}
         this.hiddenCallback = null;
+        this.eraseOnDismiss = true;
 
         this.element.addEventListener('hidden.bs.modal', (e) => this._afterHidden());
     }
@@ -37,8 +38,11 @@ class ProtoModal{
             }
         }
         this.hiddenCallback = null;
-        this.html = '';
-        this.element.innerHTML = '';
+
+        if(this.eraseOnDismiss == true){
+            this.html = '';
+            this.element.innerHTML = '';
+        }
         this.element.style.display = 'none';
     }
 }
@@ -337,6 +341,7 @@ class SettingsModal extends ProtoModal{
         this.keyElements = keyElements;
         this.settingsKeys = Object.keys(this.keyElements);
         this.globalSettingsKeys = Object.keys(SettingsManager.keys);
+        this.eraseOnDismiss = false;
         this._bind();
     }
 
@@ -419,6 +424,7 @@ class TextLoadModal extends ProtoModal{
     constructor(domElement, confirmCallback){
         super(domElement);
         this.confirmCallback = confirmCallback;
+        this.eraseOnDismiss = false;
         this._bind();
     }
 

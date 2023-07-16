@@ -35,7 +35,8 @@ class CardList{
         this.filteredCards = [];
 
         // modals
-        this.loadingCardsModal = null
+        this.loadingCardsModal = null;
+        this.loadingSetsModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -43,8 +44,9 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModalElement){
+    initModals(loadingCardsModalElement, loadingSetsModalElement){
         this.loadingCardsModal = new LoadingCardsModal(loadingCardsModalElement);
+        this.loadingSetsModal = new LoadingCardsModal(loadingSetsModalElement);
     }
 
     _filterCards(){
@@ -144,21 +146,27 @@ class CardList{
         }
     }
 
-    async loadSetData(scryfallClient=null, stepCallback=null, finalCallback=null){
+    async loadSetData(scryfallClient=null, successCallBack=null){
         if(this.scryfallClient == null){
             if(scryfallClient === null){
                 throw new Error('a scryfallClient must be provided');
             }
             this.scryfallClient = scryfallClient;
         }
-        this._loadSetKeys();
 
-        // TODO: continue by replacing the line below
+        if(!window.listManager.hasNullSets()){
+            if(successCallBack) successCallBack();
+            return;
+        };
+
+        this.loadingSetsModal.call('Loading Sets');
+        const startTimestamp = new Date().getTime();
         var response = null;
         for(const setCode of Object.keys(this.sets)){
             if(this.sets[setCode] === null){
                 await delay(100);
-                if(stepCallback) stepCallback(setCode);
+                this.loadingSetsModal.update(`set ${setCode.toUpperCase()}`);
+
                 response = await this.scryfallClient.sets(setCode);
                 this.sets[setCode] = {
                     'icon_svg_uri': response.icon_svg_uri,
@@ -167,8 +175,12 @@ class CardList{
             }
         }
 
-        await delay(100);
-        if(finalCallback) finalCallback();
+        const elapsedTime = new Date().getTime() - startTimestamp;
+        if(elapsedTime < 2000){
+            await delay(2000 - elapsedTime);
+        }
+
+        this.loadingSetsModal.dismiss(successCallBack);
     }
 
     parseCardLine(text){

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // modal handlers
     // window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
-    window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
+    // window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
     window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
     window.listManager.initModals(
-        document.querySelector('#loading-cards-modal')
+        document.querySelector('#loading-cards-modal'),
+        document.querySelector('#loading-sets-modal')
     );
     window.listManager.setScryfallClient(window.scryfall);
 

@@ -121,19 +121,9 @@ class MainController{
     }
 
     async loadSetsModalHandler(callback){
-        if(!window.listManager.hasNullSets()){
-            callback();
-            return;
-        };
-        window.loadingSetsModal.call('Loading Sets');
-        await delay(500);
         window.listManager.loadSetData(
-            window.scryfall,
-            (setCode) => {window.loadingSetsModal.update(`set ${setCode.toUpperCase()}`)},
-            async () => {
-                await delay(200);
-                window.loadingSetsModal.dismiss(callback());
-            }
+            null, //scryfallClient
+            async () => {callback();}
         );
     }
 
