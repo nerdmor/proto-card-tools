@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 document.querySelector('#list-properties-status-list'),
                                 document.querySelector('#list-properties-new-status-form'),
                                 document.querySelector('#list-properties-new-status-input'),
-                                document.querySelector('#list-properties-alert')
+                                document.querySelector('#list-properties-alert'),
+                                document.querySelector('#list-properties-save')
                                )
     );
     window.listManager.setScryfallClient(window.scryfall);

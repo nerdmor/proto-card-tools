@@ -47,6 +47,8 @@ class CardList{
         this.errors = [];
         this.scryfallClient = null;
 
+        this.changeCallback = null;
+
         this.resetFilters();
     }
 
@@ -57,7 +59,39 @@ class CardList{
         this.cardDetailsModal = cardDetailsModal;
         this.loadErrorModal = loadErrorModal;
         this.listPropertiesModal = listPropertiesModal;
-        // TODO: register callbacks in listPropertiesModal
+
+        this.listPropertiesModal.registerCallbacks((s) => this._saveSettings(s));
+    }
+
+    _saveSettings(settings){
+        var changed = false;
+        if(settings.name != this.name){
+            this.name = settings.name;
+            changed = true;
+        }
+
+        if(settings.public != this.public){
+            this.public = settings.public;
+            changed = true;
+        }
+
+        if(settings.statusList.length != this.statusList.length){
+            this.statusList = settings.statusList;
+            changed = true;
+        }else{
+            for (var i = 0; i < settings.statusList.length; i++) {
+                if(settings.statusList[i] != this.statusList[i]){
+                    this.statusList = settings.statusList;
+                    changed = true;
+                    break;
+                }
+            }
+        }
+
+        if(changed == true && this.changeCallback !== null){
+            this.changeCallback(this);
+        }
+
     }
 
     callPropertiesModal(){

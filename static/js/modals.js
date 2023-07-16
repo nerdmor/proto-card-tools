@@ -517,7 +517,7 @@ class ListPropertiesModal extends ProtoModal{
     };
 
 
-    constructor(domElement, listNameElement, listPropertiesPublicElement, listPropertiesLastUpdateElement, listPropertiesStatusListElement, listPropertiesNewStatusFormElement, listPropertiesNewStatusInputElement, listPropertiesAlertElement){
+    constructor(domElement, listNameElement, listPropertiesPublicElement, listPropertiesLastUpdateElement, listPropertiesStatusListElement, listPropertiesNewStatusFormElement, listPropertiesNewStatusInputElement, listPropertiesAlertElement, listPropertiesSaveElement){
         super(domElement);
         this.options = {'focus': true};
         this.eraseOnDismiss = false;
@@ -529,6 +529,7 @@ class ListPropertiesModal extends ProtoModal{
         this.listPropertiesNewStatusFormElement = listPropertiesNewStatusFormElement;
         this.listPropertiesNewStatusInputElement = listPropertiesNewStatusInputElement;
         this.listPropertiesAlertElement = listPropertiesAlertElement;
+        this.listPropertiesSaveElement = listPropertiesSaveElement;
 
         this.saveCallback = null;
         this.statusList = null;
@@ -576,25 +577,46 @@ class ListPropertiesModal extends ProtoModal{
             }
             if(buttonAction === null) return;
 
-            var statusValue = null;
             var statusIndex = null;
-            if(parentElement.hasAttribute('status_value')){
-                statusValue = parentElement.getAttribute('status_value');
+            if(parentElement.hasAttribute('status_index')){
                 statusIndex = parentElement.getAttribute('status_index');
             }else{
-                statusValue = parentElement.parentElement.getAttribute('status_value');
                 statusIndex = parentElement.parentElement.getAttribute('status_index');
             }
 
-            // DEBUG
-            console.log(`status[${statusIndex}] = '${statusValue}' : ${buttonAction}`);
-
-            this._updateStatusList(statusIndex, statusValue, buttonAction);
+            this._updateStatusList(statusIndex, buttonAction);
+        });
+        this.listPropertiesSaveElement.addEventListener('click', (event)=>{
+            if(this.saveCallback){
+                this.dismiss(() => {
+                    this.saveCallback({
+                        'name': this.listNameElement.value,
+                        'public': this.listPropertiesPublicElement.checked,
+                        'statusList': this.statusList
+                    });
+                });
+            }else{
+                this.dismiss();
+            }
         });
     }
 
-    _updateStatusList(statusIndex, statusValue, buttonAction){
-        // TODO: change this.statusList based on action, index and value
+    _updateStatusList(statusIndex, buttonAction){
+        if(buttonAction == 'remove'){
+            if(this.statusList.length == 1){
+                this._drawError('There must be at least one status');
+                return;
+            }
+            this.statusList.splice(statusIndex, 1);
+        }else{
+            const newIndex = buttonAction == 'up' ? statusIndex-1 : statusIndex+1;
+            if(newIndex < 0){
+                const tmp = this.statusList.shift();
+                this.statusList.push(tmp);
+            }else{
+                arrayMove(this.statusList, statusIndex, newIndex)
+            }
+        }
         this._drawStatusList();
     }
 
@@ -604,7 +626,7 @@ class ListPropertiesModal extends ProtoModal{
             this._drawError('Status already exists');
             return;
         }
-        if(/\p{Emoji}/u.test(newStatus) == false){
+        if(!isEmoji(newStatus)){
             this.listPropertiesNewStatusInputElement.value = '';
             this._drawError('Status is not an emoji');
             return;
@@ -616,11 +638,15 @@ class ListPropertiesModal extends ProtoModal{
 
     _drawError(err){
         this.listPropertiesAlertElement.innerHTML = err;
+        const removeId = Date.now();
+        this.listPropertiesAlertElement.setAttribute('remove_id', removeId);
         this.listPropertiesAlertElement.classList.remove("start-hidden");
         setTimeout(() => {
-            this.listPropertiesAlertElement.innerHTML = '';
-            this.listPropertiesAlertElement.classList.add("start-hidden");
-        }, 600);
+            if(this.listPropertiesAlertElement.getAttribute('remove_id') == removeId){
+                this.listPropertiesAlertElement.innerHTML = '';
+                this.listPropertiesAlertElement.classList.add("start-hidden");
+            }
+        }, 1000);
     }
 
     _drawStatusList(){
