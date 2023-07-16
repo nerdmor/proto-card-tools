@@ -2,7 +2,7 @@
  * Draws a list of cards
  **************************************************************************** */
 window.drawCardList = async function(element){
-    window.mainController.loadSetsModalHandler(()=>{element.innerHTML = window.listManager.draw()});
+    element.innerHTML = window.listManager.draw();
 }
 
 
@@ -21,14 +21,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // modal handlers
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
-    window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'), {
-        'cardImgQuality': document.querySelector('#settings-select-cardImgQuality'),
-        'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
-        'sldIsSpecial': document.querySelector('#settings-checkbox-sldIsSpecial'),
-        'applyFiltersOnFilterChange': document.querySelector('#settings-checkbox-applyFiltersOnFilterChange'),
-        'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
-        'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
-    });
+    window.settingsModal = new SettingsModal(
+        document.querySelector('#settings-modal'),
+        () => {window.drawCardList(window.listElement)},  // redrawCallback
+        {
+            'cardImgQuality': document.querySelector('#settings-select-cardImgQuality'),
+            'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
+            'sldIsSpecial': document.querySelector('#settings-checkbox-sldIsSpecial'),
+            'applyFiltersOnFilterChange': document.querySelector('#settings-checkbox-applyFiltersOnFilterChange'),
+            'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
+            'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
+        }
+    );
 
     // global managers
     window.wakeLock = new WakeLockController();

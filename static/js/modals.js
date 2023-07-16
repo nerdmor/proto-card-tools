@@ -335,13 +335,14 @@ class CardDetailsModal extends ProtoModal{
 }
 
 class SettingsModal extends ProtoModal{
-    constructor(domElement, keyElements){
+    constructor(domElement, redrawCallback, keyElements){
         super(domElement)
         this.options = {'focus': true};
         this.keyElements = keyElements;
         this.settingsKeys = Object.keys(this.keyElements);
         this.globalSettingsKeys = Object.keys(SettingsManager.keys);
         this.eraseOnDismiss = false;
+        this.redrawCallback = redrawCallback;
         this._bind();
     }
 
@@ -359,6 +360,7 @@ class SettingsModal extends ProtoModal{
                 this.keyElements[key].addEventListener('change', (event) => {
                     if(!SettingsManager.keys.cardImgQuality.possibleValues.includes(event.target.value)) return;
                     window.settings.setValue('cardImgQuality', event.target.value);
+                    this.redrawCallback();
                 });
                 continue;
             }

@@ -31,8 +31,8 @@ class ProtoCard{
                   </div>
                 </div>
                 <div class="card-body finder-card-body">
-                  <img class="finder-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
                   <div class="finder-card-status">%%cardstatus%%</div>
+                  <img class="finder-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
                 </div>
             </div>
             `,
