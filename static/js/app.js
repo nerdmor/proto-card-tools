@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // window.loadingCardsModal = new LoadingCardsModal(document.querySelector('#loading-cards-modal'));
     // window.loadingSetsModal = new LoadingCardsModal(document.querySelector('#loading-sets-modal'));
     // window.cardSetSelectionModal = new CardSetSelectionModal(document.querySelector('#select-card-version-modal'));
+    // window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
     window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
-    window.cardDetailsModal = new CardDetailsModal(document.querySelector('#card-details-modal'));
     window.settingsModal = new SettingsModal(document.querySelector('#settings-modal'), {
         'cardImgQuality': document.querySelector('#settings-select-cardImgQuality'),
         'deleteCooldown': document.querySelector('#settings-text-deleteCooldown'),
@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.listManager.initModals(
         document.querySelector('#loading-cards-modal'),
         document.querySelector('#loading-sets-modal'),
-        document.querySelector('#select-card-version-modal')
+        document.querySelector('#select-card-version-modal'),
+        document.querySelector('#card-details-modal')
     );
     window.listManager.setScryfallClient(window.scryfall);
 

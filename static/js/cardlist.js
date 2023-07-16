@@ -38,6 +38,7 @@ class CardList{
         this.loadingCardsModal = null;
         this.loadingSetsModal = null;
         this.cardSetSelectionModal = null;
+        this.cardDetailsModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -45,10 +46,11 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModalElement, loadingSetsModalElement, cardSetSelectionModalElement){
+    initModals(loadingCardsModalElement, loadingSetsModalElement, cardSetSelectionModalElement, cardDetailsModalElement){
         this.loadingCardsModal = new LoadingCardsModal(loadingCardsModalElement);
         this.loadingSetsModal = new LoadingCardsModal(loadingSetsModalElement);
         this.cardSetSelectionModal = new CardSetSelectionModal(cardSetSelectionModalElement);
+        this.cardDetailsModal = new CardDetailsModal(cardDetailsModalElement);
     }
 
     async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
@@ -69,6 +71,15 @@ class CardList{
             }, //confirmCallback
             () => {cancelCallback()} // cancelCallback
         );
+    }
+
+    callCardDetails(cardKey){
+        if(!Object.keys(this.cards).includes(cardKey)) return;
+        const html = this.drawCardDetails(cardKey);
+
+        if(!html) return;
+        this.cardDetailsModal.call(html);
+        return true;
     }
 
     _filterCards(){
@@ -337,15 +348,9 @@ class CardList{
         }
 
         if(this.errors.length > 0){
-            this.loadingCardsModal.dismiss(() => {
-                console.log('calling errorCallBack');
-                errorCallBack(this.errors)
-            });
+            this.loadingCardsModal.dismiss(() => {errorCallBack(this.errors)});
         }else{
-            this.loadingCardsModal.dismiss(() => {
-                console.log('calling successCallBack');
-                successCallBack()
-            });
+            this.loadingCardsModal.dismiss(() => {successCallBack()});
         }
 
     }

@@ -78,7 +78,7 @@
 
 .card-details-stats{
 	text-align: right;
-	display: block;
+	display: flex;
 	font-size: 110%;
 }
 

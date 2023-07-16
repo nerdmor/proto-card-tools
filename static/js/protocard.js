@@ -120,11 +120,11 @@ class ProtoCard{
                   <div class="col-6 card-details-name">%%cardname%%</div>
                   <div class="col-6 card-details-cost">%%cardcost%%</div>
                 </div>
-                <div class="row card-details-row card-details-type">%%typeline%%</div>
-                %%oracleblock%%
-                <div class="row card-details-row card-details-stats">
-                    <span class="card-details-stats-wrapper">%%cardstats%%</span>
+                <div class="row card-details-row card-details-type">
+                  <p>%%typeline%%</p>
                 </div>
+                %%oracleblock%%
+                %%statblock%%
                 <div class="row card-details-row card-details-links">
                   <div class="col-1">
                     <a class="btn btn-outline-secondary card-details-scryfall-link" target="_blank" href="%%scryfallurl%%">
@@ -151,6 +151,7 @@ class ProtoCard{
         oracleModel: `<div class="row card-details-row card-details-body">%%oracletext%%</div>`,
         loyaltyModel: `<i class="ms %%loyaltydirection%% ms-loyalty-%%loyalty%%"></i>`,
         defenseModel: `<i class="ms ms-defense ms-defense-print ms-defense-%%defense%%"></i>`,
+        statModel: `<div class="row card-details-row card-details-stats"><span class="card-details-stats-wrapper">%%cardstats%%</span></div>`,
         sagaModel: `<i class="ms ms-saga ms-saga-%%chapter%%"></i>`
     };
 
@@ -445,10 +446,15 @@ class ProtoCard{
     }
 
     drawDetails(){
-        var stats = '';
+        var stats = null;
         if(this.statType == 'p/t') stats = this.stats;
         else if(this.statType == 'defense') stats = ProtoCard.detailsModels.defenseModel.replaceAll('%%defense%%', this.stats);
         else if(this.statType == 'loyalty') stats = ProtoCard.detailsModels.loyaltyModel.replaceAll('%%loyaltydirection%%', 'ms-loyalty-start').replaceAll('%%loyalty%%', this.stats);
+        if(stats !== null){
+          stats = ProtoCard.detailsModels.statModel.replaceAll('%%cardstats%%', stats);
+        }else{
+          stats = '';
+        }
 
         var tmpText = [];
         var matches = null
@@ -493,7 +499,7 @@ class ProtoCard{
                                                 .replaceAll('%%cardcost%%', this._makeCostIcons())
                                                 .replaceAll('%%typeline%%', this.typeLine)
                                                 .replaceAll('%%oracleblock%%', oracleText)
-                                                .replaceAll('%%cardstats%%', stats)
+                                                .replaceAll('%%statblock%%', stats)
                                                 .replaceAll('%%scryfallurl%%', this.urls.scryfall)
                                                 .replaceAll('%%edhrecurl%%', this.urls.edhrec)
                                                 .replaceAll('%%ligamagicurl%%', this.urls.ligamagic);

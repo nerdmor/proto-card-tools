@@ -76,10 +76,7 @@ class MainController{
     callCardDetails(event){
         const cardKey = getCardKeyFromParent(event.target);
         if(cardKey === null) return false;
-
-        const html = window.listManager.drawCardDetails(cardKey);
-        if(!html) return false;
-        window.cardDetailsModal.call(html);
+        window.listManager.callCardDetails(cardKey);
         return true;
     }
 
