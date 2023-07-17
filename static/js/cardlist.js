@@ -44,16 +44,18 @@ class CardList{
         this.loadErrorModal = null;
         this.listPropertiesModal = null;
         this.fileSelectModal = null;
+        this.archidektFileImportModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
 
         this.changeCallback = null;
+        this.loadSuccessCallback = null;
 
         this.resetFilters();
     }
 
-    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal, fileSelectModal){
+    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal, fileSelectModal, archidektFileImportModal){
         this.loadingCardsModal = loadingCardsModal;
         this.loadingSetsModal = loadingSetsModal;
         this.cardSetSelectionModal = cardSetSelectionModal;
@@ -61,9 +63,20 @@ class CardList{
         this.loadErrorModal = loadErrorModal;
         this.listPropertiesModal = listPropertiesModal;
         this.fileSelectModal = fileSelectModal;
+        this.archidektFileImportModal = archidektFileImportModal;
 
         this.listPropertiesModal.registerCallbacks((s) => this._saveSettings(s));
         this.fileSelectModal.registerCallbacks((fc, ft) => this.ingestFile(fc, ft));
+        this.archidektFileImportModal.registerCallbacks(
+            (cat) => {this._processArchidektCategoriesSelection(cat)},
+            () => { this._callBackClearQueue(); }
+        );
+    }
+
+    _callLoadSuccessCallBack(){
+        if(this.loadSuccessCallback){
+            this.loadSuccessCallback(this.draw());
+        }
     }
 
     _saveSettings(settings){
@@ -101,7 +114,8 @@ class CardList{
         this.listPropertiesModal.call(this);
     }
 
-    callFileSelectModal(){
+    callFileSelectModal(loadSuccessCallback=null){
+        if(loadSuccessCallback) this.loadSuccessCallback = loadSuccessCallback;
         this.fileSelectModal.call();
     }
 
@@ -240,7 +254,8 @@ class CardList{
         }
 
         if(!window.listManager.hasNullSets()){
-            if(successCallBack) successCallBack();
+            if(successCallBack !== null) successCallBack();
+            else this._callLoadSuccessCallBack();
             return;
         };
 
@@ -265,7 +280,11 @@ class CardList{
             await delay(2000 - elapsedTime);
         }
 
-        this.loadingSetsModal.dismiss(successCallBack);
+        this.loadingSetsModal.dismiss(() => {
+            if(successCallBack !== null) successCallBack();
+            else this._callLoadSuccessCallBack();
+            return;
+        });
     }
 
     parseCardLine(text){
@@ -409,25 +428,44 @@ class CardList{
                 this.loadErrorModal.call(this.errors);
             });
         }else{
-            this.loadingCardsModal.dismiss(() => {successCallBack()});
+            this.loadingCardsModal.dismiss(() => {
+                if(successCallBack) successCallBack();
+                else this.loadSetData(null, null);
+            });
         }
 
     }
 
     ingestFile(fileContents, fileType){
-        console.log(`ready to ingest ${fileType}`);
+        if(fileType == 'archidekt'){
+            this._ingestArchidektFile(fileContents);
+        }else if(fileType == 'arena'){
+
+        }else if(fileType == 'mtggoldfish'){
+
+        }else if(fileType == 'mtgotxt'){
+
+        }else if(fileType == 'mtgodek'){
+
+        }else if(fileType == 'mwdeck'){
+
+        }else{
+            return;
+        }
     }
 
+    // TODO: remove
     ingestArchidektFile(fileList, categoryCallback){
-        const reader = new FileReader();
-        reader.onload = (event) => this._processArchidektFile(event, categoryCallback);
-        reader.readAsText(fileList[0]);
+        console.log('this is dead');
+        // const reader = new FileReader();
+        // reader.onload = (event) => this._ingestArchidektFile(event.target.result.split('\n'), categoryCallback);
+        // reader.readAsText(fileList[0]);
     }
 
-    _processArchidektFile(event, categoryCallback){
+    _ingestArchidektFile(splitList){
+        console.log(splitList);
         var categories = {};
         var currentCategory = '';
-        const splitList = event.target.result.split('\n');
 
         var newCard = null;
         var match = null;
@@ -448,28 +486,16 @@ class CardList{
             }
         }
 
-        var confirmCallback = {
-            'function': (cat, par) => {this._processArchidektCategoriesSelection(cat, par)},
-            'params': {
-                'okCallback': null,
-                'failCallback': null
-            }
-        };
-
-
-        categoryCallback(categories, confirmCallback, () => this._callBackClearQueue());
+        this.archidektFileImportModal.call(
+            categories,
+            (cat, par) => {this._processArchidektCategoriesSelection(cat, par)},  // confirmCallback
+            () => { this._callBackClearQueue() }  // cancelCallback
+        );
     }
 
-    _processArchidektCategoriesSelection(selectedCategories, params){
-        const okCallback = params['okCallback'] || null;
-        const failCallback = params['failCallback'] || null;
+    _processArchidektCategoriesSelection(selectedCategories){
+        if(!selectedCategories) return;
 
-        if(!selectedCategories){
-            if(failCallback){
-                failCallback();
-            }
-            return;
-        }
         this.cardQueue = [];
         for(const catName of Object.keys(selectedCategories)){
             for (var i = 0; i < selectedCategories[catName].length; i++) {
@@ -477,11 +503,15 @@ class CardList{
             }
         }
 
-        if(len(this.cardQueue) > 0){
-            if(okCallback) okCallback();
-        }else{
-            if(failCallback) failCallback();
-        }
+        if(this.cardQueue.length == 0) return;
+
+        this.loadQueueFromScryfall(
+            null,
+            () => {  // successCallback
+                this.loadSetData(null, null);
+            },
+            (err) => {}  // errorCallback
+        );
     }
 
     _callBackClearQueue(){

@@ -157,62 +157,42 @@ class FileSelectModal extends ProtoModal{
 
     _processFileRead(event){
         const fileContents = event.target.result.split('\n');
-        this.fileIngestCallback(fileContents, this.selectedFileType);
+        this.dismiss(() => {this.fileIngestCallback(fileContents, this.selectedFileType)});
     }
-
-
 }
 
 class ArchidektFileImportModal extends ProtoModal {
-    static modalModel = `
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">%%modal-title%%</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="row">
-                <p>We found the following categories. Which ones would you like to import?</p>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <button id="archidekt-file-modal-all" type="button" class="btn btn-sm btn-secondary">All</button>
-                </div>
-                <div class="col-6">
-                    <button id="archidekt-file-modal-none" type="button" class="btn btn-sm btn-secondary">None</button>
-                </div>
-            </div>
-            <div class="row">
-            </div>
-          %%switches%%
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button id="archidekt-file-modal-ok" type="button" class="btn btn-primary">OK</button>
-        </div>
-      </div>
-    </div>
-    `;
-
     static switchModel = `
     <div class="form-check form-switch">
-      <input class="form-check-input archidekt-file-category-toggle" type="checkbox" role="switch" checked id="archidekt-file-category-%%categoryindex%%">
+      <input class="form-check-input archidekt-file-category-toggle" type="checkbox" role="switch" checked id="archidekt-file-category-%%categoryindex%%" value="%%categoryname%%">
       <label class="form-check-label" for="archidekt-file-category-%%categoryindex%%">%%categoryname%%</label>
     </div>
     `;
 
-    constructor(domElement){
+    constructor(domElement, okButtonElement, switchWrapperElement, selectAllCategoriesElement, selectNoCategoriesElement){
         super(domElement);
         this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+
+        this.okButtonElement = okButtonElement;
+        this.switchWrapperElement = switchWrapperElement;
+        this.selectAllCategoriesElement = selectAllCategoriesElement;
+        this.selectNoCategoriesElement = selectNoCategoriesElement;
+
+        this.confirmCallback = null;
+        this.cancelCallback = null;
+
+        this._bind();
     }
 
-    call(categories, confirmCallback, cancelCallback, title=null){
-        this.title = title || 'Archidekt File Import';
+    registerCallbacks(confirmCallback, cancelCallback){
+        this.confirmCallback = confirmCallback;
+        this.cancelCallback = cancelCallback;
+    }
+
+    call(categories){
         this.categories = categories;
         this.categoryList = Object.keys(this.categories);
-        this.cancelCallback = cancelCallback;
-        this.confirmCallback = confirmCallback;
         super.call()
     }
 
@@ -224,24 +204,18 @@ class ArchidektFileImportModal extends ProtoModal {
                         );
         }
         toggles = toggles.join('\n');
-        this.html = ArchidektFileImportModal.modalModel.replaceAll('%%modal-title%%', this.title)
-                                                       .replaceAll('%%switches%%', toggles);
-        super.draw();
-        this.bind();
+        this.switchWrapperElement.innerHTML = toggles;
     }
 
-    bind(){
+    _bind(){
         this.element.addEventListener('hide.bs.modal', (e) => this._callCancelCallback());
-        document.querySelector('#archidekt-file-modal-ok').addEventListener('click', (e) => this._callConfirmCallBack());
-        document.querySelector('#archidekt-file-modal-all').addEventListener('click', (e) => this.setAllCategories(true), true);
-        document.querySelector('#archidekt-file-modal-none').addEventListener('click', (e) => this.setAllCategories(false), true);
+        this.okButtonElement.addEventListener('click', (e) => this._callConfirmCallBack());
+        this.selectAllCategoriesElement.addEventListener('click', (e) => this.setAllCategories(true), true);
+        this.selectNoCategoriesElement.addEventListener('click', (e) => this.setAllCategories(false), true);
     }
 
     dismiss(){
         this.element.removeEventListener('hide.bs.modal', (e) => this._callCancelCallback());
-        document.querySelector('#archidekt-file-modal-all').removeEventListener('click', (e) => this.setAllCategories(true), true);
-        document.querySelector('#archidekt-file-modal-none').removeEventListener('click', (e) => this.setAllCategories(false), true);
-        document.querySelector('#archidekt-file-modal-ok').removeEventListener('click', (e) => this._callConfirmCallBack());
         super.dismiss();
     }
 
@@ -252,23 +226,21 @@ class ArchidektFileImportModal extends ProtoModal {
     }
 
     _callCancelCallback(){
-        this.cancelCallback();
+        if(this.cancelCallback) this.cancelCallback();
     }
 
     _callConfirmCallBack(){
         var selectedCategories = {};
-        var categoryElementId = '';
-        for (var i = 0; i < this.categoryList.length; i++) {
-            categoryElementId = `#archidekt-file-category-${i}`;
-            if(document.querySelector(categoryElementId).checked){
-                selectedCategories[this.categoryList[i]] = this.categories[this.categoryList[i]];
-            }
+        var categoryName = '';
+        for(const el of this.element.querySelectorAll('.archidekt-file-category-toggle')){
+            if(!el.checked) continue;
+            categoryName = el.getAttribute('value');
+            if(!this.categoryList.includes(categoryName)) continue;
+            selectedCategories[categoryName] = this.categories[categoryName];
         }
 
         this.dismiss();
-        const confirmCallback = this.confirmCallback['function'];
-        confirmCallback(selectedCategories, this.confirmCallback['params']);
-
+        this.confirmCallback(selectedCategories);
     }
 }
 

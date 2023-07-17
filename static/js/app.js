@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.statusFilterElement = document.querySelector('#filter-status-wrapper');
 
     // modal handlers
-    window.archidektFileImportModal = new ArchidektFileImportModal(document.querySelector('#archidekt-file-import-modal'));
     window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
     window.settingsModal = new SettingsModal(
         document.querySelector('#settings-modal'),
@@ -44,30 +43,41 @@ document.addEventListener('DOMContentLoaded', function () {
         new LoadingCardsModal(document.querySelector('#loading-sets-modal')),
         new CardSetSelectionModal(document.querySelector('#select-card-version-modal')),
         new CardDetailsModal(document.querySelector('#card-details-modal')),
-        new LoadErrorModal(document.querySelector('#import-error-modal'),
-                           document.querySelector('#import-error-table-body'),
-                           document.querySelector('#import-error-text'),
-                           document.querySelector('#import-error-copy')
-                          ),
-        new ListPropertiesModal(document.querySelector('#list-properties-modal'),
-                                document.querySelector('#list-properties-name'),
-                                document.querySelector('#list-properties-public'),
-                                document.querySelector('#list-properties-last-update'),
-                                document.querySelector('#list-properties-status-list'),
-                                document.querySelector('#list-properties-new-status-form'),
-                                document.querySelector('#list-properties-new-status-input'),
-                                document.querySelector('#list-properties-alert'),
-                                document.querySelector('#list-properties-save')
-                               ),
+        new LoadErrorModal(
+                document.querySelector('#import-error-modal'),
+                document.querySelector('#import-error-table-body'),
+                document.querySelector('#import-error-text'),
+                document.querySelector('#import-error-copy')
+            ),
+        new ListPropertiesModal(
+                document.querySelector('#list-properties-modal'),
+                document.querySelector('#list-properties-name'),
+                document.querySelector('#list-properties-public'),
+                document.querySelector('#list-properties-last-update'),
+                document.querySelector('#list-properties-status-list'),
+                document.querySelector('#list-properties-new-status-form'),
+                document.querySelector('#list-properties-new-status-input'),
+                document.querySelector('#list-properties-alert'),
+                document.querySelector('#list-properties-save')
+            ),
         new FileSelectModal(
                 document.querySelector('#file-import-modal'),  // domElement
                 document.querySelector('#file-import-input'),  // fileImportInputElement
                 document.querySelector('#file-import-modal-ok'),  // fileImportButtonElement
                 'file-import-type',
                 'file-import-type-'
+            ),
+        new ArchidektFileImportModal(
+                document.querySelector('#archidekt-file-import-modal'),
+                document.querySelector('#archidekt-file-modal-ok'),  // okButonElement
+                document.querySelector('#archidekt-file-modal-switches'), // switchWrapperElement
+                document.querySelector('#archidekt-file-modal-all'),  // selectAllCategoriesElement
+                document.querySelector('#archidekt-file-modal-none')  // selectNoCategoriesElement
             )
     );
     window.listManager.setScryfallClient(window.scryfall);
+    // todo: make this prettier
+    window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
 
     window.mainController = new MainController();
 
@@ -151,7 +161,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // call file load modal
     document.querySelector('#header-import-file').addEventListener('click', function(event){
-        window.listManager.callFileSelectModal();
+        window.listManager.callFileSelectModal(
+            async (html) => {window.listElement.innerHTML = html;}
+        );
     });
 
     // list settings modal

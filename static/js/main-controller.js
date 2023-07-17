@@ -141,12 +141,7 @@ class MainController{
     async loadQueueFromScryfallModalHandler(){
         window.listManager.loadQueueFromScryfall(
             null,  // scryfallClient
-            () => {  // successCallback
-                window.listManager.loadSetData(
-                    null, //scryfallClient
-                    async () => {window.listElement.innerHTML = window.listManager.draw()}
-                );
-            },
+            null,  // successCallback
             (err) => {}  // errorCallback
         );
     }

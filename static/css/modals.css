@@ -1,14 +1,18 @@
-.loading-cards-modal-text{
-/*	display: inline;*/
+#archidekt-file-modal-switches{
+    padding-left: 15%;
+    margin-top: 0.3rem;
 }
 
-.loading-cards-modal-spinner{
-/*	display: inline;*/
+.archidekt-file-modal-btn-wrapper{
+    text-align:center;
 }
 
-.card-select-icon-group{
-/*	display: inline-block;*/
+.archidekt-file-modal-btn{
+    width: 30%;
 }
+
+
+
 
 .card-select-body{
   padding: 0.1em 0.5em 0.5em 0.5em;;
