@@ -6,6 +6,7 @@ class ProtoModal{
         this.options = {}
         this.hiddenCallback = null;
         this.eraseOnDismiss = true;
+        this.drawBeforeShow = true;
 
         this.element.addEventListener('hidden.bs.modal', (e) => this._afterHidden());
     }
@@ -15,7 +16,7 @@ class ProtoModal{
     }
 
     call(){
-        if(this.html == '' || this.html === null){
+        if(this.drawBeforeShow == true && (this.html == '' || this.html === null)){
             this.draw();
         }
         if(this.modal === null){
@@ -97,6 +98,68 @@ class LoadingCardsModal extends ProtoModal{
             e.innerHTML = LoadingCardsModal.cardNameModel.replaceAll('%%cardname%%', cardName);
         }
     }
+
+}
+
+class FileSelectModal extends ProtoModal{
+    constructor(domElement, fileImportInputElement, fileImportButtonElement, fileTypeElementName, fileTypeIdPrefix){
+        super(domElement);
+        this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+        this.drawBeforeShow = false;
+
+        this.fileImportInputElement = fileImportInputElement;
+        this.fileImportButtonElement = fileImportButtonElement;
+        this.fileTypeElementName = fileTypeElementName;
+        this.fileTypeIdPrefix = fileTypeIdPrefix;
+        this.fileIngestCallback = null;
+
+        this.file = null;
+        this.selectedFileType = null;
+
+        this._bind();
+    }
+
+    registerCallbacks(fileIngestCallback){
+        this.fileIngestCallback = fileIngestCallback;
+    }
+
+    _bind(){
+        this.fileImportInputElement.addEventListener('change', (event) => {
+            try {
+                this.file = event.target.files[0];
+            } catch(e) {
+                this.file = null;
+            }
+        });
+
+        this.fileImportButtonElement.addEventListener('click', (event) => {
+            this._processModalConfirm();
+        });
+    }
+
+    _processModalConfirm(){
+        if(this.file === null) return;
+
+        this.selectedFileType = null;
+        for(const e of this.element.querySelectorAll(`[name="${this.fileTypeElementName}"]`)){
+            if(e.checked == true){
+                this.selectedFileType = e.getAttribute('id').replaceAll(this.fileTypeIdPrefix, '');
+                break;
+            }
+        }
+        if(this.selectedFileType == null) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => this._processFileRead(event);
+        reader.readAsText(this.file);
+    }
+
+    _processFileRead(event){
+        const fileContents = event.target.result.split('\n');
+        this.fileIngestCallback(fileContents, this.selectedFileType);
+    }
+
 
 }
 
@@ -499,7 +562,6 @@ class LoadErrorModal extends ProtoModal{
         this.modal.hide();
     }
 }
-
 
 class ListPropertiesModal extends ProtoModal{
     static statusElementModel = `

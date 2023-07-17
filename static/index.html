@@ -249,6 +249,67 @@
         </div>
       </div>
     </div>
+    <div id="file-import-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Import File</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Select the file you want to use and its type</p>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <label for="file-import-input" class="form-label">File to import</label>
+                <input class="form-control" type="file" id="file-import-input">
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-archidekt">
+                  <label class="form-check-label" for="file-import-type-archidekt">
+                    Archidekt
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-arena">
+                  <label class="form-check-label" for="file-import-type-arena">
+                    Arena
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtggoldfish">
+                  <label class="form-check-label" for="file-import-type-mtggoldfish">
+                    MtgGoldfish
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtgotxt">
+                  <label class="form-check-label" for="file-import-type-mtgotxt">
+                    MTGO Text
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtgodek">
+                  <label class="form-check-label" for="file-import-type-mtgodek">
+                    MTGO .dek
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mwdeck">
+                  <label class="form-check-label" for="file-import-type-mwdeck">
+                    .mwdeck
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="file-import-modal-ok" type="button" class="btn btn-outline-warning">Load</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- End of Modals -->
 
     <!-- Headers start -->
@@ -278,9 +339,9 @@
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Add Cards</button>
                   <ul class="dropdown-menu header-dropdown">
-                    <li><a id="header-import-text" class="dropdown-item" href="#"><i class="bi bi-file-text-fill"></i>&nbsp;Text</a></li>
-                    <li><a id="header-import-url" class="dropdown-item" href="#"><i class="bi bi-globe2"></i>&nbsp;Url</a></li>
-                    <li><a id="header-import-file" class="dropdown-item" href="#"><i class="bi bi-upload"></i>&nbsp;&nbsp;file</a></li>
+                    <li><button id="header-import-text" class="dropdown-item" ><i class="bi bi-file-text-fill"></i>&nbsp;Text</button></li>
+                    <li><button id="header-import-url" class="dropdown-item" ><i class="bi bi-globe2"></i>&nbsp;Url</button></li>
+                    <li><button id="header-import-file" class="dropdown-item" ><i class="bi bi-upload"></i>&nbsp;&nbsp;File</button></li>
                   </ul>
                 </div>
               </li>

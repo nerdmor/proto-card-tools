@@ -58,7 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 document.querySelector('#list-properties-new-status-input'),
                                 document.querySelector('#list-properties-alert'),
                                 document.querySelector('#list-properties-save')
-                               )
+                               ),
+        new FileSelectModal(
+                document.querySelector('#file-import-modal'),  // domElement
+                document.querySelector('#file-import-input'),  // fileImportInputElement
+                document.querySelector('#file-import-modal-ok'),  // fileImportButtonElement
+                'file-import-type',
+                'file-import-type-'
+            )
     );
     window.listManager.setScryfallClient(window.scryfall);
 
@@ -140,6 +147,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // call text load modal
     document.querySelector('#header-import-text').addEventListener('click', function(event){
         window.textLoadModal.call();
+    });
+
+    // call file load modal
+    document.querySelector('#header-import-file').addEventListener('click', function(event){
+        window.listManager.callFileSelectModal();
     });
 
     // list settings modal

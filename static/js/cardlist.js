@@ -43,6 +43,7 @@ class CardList{
         this.cardDetailsModal = null;
         this.loadErrorModal = null;
         this.listPropertiesModal = null;
+        this.fileSelectModal = null;
 
         this.errors = [];
         this.scryfallClient = null;
@@ -52,15 +53,17 @@ class CardList{
         this.resetFilters();
     }
 
-    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal){
+    initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal, fileSelectModal){
         this.loadingCardsModal = loadingCardsModal;
         this.loadingSetsModal = loadingSetsModal;
         this.cardSetSelectionModal = cardSetSelectionModal;
         this.cardDetailsModal = cardDetailsModal;
         this.loadErrorModal = loadErrorModal;
         this.listPropertiesModal = listPropertiesModal;
+        this.fileSelectModal = fileSelectModal;
 
         this.listPropertiesModal.registerCallbacks((s) => this._saveSettings(s));
+        this.fileSelectModal.registerCallbacks((fc, ft) => this.ingestFile(fc, ft));
     }
 
     _saveSettings(settings){
@@ -96,6 +99,10 @@ class CardList{
 
     callPropertiesModal(){
         this.listPropertiesModal.call(this);
+    }
+
+    callFileSelectModal(){
+        this.fileSelectModal.call();
     }
 
     async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
@@ -405,6 +412,10 @@ class CardList{
             this.loadingCardsModal.dismiss(() => {successCallBack()});
         }
 
+    }
+
+    ingestFile(fileContents, fileType){
+        console.log(`ready to ingest ${fileType}`);
     }
 
     ingestArchidektFile(fileList, categoryCallback){
