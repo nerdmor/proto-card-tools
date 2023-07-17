@@ -75,7 +75,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="import-error-body modal-body">
-            <h5>We had problems loading the following cards. Please check their spelling.</h5>
+            <h5>There were problems loading the following cards. Please check their spelling.</h5>
             <table class="table">
               <thead>
                  <tr>
@@ -249,8 +249,6 @@
         </div>
       </div>
     </div>
-
-
     <!-- End of Modals -->
 
     <!-- Headers start -->
@@ -259,10 +257,13 @@
       <nav id="main-header" class="py-2 text-bg-dark">
         <div id="menu-container" class="container">
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/" class="d-flex align-items-center mb-2 mb-md-0 text-white text-decoration-none logo-link">PCT LOGO</a>
-
+            <div id="header-collapse-wrapper" class="d-block d-lg-none d-flex mb-2 mb-md-0">
+              <button id="header-collapse" type="button" class="btn btn-outline-secondary btn-collapse"><i class="bi bi-caret-up-fill"></i></button>
+              <button id="header-expand" type="button" class="btn btn-outline-secondary btn-collapse start-hidden"><i class="bi bi-caret-down-fill"></i></button>
+            </div>
+            <a href="/" class="d-flex mb-2 mb-md-0 text-white text-decoration-none logo-link">PCT LOGO</a>
             <ul id="header-menu" class="nav col-12 col-md-auto me-md-auto mb-2 justify-content-center mb-md-0">
-              <li>
+              <li class="header-collapsible">
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
                   <ul class="dropdown-menu header-dropdown">
@@ -273,7 +274,7 @@
                   </ul>
                 </div>
               </li>
-              <li>
+              <li class="header-collapsible">
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Add Cards</button>
                   <ul class="dropdown-menu header-dropdown">
@@ -285,8 +286,10 @@
               </li>
 
               <!-- <li><a id="header-settings" href="#" class="nav-link px-2 text-white" data-bs-toggle="modal" data-bs-target="#settings-modal">Settings</a></li> -->
-              <li><a id="header-settings" href="#" class="nav-link px-2 text-white">Settings</a></li>
-              <li>
+              <li class="header-collapsible">
+                <a id="header-settings" href="#" class="nav-link px-2 text-white">Settings</a>
+              </li>
+              <li class="header-collapsible">
                 <div class="dropdown">
                   <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
                   <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
@@ -302,7 +305,7 @@
 
 
 
-            <div class="text-end">
+            <div class="text-end header-collapsible">
               <button id="header-account-login" type="button" class="btn btn-outline-warning">Login/Sign-up</button>
               <button id="header-account-account" type="button" class="btn btn-outline-warning" aria-label="my account"><i class="bi bi-person-fill"></i></button>
             </div>
@@ -313,7 +316,7 @@
 
       <!-- Filter Header -->
 
-      <header id="filter-header" class="py-1 text-bg-dark border-bottom align-items-left">
+      <header id="filter-header" class="py-1 text-bg-dark border-bottom align-items-left header-collapsible">
         <div class="container d-flex flex-wrap filter-wrapper row-gap-1">
           <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
             <span class="header-filter-title">Filters</span>
@@ -398,7 +401,7 @@
       <!-- End of Filter Header -->
 
       <!-- Quick add header -->
-      <header id="control-header" class="py-1 mb-4 text-bg-dark border-bottom align-items-left">
+      <header id="control-header" class="py-1 mb-4 text-bg-dark border-bottom align-items-left header-collapsible">
         <div class="container d-flex flex-wrap filter-wrapper">
 
           <div id="header-input" class="py-1 nav col-12 col-md-auto me-md-auto align-items-left">

@@ -3,8 +3,35 @@ class MainController{
 
 
     constructor(){
+        this.collapsedTop = false;
+
         // registering listeners
         window.settings.registerTrigger('useWakeLock', (value) => window.wakeLock.setActive(value));
+
+    }
+
+    toggleCollapseTop(setCollapsed = null){
+        if(setCollapsed !== null){
+            this.collapsedTop = !setCollapsed;
+        }else if(this.collapsedTop === null) return;
+
+        if(this.collapsedTop){
+            this.collapsedTop = null;
+            document.querySelector('#header-collapse').classList.remove('start-hidden');
+            document.querySelector('#header-expand').classList.add('start-hidden');
+            for(const element of document.querySelectorAll('.header-collapsible')){
+                element.classList.remove('start-hidden');
+            }
+            this.collapsedTop = false;
+        }else{
+            this.collapsedTop = null;
+            document.querySelector('#header-collapse').classList.add('start-hidden');
+            document.querySelector('#header-expand').classList.remove('start-hidden');
+            for(const element of document.querySelectorAll('.header-collapsible')){
+                element.classList.add('start-hidden');
+            }
+            this.collapsedTop = true;
+        }
     }
 
     quickAdd(){

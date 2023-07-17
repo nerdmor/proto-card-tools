@@ -603,7 +603,12 @@ class ProtoCard{
 
 
                 // TODO: treat split card's oracle text
-                if(Object.hasOwn(firstFace, 'oracle_text')) this.oracleText = firstFace.oracle_text;
+                if(scrycard.layout == 'split'){
+                    this.oracleText = [scrycard.card_faces[0].oracle_text, scrycard.card_faces[1].oracle_text].join('\n//\n');
+                }else if(Object.hasOwn(firstFace, 'oracle_text')){
+                    this.oracleText = firstFace.oracle_text
+                };
+
                 if(Object.hasOwn(firstFace, 'power')){
                     this.stats = `${firstFace.power}/${firstFace.toughness}`;
                     this.statType = 'p/t';
@@ -737,9 +742,8 @@ class ProtoCard{
     }
 
     _makeLigaName(){
-      const compiledLayouts = ['split', 'flip'];
-      if(compiledLayouts.includes(this.layout)) return this.names.compiled;
-      return this.names.main;
+        if(this.layout == 'split' || this.layout == 'flip') return this.names.compiled;
+        return this.names.main;
     }
 
 

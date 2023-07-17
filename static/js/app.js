@@ -107,6 +107,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // fixed element bindings **************************************************
 
+    // top collapse/show
+    for(const btn of document.querySelectorAll('.btn-collapse')){
+        btn.addEventListener('click', function(){ window.mainController.toggleCollapseTop(); });
+    }
+    const resizeObserver = new ResizeObserver((entries) => {
+        if(entries[0].contentRect.width >= 960) window.mainController.toggleCollapseTop(false);
+    });
+    resizeObserver.observe(document.querySelector("body"));
+
     // filters 'select all'
     document.querySelector('#filters-color-all').addEventListener('click', function(){
         window.mainController.filterSelectAll('color');
