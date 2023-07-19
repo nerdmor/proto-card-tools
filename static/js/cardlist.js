@@ -314,7 +314,7 @@ class CardList{
         text = text.trim();
         if(text.length < 4) return null;
 
-        const reWithNum = /^(\d+) (.+) \(([A-Z]+)\) \d+$/u;
+        const reWithNum = /^(\d+) (.+) \(([A-Z0-9]+)\) \d+$/u;
         const match = text.match(reWithNum);
         if(match === null) return null;
 
@@ -499,15 +499,119 @@ class CardList{
         }else if(fileType == 'arena'){
             this._ingestArenaFile(fileContents);
         }else if(fileType == 'mtggoldfish'){
-
+            this._ingestMtgGoldFishFile(fileContents);
         }else if(fileType == 'mtgotxt'){
-
+            this.ingestText(fileContents.join('\n'));
         }else if(fileType == 'mtgodek'){
 
         }else if(fileType == 'mwdeck'){
-
+            this._ingestMwdeck(fileContents);
         }else{
             return;
+        }
+    }
+
+    async _ingestMwdeck(splitList){
+        var text = '';
+        var match = null;
+        var newCard = null;
+        for(const typedLine of splitList){
+            text = typedLine.trim();
+            if(text.length < 5) continue;
+            if(text.substring(0, 2) == '//') continue;
+            if(text.substring(0, 4) == 'SB: ') text = text.substring(4);
+
+            match = text.match(/^(\d+) \[\] (.+)/);
+            if(match === null) continue;
+
+            newCard = new ProtoCard(this.cardQueue.length);
+            newCard.buildFromParams({
+                typedName: match[2],
+                quantity: match[1]
+            });
+            this.cardQueue.push(newCard);
+        }
+
+        if(this.cardQueue.length > 0){
+            await this.loadQueueFromScryfall(
+                null,
+                async () => {  // successCallback
+                    var setList = [];
+                    for(const cardKey of Object.keys(this.cards)){
+                        setList.push(this.cards[cardKey].selectedSet);
+                    }
+                    await this.loadSetData(setList, true);
+                },
+                (err) => {}  // errorCallback
+            );
+        }
+    }
+
+    async _ingestMtgGoldFishFile(splitList){
+        if(splitList.length < 1) return;
+
+        const reWithExtra = /^(\d+) (.+) (\<.+\>)? \[(.+)\]$/;
+        const reNoExtra = /^(\d+) (.+) \[(.+)\]$/;
+        var cards = [];
+        var parsedLine = null;
+        var newCard = null;
+        var text = '';
+        var match = null;
+        for(const typedLine of splitList){
+            if(typedLine.length < 5) continue;
+
+            text = typedLine.trim();
+            match = text.match(reWithExtra);
+            if(match){
+                parsedLine = {
+                    'typedName': match[2].replaceAll('\'', '')
+                                         .replaceAll(',', '')
+                                         .replaceAll(':', '')
+                                         .replaceAll('!', '')
+                                         .replaceAll('"', '')
+                                         .trim(),
+                    'quantity': match[1],
+                    'set': match[4]
+                };
+            }else{
+                match = text.match(reNoExtra);
+                if(!match){
+                    this.errors.push({'typedName': text, 'error': 'could not parse text'});
+                    continue;
+                }
+                parsedLine = {
+                    'typedName': match[2].replaceAll('\'', '')
+                                         .replaceAll(',', '')
+                                         .replaceAll(':', '')
+                                         .replaceAll('!', '')
+                                         .replaceAll('"', '')
+                                         .trim(),
+                    'quantity': match[1],
+                    'set': match[3]
+                };
+            }
+
+            newCard = new ProtoCard(this.cardQueue.length);
+            newCard.buildFromParams({
+                typedName: parsedLine.typedName,
+                selectedSet: parsedLine.set,
+                quantity: parsedLine.quantity
+            });
+            this.cardQueue.push(newCard);
+        }
+
+        if(this.cardQueue.length > 0){
+            await this.loadQueueFromScryfall(
+                null,
+                async () => {  // successCallback
+                    var setList = [];
+                    for(const cardKey of Object.keys(this.cards)){
+                        setList.push(this.cards[cardKey].selectedSet);
+                    }
+                    await this.loadSetData(setList, true);
+                },
+                (err) => {}  // errorCallback
+            );
         }
     }
 
