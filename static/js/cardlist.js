@@ -443,10 +443,6 @@ class CardList{
             this.loadingCardsModal.update(newCard.typedName);
 
             loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': i});
-            //for some reason, this works
-            if(loaded == 1){
-                await delay(200);
-            }
 
             if(newCard.loaded == 2){
                 if(Object.keys(this.cards).includes(newCard.key)){
@@ -503,11 +499,44 @@ class CardList{
         }else if(fileType == 'mtgotxt'){
             this.ingestText(fileContents.join('\n'));
         }else if(fileType == 'mtgodek'){
-
+            this._ingestDek(fileContents.join('\n'));
         }else if(fileType == 'mwdeck'){
             this._ingestMwdeck(fileContents);
         }else{
             return;
+        }
+    }
+
+    async _ingestDek(xmlString){
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlString, "application/xml");
+        if(!xml){
+            // TODO: handle this error
+            console.error('could not parse XML');
+        }
+
+        var newCard = null;
+        for(const cardElement of xml.querySelectorAll('Cards')){
+            newCard = new ProtoCard(this.cardQueue.length);
+            newCard.buildFromParams({
+                typedName: cardElement.getAttribute('Name'),
+                quantity: cardElement.getAttribute('Quantity')
+            });
+            this.cardQueue.push(newCard);
+        }
+
+        if(this.cardQueue.length > 0){
+            await this.loadQueueFromScryfall(
+                null,
+                async () => {  // successCallback
+                    var setList = [];
+                    for(const cardKey of Object.keys(this.cards)){
+                        setList.push(this.cards[cardKey].selectedSet);
+                    }
+                    await this.loadSetData(setList, true);
+                },
+                (err) => {}  // errorCallback
+            );
         }
     }
 
