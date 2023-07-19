@@ -139,7 +139,10 @@ class FileSelectModal extends ProtoModal{
     }
 
     _processModalConfirm(){
-        if(this.file === null) return;
+        if(this.file === null){
+            if(this.fileImportInputElement.files === null || this.fileImportInputElement.files.length == 0) return;
+            this.file = this.fileImportInputElement.files[0];
+        }
 
         this.selectedFileType = null;
         for(const e of this.element.querySelectorAll(`[name="${this.fileTypeElementName}"]`)){

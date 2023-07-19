@@ -287,6 +287,28 @@ class CardList{
         });
     }
 
+    _parseCardLineArena(text){
+        text = text.trim();
+        if(text.length < 4) return null;
+
+        const reWithNum = /^(\d+) (.+) \(([A-Z]+)\) \d+$/u;
+        const match = text.match(reWithNum);
+        if(match === null) return null;
+
+        var response = {
+            'typedName': match[2].replaceAll('\'', '')
+                                 .replaceAll(',', '')
+                                 .replaceAll(':', '')
+                                 .replaceAll('!', '')
+                                 .replaceAll('"', '')
+                                 .trim(),
+            'quantity': match[1],
+            'set': match[3]
+        };
+
+        return response;
+    }
+
     parseCardLine(text){
         const reWithNum = /^(\d+)( ?[xX]?) (.+)/;
         const reFoil = /^.+ (\[FOIL\])$/;
@@ -389,17 +411,20 @@ class CardList{
 
         this.loadingCardsModal.call();
         const startTimestamp = new Date().getTime();
-        await delay(100);
+        await delay(50);
 
-        var newCard = null;
-        for (var i = 0; i < this.cardQueue.length; i++) {
+        var loaded = null;
+        var i = 0;
+        for (const newCard of this.cardQueue) {
 
-            this.loadingCardsModal.update(this.cardQueue[i].typedName);
+            this.loadingCardsModal.update(newCard.typedName);
 
-            await this.cardQueue[i].buildFromScryFall(this.scryfallClient, {'index': i});
-            await delay(20);
+            loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': i});
+            //for some reason, this works
+            if(loaded == 1){
+                await delay(200);
+            }
 
-            newCard = this.cardQueue[i];
             if(newCard.loaded == 2){
                 if(Object.keys(this.cards).includes(newCard.key)){
                     this.cards[newCard.key].quantity += newCard.quantity;
@@ -414,7 +439,8 @@ class CardList{
                 }
             }
 
-            await delay(20);
+            await delay(100);
+            i++;
         }
 
         const elapsedTime = new Date().getTime() - startTimestamp;
@@ -424,11 +450,12 @@ class CardList{
 
         if(this.errors.length > 0){
             this.loadingCardsModal.dismiss(() => {
-                errorCallBack(this.errors)
+                if(errorCallBack) errorCallBack(this.errors);
                 this.loadErrorModal.call(this.errors);
             });
         }else{
             this.loadingCardsModal.dismiss(() => {
+                this.cardQueue = [];
                 if(successCallBack) successCallBack();
                 else this.loadSetData(null, null);
             });
@@ -440,7 +467,7 @@ class CardList{
         if(fileType == 'archidekt'){
             this._ingestArchidektFile(fileContents);
         }else if(fileType == 'arena'){
-
+            this._ingestArenaFile(fileContents);
         }else if(fileType == 'mtggoldfish'){
 
         }else if(fileType == 'mtgotxt'){
@@ -454,16 +481,40 @@ class CardList{
         }
     }
 
-    // TODO: remove
-    ingestArchidektFile(fileList, categoryCallback){
-        console.log('this is dead');
-        // const reader = new FileReader();
-        // reader.onload = (event) => this._ingestArchidektFile(event.target.result.split('\n'), categoryCallback);
-        // reader.readAsText(fileList[0]);
+    async _ingestArenaFile(splitList){
+        if(splitList.length < 1) return;
+        var cards = [];
+        var parsedLine = null;
+        var newCard = null;
+        for(const typedLine of splitList){
+            if(typedLine.length < 5) continue;
+            parsedLine = this._parseCardLineArena(typedLine);
+            if(!parsedLine){
+                this.errors.push({'typedName': typedLine, 'error': 'could not parse text'});
+                continue;
+            }
+
+            newCard = new ProtoCard(len(this.cardQueue));
+            newCard.buildFromParams({
+                typedName: parsedLine.typedName,
+                selectedSet: parsedLine.set,
+                quantity: parsedLine.quantity
+            });
+            this.cardQueue.push(newCard);
+        }
+
+        if(this.cardQueue.length > 0){
+            await this.loadQueueFromScryfall(
+                null,
+                () => {  // successCallback
+                    this.loadSetData(null, null);
+                },
+                (err) => {}  // errorCallback
+            );
+        }
     }
 
     _ingestArchidektFile(splitList){
-        console.log(splitList);
         var categories = {};
         var currentCategory = '';
 

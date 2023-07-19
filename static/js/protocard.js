@@ -638,7 +638,13 @@ class ProtoCard{
         // now we search for "all versions"
         await delay(100);
         params['page'] = 1;
-        await this.scryfallClient.cardsSearch(`!"${this.name}"`, {'unique': 'prints'}, (d, p) => this._scryFallCardsSearch(d, p), params);
+        const scryResponse = await this.scryfallClient.cardsSearch(
+            `!"${this.name}"`,
+            {'unique': 'prints'}
+        );
+        await this._scryFallCardsSearch(scryResponse, params);
+
+        return this.loaded;
     }
 
     _addRarity(rarity, setCode){
@@ -708,7 +714,11 @@ class ProtoCard{
         if(hasMore == true){
             await delay(100);
             params['page'] += 1;
-            await this.scryfallClient.cardsSearch(`!"${this.name}"`, {'unique': 'prints', 'page': params.page}, (d, p) => this._scryFallCardsSearch(d, p), params);
+            const scryResponse = await this.scryfallClient.cardsSearch(
+                `!"${this.name}"`,
+                {'unique': 'prints', 'page': params.page}
+            );
+            await this._scryFallCardsSearch(scryResponse, params);
         }else{
             // ordering and setting rarities
             var tmp = [];
