@@ -120,9 +120,14 @@ class CardList{
     }
 
     async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
-        const cardBody = this.drawSetSelect(cardKey);
+        var cardBody = this.drawSetSelect(cardKey);
         if(cardBody === null){
-            await this.loadSetData();
+            await this.loadSetData(Object.keys(this.cards[cardKey].sets), true);
+        }
+        cardBody = this.drawSetSelect(cardKey);
+        if(cardBody === null){
+            console.error("SOMEHOW, we don't have data on a given set...");
+            return;
         }
 
         this.cardSetSelectionModal.call(
@@ -245,7 +250,7 @@ class CardList{
         }
     }
 
-    async loadSetData(scryfallClient=null, successCallBack=null){
+    async loadSetData(setList=null, forceBasics=false){
         if(this.scryfallClient == null){
             if(scryfallClient === null){
                 throw new Error('a scryfallClient must be provided');
@@ -254,24 +259,44 @@ class CardList{
         }
 
         if(!window.listManager.hasNullSets()){
-            if(successCallBack !== null) successCallBack();
-            else this._callLoadSuccessCallBack();
+            this._callLoadSuccessCallBack();
             return;
         };
+
+        if(setList === null){
+            var nonBasicSets = [];
+            if(forceBasics == true){
+                nonBasicSets = Object.keys(this.sets);
+            }else{
+                for(const cardKey of this.cards){
+                    if(this.cards[cardKey].isBasicLand == false){
+                        nonBasicSets = nonBasicSets.concat(Object.keys(this.cards[cardKey].sets));
+                    }
+                }
+                nonBasicSets = onlyUnique(nonBasicSets);
+            }
+
+            setList = [];
+            for(const setCode of Object.keys(this.sets)){
+                if(this.sets[setCode] === null && nonBasicSets.includes(setCode)){
+                    setList.push(setCode);
+                }
+            }
+        }
+
 
         this.loadingSetsModal.call('Loading Sets');
         const startTimestamp = new Date().getTime();
         var response = null;
-        for(const setCode of Object.keys(this.sets)){
-            if(this.sets[setCode] === null){
-                await delay(100);
-                this.loadingSetsModal.update(`set ${setCode.toUpperCase()}`);
+        for(const setCode of setList){
+            if(this.sets[setCode] !== null) continue;
+            await delay(100);
+            this.loadingSetsModal.update(`set ${setCode.toUpperCase()}`);
 
-                response = await this.scryfallClient.sets(setCode);
-                this.sets[setCode] = {
-                    'icon_svg_uri': response.icon_svg_uri,
-                    'name': response.name
-                }
+            response = await this.scryfallClient.sets(setCode);
+            this.sets[setCode] = {
+                'icon_svg_uri': response.icon_svg_uri,
+                'name': response.name
             }
         }
 
@@ -281,9 +306,7 @@ class CardList{
         }
 
         this.loadingSetsModal.dismiss(() => {
-            if(successCallBack !== null) successCallBack();
-            else this._callLoadSuccessCallBack();
-            return;
+            this._callLoadSuccessCallBack();
         });
     }
 
@@ -454,10 +477,17 @@ class CardList{
                 this.loadErrorModal.call(this.errors);
             });
         }else{
-            this.loadingCardsModal.dismiss(() => {
+            this.loadingCardsModal.dismiss(async () => {
                 this.cardQueue = [];
-                if(successCallBack) successCallBack();
-                else this.loadSetData(null, null);
+                if(successCallBack){
+                    successCallBack();
+                }else{
+                    var setList = [];
+                    for(const cardKey of Object.keys(this.cards)){
+                        setList.push(this.cards[cardKey].selectedSet);
+                    }
+                    await this.loadSetData(setList, true);
+                };
             });
         }
 
@@ -506,8 +536,12 @@ class CardList{
         if(this.cardQueue.length > 0){
             await this.loadQueueFromScryfall(
                 null,
-                () => {  // successCallback
-                    this.loadSetData(null, null);
+                async () => {  // successCallback
+                    var setList = [];
+                    for(const cardKey of Object.keys(this.cards)){
+                        setList.push(this.cards[cardKey].selectedSet);
+                    }
+                    await this.loadSetData(setList, true);
                 },
                 (err) => {}  // errorCallback
             );
@@ -558,8 +592,12 @@ class CardList{
 
         this.loadQueueFromScryfall(
             null,
-            () => {  // successCallback
-                this.loadSetData(null, null);
+            async () => {  // successCallback
+                var setList = [];
+                for(const cardKey of Object.keys(this.cards)){
+                    setList.push(this.cards[cardKey].selectedSet);
+                }
+                await this.loadSetData(setList, true);
             },
             (err) => {}  // errorCallback
         );
@@ -584,7 +622,9 @@ class CardList{
 
     drawSetSelect(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return null;
-        if(this.hasNullSets()) return null;
+        for(const setCode of Object.keys(this.cards[cardKey].sets)){
+            if(this.sets[setCode] === null) return null;
+        }
         return this.cards[cardKey].drawSetSelect(this.sets);
     }
 

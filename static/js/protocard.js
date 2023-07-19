@@ -196,6 +196,7 @@ class ProtoCard{
         this.isMulticolor = false;
         this.isColorless = false;
         this.statType = null;
+        this.isBasicLand = false;
 
         // internal Control
         this.errors = [];
@@ -600,9 +601,8 @@ class ProtoCard{
                 else if(this.colors.length == 0) this.isColorless = true;
 
                 this.typeLine = firstFace.type_line;
+                this.isBasicLand = window.constants.basicLands.includes(this.name.toLowerCase());
 
-
-                // TODO: treat split card's oracle text
                 if(scrycard.layout == 'split'){
                     this.oracleText = [scrycard.card_faces[0].oracle_text, scrycard.card_faces[1].oracle_text].join('\n//\n');
                 }else if(Object.hasOwn(firstFace, 'oracle_text')){
@@ -623,12 +623,10 @@ class ProtoCard{
                 if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
             }
 
-            if(!Object.keys(this.sets).includes(scrycard['set'])){
-                this.sets[scrycard['set']] = {
-                    'rarity': translateRarity(scrycard['rarity']),
-                    'images': Object.hasOwn(firstFace, 'image_uris') ? firstFace.image_uris : scrycard.image_uris
-                };
-            }
+            this.sets[scrycard['set']] = {
+                'rarity': translateRarity(scrycard['rarity']),
+                'images': Object.hasOwn(firstFace, 'image_uris') ? firstFace.image_uris : scrycard.image_uris
+            };
 
 
             this._addRarity(scrycard.rarity, scrycard['set']);
