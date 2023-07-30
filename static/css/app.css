@@ -116,3 +116,26 @@
 	min-width: 90%;
 	width: 90%;
 }
+
+.btn-sort{
+	padding-top: 2px;
+	padding-bottom: 3px;
+	border-color: #495057;
+}
+
+#header-sort-select-wrapper{
+	padding-right: 0px;
+}
+#header-sort{
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+#header-sort-button-wrapper{
+	padding-left: 0px;
+}
+#header-sort-asc{
+	margin-left: -1px;
+	border-left-style: none;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
