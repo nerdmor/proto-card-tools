@@ -111,3 +111,8 @@
 .start-hidden{
 	display: none;
 }
+
+#second-row{
+	min-width: 90%;
+	width: 90%;
+}

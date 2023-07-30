@@ -273,13 +273,15 @@ class CardSetSelectionModal extends ProtoModal {
         this.options = {'focus': true};
     }
 
-    call(cardBody, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass ,confirmCallback, cancelCallback, title=null){
+    call(cardBody, selectionElementQuery, selectionSetElementPropName, selectionNumElementPropName, wrapperElementQuery, selectedClass ,confirmCallback, cancelCallback, title=null){
         this.title = title || 'Select card set/version';
         this.cardBody = cardBody;
         this.selectedSet = null;
+        this.selectedNumber = null;
 
         this.selectionElementQuery = selectionElementQuery;
-        this.selectionElementPropName = selectionElementPropName;
+        this.selectionSetElementPropName = selectionSetElementPropName;
+        this.selectionNumElementPropName = selectionNumElementPropName;
         this.wrapperElementQuery = wrapperElementQuery;
         this.selectedClass = selectedClass;
         this.cancelCallback = cancelCallback;
@@ -327,7 +329,8 @@ class CardSetSelectionModal extends ProtoModal {
         }
 
 
-        this.selectedSet = event.target.getAttribute(this.selectionElementPropName);
+        this.selectedSet = event.target.getAttribute(this.selectionSetElementPropName);
+        this.selectedNumber = event.target.getAttribute(this.selectionNumElementPropName);
     }
 
     _callCancelCallback(){
@@ -335,7 +338,7 @@ class CardSetSelectionModal extends ProtoModal {
     }
 
     _callConfirmCallBack(){
-        this.hiddenCallback = () => this.confirmCallback(this.selectedSet);
+        this.hiddenCallback = () => this.confirmCallback(this.selectedSet, this.selectedNumber);
         this.dismiss();
     }
 }

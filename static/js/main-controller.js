@@ -51,7 +51,8 @@ class MainController{
         window.listManager.callCardSelectModal(
             cardKey,
             '.card-select-image', //selectionElementQuery
-            'set_code', //selectionElementPropName
+            'set_code', //selectionSetElementPropName
+            'collector_number', //selectionNumElementPropName
             '.select-card-wrapper', //wrapperElementQuery
             'select-card-selected', //selectedClass
             (setCode) => {window.drawCardList(window.listElement);}, // confirmCallback

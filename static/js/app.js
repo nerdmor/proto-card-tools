@@ -180,18 +180,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // DEBUG load archidekt file
     // TODO: add handling of other kinds of files. Split logic from cardlist
-    document.querySelector('#archidekt-file').addEventListener('change',
-        function(e){
-            window.listManager.ingestArchidektFile(
-                this.files,
-                (cat, confCall, canCall) => {
-                    confCall.params.okCallback = () => {window.mainController.loadQueueFromScryfallModalHandler()};
-                    window.archidektFileImportModal.call(cat, confCall, canCall);
-                }
-            );
-        },
-        false
-    );
+    // document.querySelector('#archidekt-file').addEventListener('change',
+    //     function(e){
+    //         window.listManager.ingestArchidektFile(
+    //             this.files,
+    //             (cat, confCall, canCall) => {
+    //                 confCall.params.okCallback = () => {window.mainController.loadQueueFromScryfallModalHandler()};
+    //                 window.archidektFileImportModal.call(cat, confCall, canCall);
+    //             }
+    //         );
+    //     },
+    //     false
+    // );
 
 
 // end of bindings

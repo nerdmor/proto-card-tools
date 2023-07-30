@@ -13,11 +13,13 @@ class ProtoCard{
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
                   <div class="col finder-icon-group">%%rarityicons%%</div>
-                  <form class="col finder-card-quantity-form d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group d-none d-lg-flex">
+                  <!--
+                  <form class="col finder-card-quantity-form d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group d-none d-xl-flex">
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-minus"><i class="bi bi-dash-lg"></i></button>
                     <input type="text" class="form-control form-control-sm finder-card-quantity finder-card-quantity-control card-quantity-control" value="%%quantity%%">
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-plus"><i class="bi bi-plus-lg"></i></button>
                   </form>
+                  -->
                   <div class="col py-1 finder-card-control-col">
                     <div class="btn-group finder-card-control-group">
                       <button type="button" class="btn btn-sm btn-light py-1 card-select-set">
@@ -102,7 +104,7 @@ class ProtoCard{
                   </div>
                 </div>
                 <div class="card-body card-select-body">
-                  <img class="card-select-image" set_code="%%setcode%%" src="%%cardimageurl%%" alt="%%cardname%%">
+                  <img class="card-select-image" set_code="%%setcode%%" collector_number="%%collectorNumber%%" src="%%cardimageurl%%" alt="%%cardname%%">
                 </div>
               </div>
             </div>
@@ -162,6 +164,7 @@ class ProtoCard{
         this.quantity = null;
         this.foil = false;
         this.selectedSet = null;
+        this.selectedNumber = null;
 
         // loaded from Scryfall
         this.name = null;
@@ -259,8 +262,10 @@ class ProtoCard{
     }
 
     makeKey(){
-        this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}-${this.foil?'foil':'nonfoil'}`);
+        this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}${this.selectedNumber}-${this.foil?'foil':'nonfoil'}`);
     }
+
+
 
     drawInner(setData, printmode=null){
         if(printmode === null){
@@ -297,7 +302,7 @@ class ProtoCard{
     _drawInnerFind(setData){
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
-                                                  .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet].images[window.settings.cardImgQuality])
+                                                  .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality])
                                                   .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status)
                                                   .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name)
@@ -306,7 +311,6 @@ class ProtoCard{
         for (const e of this.rarities) {
             if(window.constants.rarities.includes(e)){
                 rarityIcons.push(
-                    // ProtoCard.findModels.baseRarityModel.replaceAll('%%rarity%%', e.charAt(0).toLowerCase())
                     ProtoCard.findModels.rarityIconModel.replaceAll('%%rarityletter%%', e.toLowerCase())
                                                         .replaceAll('%%alt%%', e)
                 );
@@ -434,14 +438,17 @@ class ProtoCard{
     drawSetSelect(setData){
         var cards = [];
         for(const setCode of Object.keys(this.sets)){
-            cards.push(ProtoCard.selectModels.cardModel.replaceAll('%%cardkey%%', this.key)
-                                                       .replaceAll('%%selectedClass%%', (setCode == this.selectedSet ? 'select-card-selected' : ''))
-                                                       .replaceAll('%%setname%%', setData[setCode].name)
-                                                       .replaceAll('%%seticonurl%%', setData[setCode].icon_svg_uri)
-                                                       .replaceAll('%%setcode%%', setCode)
-                                                       .replaceAll('%%cardimageurl%%', this.sets[setCode].images[window.settings.cardImgQuality])
-                                                       .replaceAll('%%cardname%%', this.name)
-                      );
+            for(const collectorNumber of Object.keys(this.sets[setCode])){
+                cards.push(ProtoCard.selectModels.cardModel.replaceAll('%%cardkey%%', this.key)
+                                                           .replaceAll('%%selectedClass%%', (setCode == this.selectedSet ? 'select-card-selected' : ''))
+                                                           .replaceAll('%%setname%%', setData[setCode].name)
+                                                           .replaceAll('%%seticonurl%%', setData[setCode].icon_svg_uri)
+                                                           .replaceAll('%%setcode%%', setCode)
+                                                           .replaceAll('%%collectorNumber%%', collectorNumber)
+                                                           .replaceAll('%%cardimageurl%%', this.sets[setCode][collectorNumber].images[window.settings.cardImgQuality])
+                                                           .replaceAll('%%cardname%%', this.name)
+                          );
+            }
         }
 
         return cards.join('\n');
@@ -496,7 +503,7 @@ class ProtoCard{
             oracleText = ProtoCard.detailsModels.oracleModel.replaceAll('%%oracletext%%', oracleText);
         }
 
-        return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet].images['normal'])
+        return ProtoCard.detailsModels.cardModel.replaceAll('%%cardimageurl%%',this.sets[this.selectedSet][this.selectedNumber].images['normal'])
                                                 .replaceAll('%%cardname%%', this.name)
                                                 .replaceAll('%%cardcost%%', this._makeCostIcons())
                                                 .replaceAll('%%typeline%%', this.typeLine)
@@ -505,6 +512,14 @@ class ProtoCard{
                                                 .replaceAll('%%scryfallurl%%', this.urls.scryfall)
                                                 .replaceAll('%%edhrecurl%%', this.urls.edhrec)
                                                 .replaceAll('%%ligamagicurl%%', this.urls.ligamagic);
+    }
+
+    selectVersion(setCode, collectorNumber){
+        if(!Object.hasOwn(this.sets, setCode)) return null;
+        if(!Object.hasOwn(this.sets[setCode], collectorNumber)) return null;
+
+        this.selectedSet = setCode;
+        this.selectedNumber = collectorNumber;
     }
 
     buildFromParams(params, calculate=false){
@@ -623,11 +638,10 @@ class ProtoCard{
                 if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
             }
 
-            this.sets[scrycard['set']] = {
+            this._addVersion(scrycard['set'], scrycard['collector_number'], {
                 'rarity': translateRarity(scrycard['rarity']),
                 'images': Object.hasOwn(firstFace, 'image_uris') ? firstFace.image_uris : scrycard.image_uris
-            };
-
+            });
 
             this._addRarity(scrycard.rarity, scrycard['set']);
         }
@@ -651,6 +665,15 @@ class ProtoCard{
             return;
         }
         this.rarities.push(rarity.toLowerCase());
+    }
+
+    _addVersion(setCode, collectorNumber, data){
+        if(!Object.hasOwn(this.sets, setCode)){
+          this.sets[setCode] = {};
+        }
+        if(Object.hasOwn(this.sets[setCode], collectorNumber)) return;
+
+        this.sets[setCode][collectorNumber] = data;
     }
 
     async _scryFallCardsSearch(data, params){
@@ -689,15 +712,11 @@ class ProtoCard{
                 scrycard.card_faces = [scrycard];
             }
 
-            for (var j = 0; j < scrycard.card_faces.length; j++) {
-                currentFace = scrycard.card_faces[j];
-
-                if(j == 0 && !Object.keys(this.sets).includes(scrycard['set'])){
-                    this.sets[scrycard['set']] = {
-                        'rarity': translateRarity(scrycard['rarity']),
-                        'images': currentFace.image_uris
-                    }
-                }
+            for (const currentFace of scrycard.card_faces){
+                this._addVersion(scrycard['set'], scrycard['collector_number'], {
+                    'rarity': translateRarity(scrycard['rarity']),
+                    'images': currentFace.image_uris
+                });
 
                 if(!this.names.faces.includes(currentFace.name)){
                     this.names.faces.push(currentFace.name);
@@ -738,6 +757,7 @@ class ProtoCard{
 
             if(this.selectedSet === null || !Object.keys(this.sets).includes(this.selectedSet)){
                 this.selectedSet = Object.keys(this.sets)[0];
+                this.selectedNumber = Object.keys(this.sets[this.selectedSet])[0];
             }
 
             this.makeKey();

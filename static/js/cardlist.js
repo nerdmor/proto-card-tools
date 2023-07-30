@@ -119,7 +119,7 @@ class CardList{
         this.fileSelectModal.call();
     }
 
-    async callCardSelectModal(cardKey, selectionElementQuery, selectionElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
+    async callCardSelectModal(cardKey, selectionElementQuery, selectionSetElementPropName, selectionNumElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
         var cardBody = this.drawSetSelect(cardKey);
         if(cardBody === null){
             await this.loadSetData(Object.keys(this.cards[cardKey].sets), true);
@@ -133,11 +133,12 @@ class CardList{
         this.cardSetSelectionModal.call(
             cardBody,
             selectionElementQuery,
-            selectionElementPropName,
+            selectionSetElementPropName,
+            selectionNumElementPropName,
             wrapperElementQuery,
             selectedClass,
-            (setCode) => {
-                this.setCardSelectedSet(cardKey, setCode);
+            (setCode, collectorNumber) => {
+                this.setCardSelectedSet(cardKey, setCode, collectorNumber);
                 confirmCallback();
             }, //confirmCallback
             () => {cancelCallback()} // cancelCallback
@@ -784,17 +785,16 @@ class CardList{
         return html.join('\n');
     }
 
-    setCardSelectedSet(cardKey, setCode){
+    setCardSelectedSet(cardKey, setCode, collectorNumber){
         if(!Object.keys(this.cards).includes(cardKey)){
             return;
         }
         if(!Object.keys(this.sets).includes(setCode)){
             return;
         }
-        if(!Object.keys(this.cards[cardKey].sets).includes(setCode)){
-            return;
-        }
-        this.cards[cardKey].selectedSet = setCode;
+
+
+        this.cards[cardKey].selectVersion(setCode, collectorNumber);
     }
 
     removeCard(cardKey){
