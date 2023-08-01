@@ -100,6 +100,16 @@ function makeFunnyName(){
     return `${window.constants.adjectives[Math.floor(Math.random() * window.constants.adjectives.length)]} ${window.constants.nouns[Math.floor(Math.random() * window.constants.nouns.length)]}`;
 }
 
+function makeRandomId(blocks=1, separator='-'){
+    const arr = new Uint32Array(blocks);
+    self.crypto.getRandomValues(arr);
+    var result = [];
+    for(const num of arr){
+        result.push(num.toString());
+    }
+    return result.join(separator);
+}
+
 
 // md5 ugly block
 function md5(d){var r = md5m(md5v(md5y(md5x(encodeURIComponent(d)),8*d.length)));return r.toLowerCase()};

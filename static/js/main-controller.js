@@ -1,4 +1,8 @@
 class MainController{
+    static alertModels = {
+        'alert': `<div %%elementid%% class="row alert alert-%%bstype%% alert-element" role="alert">%%content%%</div>`,
+        'spinner': `<div class="spinner-border spinner-border-sm alert-element-spinner" role="status"><span class="visually-hidden">Loading...</span></div>`
+    }
 
 
 

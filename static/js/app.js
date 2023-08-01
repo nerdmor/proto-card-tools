@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     window.settings = new SettingsManager();
 
     // common elements
-    window.listElement = document.querySelector('#second-row');  // DEBUG
-    window.statusFilterElement = document.querySelector('#filter-status-wrapper');
+    window.listElement = document.getElementById('first-row');
+    window.statusFilterElement = document.getElementById('filter-status-wrapper');
+    window.alertElement = document.getElementById('alert-row');
 
     // modal handlers
     window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // global managers
     window.wakeLock = new WakeLockController();
     window.scryfall = new Scryfall();
+    window.alertManager = new AlertManager(window.alertElement);
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
     window.listManager.initModals(
