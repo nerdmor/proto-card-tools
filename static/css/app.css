@@ -123,6 +123,10 @@
 	border-color: #495057;
 }
 
+.btn-sort-selected{
+	color: #ffc107;
+}
+
 #header-sort-select-wrapper{
 	padding-right: 0px;
 }

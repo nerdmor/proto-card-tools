@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.mainController.setInterfaceFilters();
 
 
+
     /* *****************************************************************************
      * Bindings
      * ************************************************************************** */
@@ -177,21 +178,16 @@ document.addEventListener('DOMContentLoaded', function () {
         window.mainController.quickAdd();
     });
 
-
-    // DEBUG load archidekt file
-    // TODO: add handling of other kinds of files. Split logic from cardlist
-    // document.querySelector('#archidekt-file').addEventListener('change',
-    //     function(e){
-    //         window.listManager.ingestArchidektFile(
-    //             this.files,
-    //             (cat, confCall, canCall) => {
-    //                 confCall.params.okCallback = () => {window.mainController.loadQueueFromScryfallModalHandler()};
-    //                 window.archidektFileImportModal.call(cat, confCall, canCall);
-    //             }
-    //         );
-    //     },
-    //     false
-    // );
+    // sorting
+    document.querySelector('#header-sort').addEventListener('change', function(event) {
+        window.mainController.setSortValue(event.target, 'header-sort-');
+    });
+    for(const element of document.querySelectorAll('.btn-sort')){
+        element.addEventListener('click', function(event) {
+            const target = matchElementAndParent(event.target, ['.btn-sort']);
+            window.mainController.setSortDirection(document.querySelector('#header-sort'), target, 'header-sort-');
+        });
+    }
 
 
 // end of bindings

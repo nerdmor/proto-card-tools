@@ -82,8 +82,8 @@ function matchElementAndParent(element, filters){
     if(!Array.isArray(filters)) filters = [filters];
     const parentElement = element.parentElement;
     for(const fi of filters){
-        if(element.matches(fi)) return true;
-        if(parentElement.matches(fi)) return true;
+        if(element.matches(fi)) return element;
+        if(parentElement.matches(fi)) return parentElement;
     }
     return false;
 }

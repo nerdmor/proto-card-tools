@@ -231,8 +231,6 @@ class MainController{
                     }
                 }
             }
-
-
         }
     }
 
@@ -241,6 +239,33 @@ class MainController{
         window.settings.setValue('displayMode', drawType);
         window.listManager.setCardMode(drawType);
         window.drawCardList(window.listElement);
+    }
+
+    drawSort(selectElement, buttonIdPrefix){
+        if(window.listManager.sortDirection == 'asc'){
+            document.querySelector(`#${buttonIdPrefix}desc`).classList.remove('btn-sort-selected');
+            document.querySelector(`#${buttonIdPrefix}asc`).classList.add('btn-sort-selected');
+        }else{
+            document.querySelector(`#${buttonIdPrefix}asc`).classList.remove('btn-sort-selected');
+            document.querySelector(`#${buttonIdPrefix}desc`).classList.add('btn-sort-selected');
+        }
+        selectElement.value = window.listManager.sortField;
+    }
+
+    setSortValue(selectElement, buttonIdPrefix){
+        const sortDirection = document.querySelector(`#${buttonIdPrefix}desc`).classList.contains('btn-sort-selected') ? 'desc' : 'asc';
+        if(window.listManager.setSort(selectElement.value, sortDirection)){
+            window.drawCardList(window.listElement);
+        }
+        this.drawSort(selectElement, buttonIdPrefix);
+    }
+
+    setSortDirection(selectElement, buttonElement, buttonIdPrefix){
+        const sortDirection = buttonElement.id.replaceAll(buttonIdPrefix, '');
+        if(window.listManager.setSort(selectElement.value, sortDirection)){
+            window.drawCardList(window.listElement);
+        }
+        this.drawSort(selectElement, buttonIdPrefix);
     }
 
 }

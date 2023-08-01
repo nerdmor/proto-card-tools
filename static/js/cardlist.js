@@ -4,6 +4,7 @@ class CardList{
         'find': 'finder-card',
         'table': 'table-card-row'
     };
+    static allowedSorts = ['name', 'color', 'manavalue', 'collectornumber'];
 
     static filterModels = {
         'statusNullModel': `
@@ -36,6 +37,12 @@ class CardList{
         this.public = false;
         this.lastUpdate = Math.floor((new Date()).getTime() / 1000);
 
+        this.sortField = 'name';
+        this.sortDirection = 'asc';
+
+        this.errors = [];
+        this.scryfallClient = null;
+
         // modals
         this.loadingCardsModal = null;
         this.loadingSetsModal = null;
@@ -46,8 +53,6 @@ class CardList{
         this.fileSelectModal = null;
         this.archidektFileImportModal = null;
 
-        this.errors = [];
-        this.scryfallClient = null;
 
         this.changeCallback = null;
         this.loadSuccessCallback = null;
@@ -71,6 +76,15 @@ class CardList{
             (cat) => {this._processArchidektCategoriesSelection(cat)},
             () => { this._callBackClearQueue(); }
         );
+    }
+
+    setSort(sortField, sortDirection){
+        if(!CardList.allowedSorts.includes(sortField)) return false;
+        if(sortDirection != 'asc' && sortDirection != 'desc') return false;
+
+        this.sortField = sortField;
+        this.sortDirection = sortDirection;
+        return true;
     }
 
     _callLoadSuccessCallBack(){
