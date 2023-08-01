@@ -93,6 +93,50 @@ class CardList{
         return true;
     }
 
+    _sortCards(keyList=null){
+        var sortList = [];
+        if(keyList === null){
+            keyList = Object.keys(this.cards);
+        }
+
+        for(const key of keyList){
+            sortList.push({
+                'key': key,
+                'name': this.cards[key].name,
+                'cmc': this.cards[key].cmc,
+                'colorSortValue': this.cards[key].colorSortValue,
+                'collectorNumber': this.cards[key].selectedNumber
+            });
+        }
+        if(this.sortField == 'name'){
+            sortList.sort(function (a, b) {
+                return a.name.localeCompare(b.name);
+            });
+        }else if(this.sortField == 'color'){
+            sortList.sort(function (a, b) {
+                return b.colorSortValue - a.colorSortValue || a.name.localeCompare(b.name);
+            });
+        }else if(this.sortField == 'manavalue'){
+            sortList.sort(function (a, b) {
+                return b.cmc - a.cmc || a.name.localeCompare(b.name);
+            });
+        }else if(this.sortField == 'collectornumber'){
+            sortList.sort(function (a, b) {
+                return b.collectorNumber - a.collectorNumber || a.name.localeCompare(b.name);
+            });
+        }
+
+        if(this.sortDirection == 'desc'){
+            sortList.reverse();
+        }
+
+        var returnList = [];
+        for(const e of sortList){
+            returnList.push(e.key);
+        }
+        return returnList;
+    }
+
     _callLoadSuccessCallBack(){
         if(this.loadSuccessCallback){
             this.loadSuccessCallback(this.draw());
@@ -181,6 +225,7 @@ class CardList{
                 this.filteredCards.push(cardKey);
             }
         }
+        this.filteredCards = this._sortCards(this.filteredCards);
     }
 
     resetFilters(){

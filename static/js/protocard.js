@@ -203,10 +203,12 @@ class ProtoCard{
 
         // calculated from Scryfall
         this.isLand = false;
+        this.isArtifact = false;
         this.isMulticolor = false;
         this.isColorless = false;
         this.statType = null;
         this.isBasicLand = false;
+        this.colorSortValue = 999;
 
         // internal Control
         this.errors = [];
@@ -438,7 +440,7 @@ class ProtoCard{
 
 
         if(this.isLand) return 'land';
-        if(this.typeLine.toLowerCase().indexOf('artifact') > -1) return 'artifact';
+        if(this.isArtifact) return 'artifact';
         return 'colorless';
     }
 
@@ -643,6 +645,7 @@ class ProtoCard{
                 }
 
                 if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
+                if(firstFace.type_line.toLowerCase().indexOf('artifact') > -1) this.isArtifact = true;
             }
 
             this._addVersion(scrycard['set'], scrycard['collector_number'], {
@@ -744,6 +747,8 @@ class ProtoCard{
             );
             await this._scryFallCardsSearch(scryResponse, params);
         }else{
+            // setting final static values
+
             // ordering and setting rarities
             var tmp = [];
             for(const rar of window.constants.rarities){
@@ -768,6 +773,26 @@ class ProtoCard{
             }
 
             this.makeKey();
+
+            if(this.isLand){
+                this.colorSortValue = '9';
+            }else if(this.isArtifact){
+                this.colorSortValue = '8';
+            }else if(this.isMulticolor){
+                this.colorSortValue = '7';
+            }else if(this.colors.includes('g')){
+                this.colorSortValue = '6';
+            }else if(this.colors.includes('r')){
+                this.colorSortValue = '5';
+            }else if(this.colors.includes('b')){
+                this.colorSortValue = '4';
+            }else if(this.colors.includes('u')){
+                this.colorSortValue = '3';
+            }else if(this.colors.includes('w')){
+                this.colorSortValue = '2';
+            }else{
+                this.colorSortValue = '1';
+            }
 
             // if we have a callback, call it
             if(Object.hasOwn(params, 'callback')){

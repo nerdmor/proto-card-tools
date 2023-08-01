@@ -42,8 +42,6 @@ class MainController{
         const quickValue = document.querySelector('#header-quick-add-txt').value;
         if(quickValue.length < 4) return;
         window.listManager.quickIngest(quickValue, (cardKey)=>{window.drawCardList(window.listElement);});
-        // await window.listManager.ingestText(quickValue);
-        // window.mainController.loadQueueFromScryfallModalHandler();
     }
 
     redrawStatusFilters(element){
@@ -246,7 +244,7 @@ class MainController{
         window.drawCardList(window.listElement);
     }
 
-    drawSort(selectElement, buttonIdPrefix){
+    drawSort(selectElement, buttonIdPrefix, draw=false){
         if(window.listManager.sortDirection == 'asc'){
             document.querySelector(`#${buttonIdPrefix}desc`).classList.remove('btn-sort-selected');
             document.querySelector(`#${buttonIdPrefix}asc`).classList.add('btn-sort-selected');
@@ -255,6 +253,10 @@ class MainController{
             document.querySelector(`#${buttonIdPrefix}desc`).classList.add('btn-sort-selected');
         }
         selectElement.value = window.listManager.sortField;
+
+        if(draw){
+            window.drawCardList(window.listElement);
+        }
     }
 
     setSortValue(selectElement, buttonIdPrefix){
@@ -262,7 +264,7 @@ class MainController{
         if(window.listManager.setSort(selectElement.value, sortDirection)){
             window.drawCardList(window.listElement);
         }
-        this.drawSort(selectElement, buttonIdPrefix);
+        this.drawSort(selectElement, buttonIdPrefix, true);
     }
 
     setSortDirection(selectElement, buttonElement, buttonIdPrefix){
@@ -270,7 +272,7 @@ class MainController{
         if(window.listManager.setSort(selectElement.value, sortDirection)){
             window.drawCardList(window.listElement);
         }
-        this.drawSort(selectElement, buttonIdPrefix);
+        this.drawSort(selectElement, buttonIdPrefix, true);
     }
 
 }
