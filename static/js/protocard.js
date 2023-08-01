@@ -440,7 +440,7 @@ class ProtoCard{
         for(const setCode of Object.keys(this.sets)){
             for(const collectorNumber of Object.keys(this.sets[setCode])){
                 cards.push(ProtoCard.selectModels.cardModel.replaceAll('%%cardkey%%', this.key)
-                                                           .replaceAll('%%selectedClass%%', (setCode == this.selectedSet ? 'select-card-selected' : ''))
+                                                           .replaceAll('%%selectedClass%%', (setCode == this.selectedSet && collectorNumber == this.selectedNumber ? 'select-card-selected' : ''))
                                                            .replaceAll('%%setname%%', setData[setCode].name)
                                                            .replaceAll('%%seticonurl%%', setData[setCode].icon_svg_uri)
                                                            .replaceAll('%%setcode%%', setCode)
