@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.alertManager = new AlertManager(window.alertElement);
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
+    window.listManager.setAlertManager(window.alertManager);
     window.listManager.initModals(
         new LoadingCardsModal(document.querySelector('#loading-cards-modal')),
         new LoadingCardsModal(document.querySelector('#loading-sets-modal')),

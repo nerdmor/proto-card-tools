@@ -24,14 +24,22 @@ class AlertManager{
     }
 
 
-    addAlert(text, spinner=false, bsType='info'){
+    addAlert(text, spinner=false, bsType='info', timer=false){
         const alertElement = this._buildAlert(text,bsType, spinner);
         this.rowElement.appendChild(alertElement);
 
+        const elementId = alertElement.getAttribute('id');
         const bsAlert = new bootstrap.Alert(alertElement);
-        this.alerts[alertElement.getAttribute('id')] = bsAlert;
+        this.alerts[elementId] = bsAlert;
         this.rowElement.classList.remove('start-hidden');
-        return alertElement.getAttribute('id');
+
+        if(timer){
+            setTimeout(() => {
+                this.removeAlert(elementId);
+            }, timer);
+        }
+
+        return elementId;
     }
 
     removeAlert(alertId){

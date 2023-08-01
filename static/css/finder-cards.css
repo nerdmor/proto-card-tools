@@ -20,10 +20,19 @@
   min-width: 100%;
 }
 
-.finder-card-quantity{
-  min-width: 2.5em;
-  border-radius: 0px 0px 0px 0px;
+.finder-card-quantity-wrapper{
   text-align: center;
+  align-items: center;
+}
+
+.finder-card-quantity{
+  padding-top: 0.25rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-radius: 0.25rem;
+  border-style: solid;
+  border-width: 1px;
 }
 
 .finder-card-body{
@@ -37,6 +46,19 @@
   max-height: 100%;
   object-fit: contain;
 }
+
+.finder-icon-group{
+/*  background-color: #000000;*/
+  min-height: 3.65rem;
+}
+
+@media (min-width: 1275px) {
+  .finder-icon-group {
+/*    background-color: #ff0000;*/
+    min-height: 1rem;
+  }
+}
+
 
 .finder-card-rarity-icon{
     aspect-ratio: 1 / 1;

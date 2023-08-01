@@ -38,11 +38,12 @@ class MainController{
         }
     }
 
-    quickAdd(){
+    async quickAdd(){
         const quickValue = document.querySelector('#header-quick-add-txt').value;
         if(quickValue.length < 4) return;
-        window.listManager.ingestText(quickValue);
-        window.mainController.loadQueueFromScryfallModalHandler();
+        window.listManager.quickIngest(quickValue, (cardKey)=>{window.drawCardList(window.listElement);});
+        // await window.listManager.ingestText(quickValue);
+        // window.mainController.loadQueueFromScryfallModalHandler();
     }
 
     redrawStatusFilters(element){

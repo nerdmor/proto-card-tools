@@ -13,6 +13,9 @@ class ProtoCard{
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
                   <div class="col finder-icon-group">%%rarityicons%%</div>
+                  <div class="col-1 d-inline-flex py-1 finder-card-quantity-wrapper">
+                    <span class="finder-card-quantity">%%quantity%%</span>
+                  </div>
                   <!--
                   <form class="col finder-card-quantity-form d-inline-flex mt-2 mt-md-0 ms-md-auto btn-group d-none d-xl-flex">
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-minus"><i class="bi bi-dash-lg"></i></button>
@@ -20,7 +23,7 @@ class ProtoCard{
                     <button type="button" class="btn btn-sm btn-secondary finder-card-quantity-control finder-card-plus"><i class="bi bi-plus-lg"></i></button>
                   </form>
                   -->
-                  <div class="col py-1 finder-card-control-col">
+                  <div class="col-3 py-1 finder-card-control-col">
                     <div class="btn-group finder-card-control-group">
                       <button type="button" class="btn btn-sm btn-light py-1 card-select-set">
                         <img src="%%seticonurl%%" class="table-card-set-icon card-select-set" alt="%%setname%%">

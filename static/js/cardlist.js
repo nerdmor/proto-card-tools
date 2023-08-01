@@ -29,6 +29,7 @@ class CardList{
         this.cardMode = cardMode || Cardlist.allowedModes[0];
         this.name = makeFunnyName();
         this.cardQueue = [];
+        this.quickQueue = [];
         this.cards = {};
         this.sets = {};
         this.statusList = statusList || [];
@@ -42,6 +43,7 @@ class CardList{
 
         this.errors = [];
         this.scryfallClient = null;
+        this.alertManager = null;
 
         // modals
         this.loadingCardsModal = null;
@@ -76,6 +78,10 @@ class CardList{
             (cat) => {this._processArchidektCategoriesSelection(cat)},
             () => { this._callBackClearQueue(); }
         );
+    }
+
+    setAlertManager(alertManager){
+        this.alertManager = this.alertManager || alertManager;
     }
 
     setSort(sortField, sortDirection){
@@ -273,7 +279,7 @@ class CardList{
             this.scryfallClient = scryfallClient;
         }
 
-        if(!window.listManager.hasNullSets()){
+        if(!this.hasNullSets()){
             this._callLoadSuccessCallBack();
             return;
         };
@@ -399,14 +405,15 @@ class CardList{
         return response;
     }
 
-    ingestText(text){
+    _digestText(text){
         if(!text) return;
-        this.errors = [];
 
         var typedList = text.split('\n').filter(e => e.length >= 2);
         if(len(typedList) < 1) return;
 
-        this.cardQueue = [];
+        var errors = [];
+        var queue = [];
+
         var newCard = null;
         var parsedLine = null;
         for (var i = 0; i < typedList.length; i++) {
@@ -415,7 +422,7 @@ class CardList{
             }
             parsedLine = this.parseCardLine(typedList[i]);
             if(!parsedLine){
-                this.errors.push({'typedName': typedList[i], 'error': 'could not parse text'});
+                errors.push({'typedName': typedList[i], 'error': 'could not parse text'});
                 continue;
             }
 
@@ -426,11 +433,73 @@ class CardList{
                 selectedSet: parsedLine.set,
                 quantity: parsedLine.quantity
             });
-            this.cardQueue.push(newCard);
+            queue.push(newCard);
         }
 
-        if (len(this.cardQueue) > 0) return true;
-        return false;
+        return {
+            'queue': queue,
+            'errors': errors
+        };
+    }
+
+    async quickIngest(text, successCallback=null){
+        if(!text) return;
+        const ingestedText = this._digestText(text);
+        if(ingestedText.errors.length > 0){
+            this.alertManager.addAlert(ingestedText.errors.join('<br>'), false, 'danger', 1500);
+            return;
+        }
+        if(ingestedText.queue.length != 1) return;
+
+        const newCard = ingestedText.queue[0];
+        const alertId = this.alertManager.addAlert(`adding ${newCard.typedName}`, true, 'info');
+        var loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': this.cards.length});
+        if(newCard.loaded == 2){
+            if(Object.keys(this.cards).includes(newCard.key)){
+                this.cards[newCard.key].quantity += newCard.quantity;
+            }else{
+                this.cards[newCard.key] = newCard;
+            }
+        }else{
+            if(newCard.errors.length > 0){
+                this.alertManager.addAlert(newCard.errors.join('<br>'), false, 'danger', 1500);
+            }else{
+                this.alertManager.addAlert(`could not load ${newCard.typedName}`, false, 'danger', 1500);
+            }
+            this.alertManager.removeAlert(alertId);
+            return;
+        }
+
+        for(const setCode of Object.keys(newCard.sets)){
+            if(!Object.hasOwn(this.sets, setCode)) this.sets[setCode] = null;
+            if(setCode == newCard.selectedSet && this.sets[setCode] === null){
+                const response = await this.scryfallClient.sets(setCode);
+                this.sets[setCode] = {
+                    'icon_svg_uri': response.icon_svg_uri,
+                    'name': response.name
+                }
+            }
+        }
+
+        this.alertManager.removeAlert(alertId);
+        if(successCallback) successCallback(newCard.key);
+    }
+
+
+
+    async ingestText(text){
+        if(!text) return;
+        this.errors = [];
+
+        const ingestedText = this._digestText(text);
+        this.errors = ingestedText.errors;
+        if(ingestedText.queue.length == 0){
+            this.cardQueue = [];
+            return false;
+        }
+
+        this.cardQueue = ingestedText.queue;
+        return true;
     }
 
     async loadQueueFromScryfall(scryfallClient=null, successCallBack=null, errorCallBack=null){
