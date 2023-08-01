@@ -12,7 +12,11 @@ class ProtoCard{
         innerModel : `
             <div class="card mb-4 rounded-3 shadow-sm">
                 <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
-                  <div class="col finder-icon-group">%%rarityicons%%</div>
+                  <div class="col finder-icon-group">
+                    <div class="finder-icon-container">
+                      %%rarityicons%%
+                    </div>
+                  </div>
                   <div class="col-1 d-inline-flex py-1 finder-card-quantity-wrapper">
                     <span class="finder-card-quantity">%%quantity%%</span>
                   </div>

@@ -26,13 +26,11 @@
 }
 
 .finder-card-quantity{
-  padding-top: 0.25rem;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  padding-bottom: 0.25rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   border-radius: 0.25rem;
   border-style: solid;
   border-width: 1px;
+  border-color: #6c757d;
 }
 
 .finder-card-body{
@@ -49,13 +47,21 @@
 
 .finder-icon-group{
   min-height: 3.65rem;
+  display: flex;
+  align-items: center;
 }
 
 @media (min-width: 1275px) {
   .finder-icon-group {
     min-height: 1rem;
+    display: inline-block;
   }
 }
+
+.finder-icon-container{
+}
+
+
 
 
 .finder-card-rarity-icon{
