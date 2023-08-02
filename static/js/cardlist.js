@@ -218,14 +218,14 @@ class CardList{
         return true;
     }
 
-    _filterCards(){
+    _filterCards(sort=true){
         this.filteredCards = [];
         for(const cardKey of Object.keys(this.cards)){
             if(this.cards[cardKey].matchesFilters(this.filters)){
                 this.filteredCards.push(cardKey);
             }
         }
-        this.filteredCards = this._sortCards(this.filteredCards);
+        if(sort) this.filteredCards = this._sortCards(this.filteredCards);
     }
 
     resetFilters(){
@@ -233,6 +233,14 @@ class CardList{
             'color': window.constants.colors.slice(),
             'rarity': window.constants.rarities.slice(),
             'status': [...this.statusList.slice(), null]
+        };
+    }
+
+    emptyFilters(){
+        this.filters = {
+            'color': [],
+            'rarity': [],
+            'status': []
         };
     }
 
@@ -258,6 +266,7 @@ class CardList{
         if(this.filters[filterType].length == 0) return;
 
         if(value === 'null') value = null;
+
         const index = this.filters[filterType].indexOf(value);
         if(index < 0) return;
         this.filters[filterType].splice(index, 1);
@@ -931,6 +940,13 @@ class CardList{
         }
 
         delete this.cards[cardKey];
+    }
+
+    removeVisibleCards(){
+        this._filterCards(false);
+        for(const key of this.filteredCards){
+            delete this.cards[key];
+        }
     }
 
 

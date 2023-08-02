@@ -10,8 +10,8 @@ class ProtoCard{
 
     static findModels = {
         innerModel : `
-            <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="flex-md-row d-inline-flex align-items-center card-header py-1">
+            <div class="card mb-4 rounded-3 shadow-sm finder-card-wrapper">
+                <div class="flex-md-row d-inline-flex align-items-center card-header py-1 finder-card-header">
                   <div class="col finder-icon-group">
                     <div class="finder-icon-container">
                       %%rarityicons%%
@@ -227,23 +227,18 @@ class ProtoCard{
         var result = true;
         if(Object.hasOwn(filters, 'color')){
             if(filters.color.length == 0) return false;
-            result = false;
-            for(const colorKey of filters.color){
-                if(this.colors.includes(colorKey)){
-                    result = true;
-                    break;
-                }
-                if(colorKey == 'multi' && this.isMulticolor){
-                    result = true;
-                    break;
-                }
-                if(colorKey == 'c' && this.isColorless){
-                    result = true;
-                    break;
-                }
-                if(colorKey == 'land' && this.isLand){
-                    result = true;
-                    break;
+
+            if(this.isMulticolor && !filters.color.includes('multi')) return false;
+            if(this.isLand && !filters.color.includes('land')) return false;
+            if(this.isColorless && !filters.color.includes('c')) return false;
+
+            if(this.colors.length > 0){
+                result = false;
+                for(const colorKey of this.colors){
+                    if(filters.color.includes(colorKey)){
+                        result = true;
+                        break;
+                    }
                 }
             }
             if(result === false) return false;
@@ -621,8 +616,11 @@ class ProtoCard{
                 for(const c of colors){
                     this.colors.push(c.toLowerCase());
                 }
+
+                if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
+
                 if(this.colors.length > 1) this.isMulticolor = true;
-                else if(this.colors.length == 0) this.isColorless = true;
+                else if(this.colors.length == 0 && this.isLand == false) this.isColorless = true;
 
                 this.typeLine = firstFace.type_line;
                 this.isBasicLand = window.constants.basicLands.includes(this.name.toLowerCase());
@@ -644,7 +642,6 @@ class ProtoCard{
                     this.statType = 'loyalty';
                 }
 
-                if(firstFace.type_line.toLowerCase().indexOf('land') > -1) this.isLand = true;
                 if(firstFace.type_line.toLowerCase().indexOf('artifact') > -1) this.isArtifact = true;
             }
 

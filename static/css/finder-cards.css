@@ -58,12 +58,6 @@
   }
 }
 
-.finder-icon-container{
-}
-
-
-
-
 .finder-card-rarity-icon{
     aspect-ratio: 1 / 1;
     max-width: 2.5em;
@@ -134,3 +128,46 @@
   width: 100%;
 }
 
+
+/* *****************************************************************************
+ * PRINTABLE
+ * ****************************************************************************/
+@media print{
+  .finder-card-header {
+    display:none !important;
+    visibility:hidden;
+    background-color: #ffffff;
+    height: 0px;
+  }
+  .finder-card-wrapper{
+    border-style:none;
+    box-shadow: none !important;
+    margin-bottom: 0mm !important;
+    margin-top: 0mm !important;
+    margin-left: 0mm !important;
+    margin-right: 0mm !important;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .finder-card-body {
+    background-color: #ffffff;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .finder-card-status{
+    display:none;
+  }
+  .finder-card-image{
+    width: 63mm;
+    height: 88mm;
+    margin-left: 1mm;
+    margin-right: 1mm;
+  }
+  .finder-card{
+    padding-left: 0mm;
+    padding-right: 0mm;
+    min-width: 63mm;
+    width: 33%;
+    max-height: 88mm;
+  }
+}

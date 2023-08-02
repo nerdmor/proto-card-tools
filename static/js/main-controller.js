@@ -86,6 +86,27 @@ class MainController{
         return true;
     }
 
+    deleteVisibleCards(event){
+        if(!event.target.hasAttribute('mouse_down')){
+            event.target.addEventListener('mouseup', function(evt){
+                this.setAttribute('mouse_down', '0');
+            });
+            event.target.addEventListener('mouseleave', function(evt){
+                this.setAttribute('mouse_down', '0');
+            });
+        }
+        event.target.setAttribute('mouse_down', '1');
+
+        setTimeout((element) => {
+            if(element.getAttribute('mouse_down') == '1'){
+                listManager.removeVisibleCards();
+                window.drawCardList(window.listElement);
+            }
+        }, 3000, event.target);
+
+        return true;
+    }
+
     nextStatus(event){
         const cardKey = getCardKeyFromParent(event.target);
         if(cardKey === null){
@@ -181,17 +202,18 @@ class MainController{
             element.checked = !allChecked;
         }
 
-        if(!suppressLoad) this.loadFiltersFromInterface()
+        if(suppressLoad == false) this.loadFiltersFromInterface()
     }
 
     async loadFiltersFromInterface(){
-        window.listManager.resetFilters();
-        var filterValue = null;
+        window.listManager.emptyFilters();
 
+        var filterValue = null;
         for(const filterType of ['color', 'rarity', 'status']){
             for(const filterBox of document.querySelectorAll(`.filter-check-${filterType}`)){
+                if(filterBox.checked == false) continue;
                 filterValue = filterBox.checked ? filterBox.value : null;
-                if(filterValue) window.listManager.addFilter(filterType, filterValue);
+                window.listManager.addFilter(filterType, filterValue);
             }
         }
 
@@ -207,7 +229,6 @@ class MainController{
                            element.classList.contains('filter-check-rarity') ? 'rarity' :
                            element.classList.contains('filter-check-status') ? 'status' : null;
         if(!filterType) return;
-
 
         if(filterChecked){
             window.listManager.addFilter(filterType, filterValue);

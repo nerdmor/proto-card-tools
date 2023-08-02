@@ -341,7 +341,7 @@
 
     <!-- Headers start -->
     <!-- Main Header -->
-    <div class="sticky-top">
+    <div id="header-block" class="sticky-top">
       <nav id="main-header" class="py-2 text-bg-dark">
         <div id="menu-container" class="container">
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -516,6 +516,10 @@
             </div>
           </div>
 
+          <div class="py-1 nav col-12 col-md-auto me-md-auto align-items-center">
+            <button id="header-trash" type="button" class="btn btn-sm" alt="Deletes visible cards" aria-description="Deletes visible cards"><i class="bi bi-trash"></i></button>
+          </div>
+
           <div id="header-toggle" class="nav text-end align-items-right">
             <div id="header-toggle-wrapper" class="form-group d-flex">
               <span class="form-text ">table</span>
@@ -532,14 +536,9 @@
     </div>
   <!-- End of Headers -->
 
-
-
     <div id="main-container" class="container">
       <div id="alert-row" class="row start-hidden"></div>
-      <div id="first-row" class="row"></div>
-      <!-- <div id="second-row" class="row">
-        this row is empty
-      </div> -->
+      <div id="draw-area" class="row"></div>
     </div>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/constants.js"></script>

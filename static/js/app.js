@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.settings = new SettingsManager();
 
     // common elements
-    window.listElement = document.getElementById('first-row');
+    window.listElement = document.getElementById('draw-area');
     window.statusFilterElement = document.getElementById('filter-status-wrapper');
     window.alertElement = document.getElementById('alert-row');
 
@@ -191,6 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
             window.mainController.setSortDirection(document.querySelector('#header-sort'), target, 'header-sort-');
         });
     }
+
+    // trash icon
+    document.getElementById('header-trash').addEventListener('mousedown', function(event){
+        window.mainController.deleteVisibleCards(event);
+    });
 
 
 // end of bindings
