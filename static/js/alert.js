@@ -24,7 +24,7 @@ class AlertManager{
     }
 
 
-    addAlert(text, spinner=false, bsType='info', timer=false){
+    addAlert(text, spinner=false, bsType='info', timer=null){
         const alertElement = this._buildAlert(text,bsType, spinner);
         this.rowElement.appendChild(alertElement);
 

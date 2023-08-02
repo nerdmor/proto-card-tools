@@ -175,6 +175,9 @@ document.addEventListener('DOMContentLoaded', function () {
         window.listManager.callPropertiesModal();
     });
 
+    // export menu
+    document.getElementById('header-list-export').addEventListener('click', function(){ window.mainController.exportToClipboard(); });
+
     // quickadd
     document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){
         event.preventDefault();

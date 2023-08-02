@@ -988,4 +988,12 @@ class CardList{
         }
         return false;
     }
+
+    exportToText(){
+        var result = [];
+        for(const key of Object.keys(this.cards)){
+            result.push(`${this.cards[key].quantity} ${this.cards[key].names.compiled}`);
+        }
+        return result;
+    }
 }

@@ -296,4 +296,16 @@ class MainController{
         this.drawSort(selectElement, buttonIdPrefix, true);
     }
 
+    exportToClipboard(){
+        var field = document.getElementById("transfer-area");
+
+        const textValue = window.listManager.exportToText().join('\n');
+        field.value = textValue;
+
+        field.select();
+        field.setSelectionRange(0, 9999999); // For mobile devices
+        navigator.clipboard.writeText(field.value);
+        window.alertManager.addAlert('List copied to clipboard', false, 'warning', 1500);
+    }
+
 }
