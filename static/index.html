@@ -337,6 +337,53 @@
         </div>
       </div>
     </div>
+    <div id="login-modal" class="modal fade" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Log in or sign up</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-xs-12 col-md-6 mr-2">
+                <form id="login-form">
+                  <h1 class="h3 mb-3 fw-normal">Log in</h1>
+                  <div class="form-floating mb-1">
+                    <input type="email" class="form-control" id="login-email" placeholder="name@example.com">
+                    <label for="login-email">Email address</label>
+                  </div>
+                  <div class="form-floating mb-1">
+                    <input type="password" class="form-control" id="login-password" placeholder="Password">
+                    <label for="login-password">Password</label>
+                  </div>
+                  <button class="btn btn-warning w-100 py-1 mb-2" type="submit">Log in</button>
+                </form>
+              </div>
+              <div class="col-xs-12 col-md-6 ml-2">
+                <form id="signup-form">
+                  <h1 class="h3 mb-3 fw-normal">Sign up</h1>
+                  <div class="form-floating mb-1">
+                    <input type="email" class="form-control" id="signup-email" placeholder="name@example.com">
+                    <label for="signup-email">Email address</label>
+                  </div>
+                  <div class="form-floating">
+                    <input type="password" class="form-control" id="signup-password" placeholder="Password">
+                    <label for="signup-password">Password</label>
+                  </div>
+                  <div class="form-floating mb-1">
+                    <input type="password" class="form-control" id="signup-password-conf" placeholder="Password (again)">
+                    <label for="signup-password-conf">Password (again)</label>
+                  </div>
+                  <button class="btn btn-warning w-100 py-1 mb-2" type="submit">Sign up</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- End of Modals -->
 
     <!-- Headers start -->

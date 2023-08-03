@@ -201,5 +201,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+    // DEBUG login
+    window.loginModal = new bootstrap.Modal('#login-modal');
+    document.getElementById('header-account-login').addEventListener('click', function(event){
+        window.loginModal.show();
+    });
+
+
 // end of bindings
 }, false);
