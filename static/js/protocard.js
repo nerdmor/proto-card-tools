@@ -197,10 +197,6 @@ class ProtoCard{
         };
         this.layout = null;
         this.rarities = [];
-        this.img_urls = {};
-        this.valid = false;
-        this.data = {};
-        this.loaded = 0;
         this.cmc = null;
         this.colors = [];
         this.sets = {};
@@ -232,10 +228,47 @@ class ProtoCard{
         this.index = index;
         this.status = null;
         this.printmode = null;
+        this.loaded = 0;
     }
 
     toString(){
         return JSON.stringify(this);
+    }
+
+    simplify(){
+      var result = {
+        'typedName': this.typedName,
+        'quantity': this.quantity,
+        'foil': this.foil,
+        'selectedSet': this.selectedSet,
+        'selectedNumber': this.selectedNumber,
+        'name': this.name,
+        'names': this.names,
+        'layout': this.layout,
+        'rarities': this.rarities,
+        'loaded': this.loaded,
+        'cmc': this.cmc,
+        'colors': this.colors,
+        'sets': {},
+        'oracleId': this.oracleId,
+        'typeLine': this.typeLine,
+        'urls': this.urls,
+        'manaCosts': this.manaCosts,
+        'oracleText': this.oracleText,
+        'stats': this.stats,
+        'isLand': this.isLand,
+        'isArtifact': this.isArtifact,
+        'isMulticolor': this.isMulticolor,
+        'isColorless': this.isColorless,
+        'statType': this.statType,
+        'isBasicLand': this.isBasicLand,
+        'colorSortValue': this.colorSortValue,
+        'status': this.status
+      };
+
+      result.sets[this.selectedSet] = {};
+      result.sets[this.selectedSet][this.selectedNumber] = this.sets[this.selectedSet][this.selectedNumber];
+      return result;
     }
 
     matchesFilters(filters){

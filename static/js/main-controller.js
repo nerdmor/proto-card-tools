@@ -7,9 +7,21 @@ class MainController{
 
 
     constructor(){
-        // registering listeners
-        window.settings.registerTrigger('useWakeLock', (value) => window.wakeLock.setActive(value));
+        this.registerListeners();
+        this.loadFromStorage();
+        window.drawCardList(window.listElement);
+    }
 
+    registerListeners(){
+        window.settings.registerTrigger('useWakeLock', (key, value) => window.wakeLock.setActive(value));
+        window.settings.registerTrigger('all', (k, v) => { window.storage.setItem('settings', window.settings.toString()) });
+
+        window.listManager.changeCallback = (lm) => {window.storage.setItem('listManager', lm.toString())};
+        window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
+    }
+
+    loadFromStorage(){
+        window.listManager.loadFromStorage(window.storage.getObject('listManager'));
     }
 
     async toggleCollapseTop(setCollapsed=null){
@@ -19,7 +31,6 @@ class MainController{
         if(setCollapsed===null){
             setCollapsed = headerExpandButton.classList.contains('start-hidden');
         }
-
 
         if(setCollapsed){
             headerCollapseButton.classList.add('start-hidden');
@@ -311,13 +322,20 @@ class MainController{
     exportToClipboard(){
         var field = document.getElementById("transfer-area");
 
-        const textValue = window.listManager.exportToText().join('\n');
+        const textValue = window.listManager.exportCardsToText().join('\n');
         field.value = textValue;
 
         field.select();
         field.setSelectionRange(0, 9999999); // For mobile devices
         navigator.clipboard.writeText(field.value);
         window.alertManager.addAlert('List copied to clipboard', false, 'warning', 1500);
+    }
+
+    clearData(){
+        var confirmation = confirm('Are you sure you want to delete all local data?');
+        if(confirmation === false) return;
+        window.storage.clear();
+        location.reload();
     }
 
 }

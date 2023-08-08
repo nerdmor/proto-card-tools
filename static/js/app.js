@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if(!window.loadedModules.includes('protocard')) continue;
         if(!window.loadedModules.includes('scryfall')) continue;
         if(!window.loadedModules.includes('settings')) continue;
+        if(!window.loadedModules.includes('storage')) continue;
         break;
     }
 
@@ -32,13 +33,17 @@ document.addEventListener('DOMContentLoaded', async function() {
      * Starters
      **************************************************************************** */
 
-    // settings
-    window.settings = new SettingsManager();
-
     // common elements
     window.listElement = document.getElementById('draw-area');
     window.statusFilterElement = document.getElementById('filter-status-wrapper');
     window.alertElement = document.getElementById('alert-row');
+
+
+    // storage, so we can load everything from there
+    window.storage = new StorageManager()
+
+    // settings
+    window.settings = new SettingsManager(window.storage.getObject('settings'));
 
     // modal handlers
     window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
@@ -100,14 +105,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             )
     );
     window.listManager.setScryfallClient(window.scryfall);
-    // todo: make this prettier
-    window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
 
     window.mainController = new MainController();
 
     // drawing/setting dynamic things
     window.mainController.redrawStatusFilters(window.statusFilterElement);
-    // document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
+    document.getElementById('header-display-select').value = window.settings.displayMode;
     window.mainController.setInterfaceFilters();
 
 
@@ -222,6 +225,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // trash icon
     document.getElementById('header-trash').addEventListener('mousedown', function(event){
         window.mainController.deleteVisibleCards(event);
+    });
+
+    // help menu nuke
+    document.getElementById('header-help-clear').addEventListener('click', function(event){
+        window.mainController.clearData();
     });
 
 

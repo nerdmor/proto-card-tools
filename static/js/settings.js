@@ -37,7 +37,9 @@ class SettingsManager{
     }
 
     constructor(values=null){
+        this.version = '0.1';
         this.validKeys = Object.keys(SettingsManager.keys);
+        this.exportKeys = [...this.validKeys, 'version'];
         this.changeTriggers = {};
 
         if(values===null){
@@ -53,6 +55,14 @@ class SettingsManager{
         }
     }
 
+    toString(){
+        var result = {};
+        for(const key of this.exportKeys){
+            result[key] = this[key];
+        }
+        return JSON.stringify(result);
+    }
+
     setValue(key, value){
         if(!this.validKeys.includes(key)) return;
         if(SettingsManager.keys[key].type == 'Array' && !Array.isArray(value)) return;
@@ -60,12 +70,12 @@ class SettingsManager{
         this[key] = value;
         if(Object.keys(this.changeTriggers).includes(key)){
             for(const callback of this.changeTriggers[key]){
-                callback(value);
+                callback(key, value);
             }
         }
         if(Object.keys(this.changeTriggers).includes('all')){
             for(const callback of this.changeTriggers['all']){
-                callback(value);
+                callback(key, value);
             }
         }
     }
@@ -75,8 +85,6 @@ class SettingsManager{
         if(!Object.keys(this.changeTriggers).includes(key)) this.changeTriggers[key] = [];
         this.changeTriggers[key].push(callback);
     }
-
-
 }
 
 window.loadedModules.push('settings');

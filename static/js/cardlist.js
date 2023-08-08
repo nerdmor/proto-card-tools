@@ -26,6 +26,7 @@ class CardList{
 
 
     constructor(statusList=null, cardMode=null){
+        this.id = null;
         this.cardMode = cardMode || Cardlist.allowedModes[0];
         this.name = makeFunnyName();
         this.cardQueue = [];
@@ -59,7 +60,55 @@ class CardList{
         this.changeCallback = null;
         this.loadSuccessCallback = null;
 
-        this.resetFilters();
+        this.resetFilters(true);
+    }
+
+    loadFromStorage(values){
+        if(values === null) return;
+
+        var newCard = null;
+        for(const key of Object.keys(this)){
+            if(Object.hasOwn(values, key)){
+                if(key == 'cards'){
+                    for(const cardKey of Object.keys(values.cards)){
+                        newCard = new ProtoCard(Object.keys(this.cards).length);
+                        newCard.buildFromParams(values.cards[cardKey], true);
+                        this.cards[newCard.key] = newCard;
+                    }
+                    continue;
+                }
+                this[key] = values[key];
+            }
+        }
+    }
+
+    async _callChangeCallback(){
+        this.lastUpdate = Math.floor((new Date()).getTime() / 1000);
+        if(this.changeCallback !== null){
+            this.changeCallback(this);
+        }
+    }
+
+    toString(){
+        var result = {
+            'id': this.id,
+            'cardMode': this.cardMode,
+            'name': this.name,
+            'cards': {},
+            'sets': this.sets,
+            'statusList': this.statusList,
+            'filters': this.filters,
+            'public': this.public,
+            'lastUpdate': this.lastUpdate,
+            'sortField': this.sortField,
+            'sortDirection': this.sortDirection
+        };
+
+        for(const cardKey of Object.keys(this.cards)){
+            result.cards[cardKey] = this.cards[cardKey].simplify();
+        }
+
+        return JSON.stringify(result);
     }
 
     initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal, fileSelectModal, archidektFileImportModal){
@@ -87,9 +136,13 @@ class CardList{
     setSort(sortField, sortDirection){
         if(!CardList.allowedSorts.includes(sortField)) return false;
         if(sortDirection != 'asc' && sortDirection != 'desc') return false;
+        if(this.sortField == sortField && this.sortDirection == sortDirection) return false;
 
         this.sortField = sortField;
         this.sortDirection = sortDirection;
+
+        this._callChangeCallback();
+
         return true;
     }
 
@@ -168,8 +221,8 @@ class CardList{
             }
         }
 
-        if(changed == true && this.changeCallback !== null){
-            this.changeCallback(this);
+        if(changed == true){
+            this._callChangeCallback();
         }
 
     }
@@ -228,12 +281,15 @@ class CardList{
         if(sort) this.filteredCards = this._sortCards(this.filteredCards);
     }
 
-    resetFilters(){
+    resetFilters(suppressChangeCallback){
         this.filters = {
             'color': window.constants.colors.slice(),
             'rarity': window.constants.rarities.slice(),
             'status': [...this.statusList.slice(), null]
         };
+        if(!suppressChangeCallback){
+            this._callChangeCallback();
+        }
     }
 
     emptyFilters(){
@@ -242,13 +298,16 @@ class CardList{
             'rarity': [],
             'status': []
         };
+        this._callChangeCallback();
     }
 
     addFilter(filterType, value){
-        if(Object.hasOwn(this.filters, filterType)){
-            if(value === 'null') this.filters[filterType].push(null);
-            else this.filters[filterType].push(value);
-        }
+        if(!Object.hasOwn(this.filters, filterType)) return;
+
+        if(value === 'null') this.filters[filterType].push(null);
+        else this.filters[filterType].push(value);
+
+        this._callChangeCallback();
     }
 
     _addAllFilters(filterType){
@@ -270,6 +329,7 @@ class CardList{
         const index = this.filters[filterType].indexOf(value);
         if(index < 0) return;
         this.filters[filterType].splice(index, 1);
+        this._callChangeCallback();
     }
 
     setScryfallClient(client){
@@ -291,16 +351,19 @@ class CardList{
             status = this._getNextStatus(this.cards[cardKey].status);
         }
         this.cards[cardKey].status = status;
+        this._callChangeCallback();
     }
 
     addCardQuantity(cardKey, newQuant){
         if(!Object.keys(this.cards).includes(cardKey)) return;
         if(this.cards[cardKey].quantity = Math.max(0, this.cards[cardKey].quantity + newQuant));
+        this._callChangeCallback();
     }
 
     setCardQuantity(cardKey, newQuant){
         if(!Object.keys(this.cards).includes(cardKey)) return;
         if(this.cards[cardKey].quantity = Math.max(0, newQuant));
+        this._callChangeCallback();
     }
 
     _getNextStatus(status){
@@ -382,6 +445,7 @@ class CardList{
 
         this.loadingSetsModal.dismiss(() => {
             this._callLoadSuccessCallBack();
+            this._callChangeCallback();
         });
     }
 
@@ -536,7 +600,8 @@ class CardList{
         }
 
         this.alertManager.removeAlert(alertId);
-        if(successCallback) successCallback(newCard.key);
+        if(successCallback){successCallback(newCard.key);}
+        this._callChangeCallback();
     }
 
 
@@ -622,6 +687,7 @@ class CardList{
                     }
                     await this.loadSetData(setList, true);
                 };
+                this._callChangeCallback();
             });
         }
 
@@ -884,7 +950,6 @@ class CardList{
 
         this._filterCards();
 
-        // for(const cardKey of Object.keys(this.cards)){
         for(const cardKey of this.filteredCards){
             html.push(this.cards[cardKey].draw(this.sets, this.cardMode));
         }
@@ -918,28 +983,21 @@ class CardList{
                                                        .replaceAll('%%statusicon%%', this.statusList[i])
                      );
         }
-        // html.push(CardList.filterModels.buttonModel);
         return html.join('\n');
     }
 
     setCardSelectedSet(cardKey, setCode, collectorNumber){
-        if(!Object.keys(this.cards).includes(cardKey)){
-            return;
-        }
-        if(!Object.keys(this.sets).includes(setCode)){
-            return;
-        }
-
+        if(!Object.keys(this.cards).includes(cardKey)) return;
+        if(!Object.keys(this.sets).includes(setCode))return;
 
         this.cards[cardKey].selectVersion(setCode, collectorNumber);
+        this._callChangeCallback();
     }
 
     removeCard(cardKey){
-        if(!Object.keys(this.cards).includes(cardKey)){
-            return;
-        }
-
+        if(!Object.keys(this.cards).includes(cardKey)) return;
         delete this.cards[cardKey];
+        this._callChangeCallback();
     }
 
     removeVisibleCards(){
@@ -947,6 +1005,7 @@ class CardList{
         for(const key of this.filteredCards){
             delete this.cards[key];
         }
+        this._callChangeCallback();
     }
 
 
@@ -977,6 +1036,7 @@ class CardList{
                 this.cards[newCard.key] = newCard;
             }
         }
+        this._callChangeCallback();
     }
 
     hasNullSets(){
@@ -989,7 +1049,7 @@ class CardList{
         return false;
     }
 
-    exportToText(){
+    exportCardsToText(){
         var result = [];
         for(const key of Object.keys(this.cards)){
             result.push(`${this.cards[key].quantity} ${this.cards[key].names.compiled}`);
