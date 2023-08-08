@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Proto Card Tools</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/mana.min.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
+    <link href="css/modals.css" rel="stylesheet">
+    <link href="css/alert.css" rel="stylesheet">
+    <link href="css/card-finder.css" rel="stylesheet">
+    <link href="css/finder-cards.css" rel="stylesheet">
+    <link href="css/table-cards.css" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Modals -->
+    <div id="alert-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="loading-cards-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="loading-sets-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="archidekt-file-import-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Archidekt File Import</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body container-fluid">
+            <p>We found the following categories. Which ones would you like to import?</p>
+            <div class="row d-flex">
+                <div class="col-6 archidekt-file-modal-btn-wrapper">
+                  <button id="archidekt-file-modal-all" type="button" class="btn btn-sm btn-secondary archidekt-file-modal-btn">All</button>
+                </div>
+                <div class="col-6 archidekt-file-modal-btn-wrapper">
+                  <button id="archidekt-file-modal-none" type="button" class="btn btn-sm btn-secondary archidekt-file-modal-btn">None</button>
+                </div>
+            </div>
+            <div id="archidekt-file-modal-switches" class="row">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="archidekt-file-modal-ok" type="button" class="btn btn-primary">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="select-card-version-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="card-details-modal" class="modal fade" aria-hidden="true"></div>
+    <div id="list-properties-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">List properties</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="list-properties-alert" class="row alert alert-warning start-hidden" role="alert fade show"></div>
+            <div class="row list-properties-name-wrapper">
+              <label for="list-properties-name" class="col-3 col-form-label">Name</label>
+              <div class="col-9">
+                <input id="list-properties-name" class="form-control form-control-lg formless-input" type="text" >
+              </div>
+            </div>
+            <div class="row form-check form-switch">
+              <input id="list-properties-public" class="form-check-input" type="checkbox" role="switch">
+              <label class="form-check-label" for="list-properties-public">list is public for view</label>
+            </div>
+            <div class="row">
+              <label for="list-properties-last-update" class="col-2 col-form-label">Last update</label>
+              <div class="col-10">
+                <input id="list-properties-last-update" class="form-control" type="text" disabled>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-2">
+                Status list
+              </div>
+              <div id="list-properties-status-list-wrapper" class="col-10">
+                <div id="list-properties-status-list">
+                </div>
+                <form id="list-properties-new-status-form" class="input-group">
+                  <input id="list-properties-new-status-input" type="text" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="hover focus" class="form-control status-button-input">
+                  <button id="list-properties-new-status-btn" type="submit" class="input-group-text"><i class="bi bi-plus-circle"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="list-properties-save" type="button" class="btn btn-warning">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="import-error-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Errors</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="import-error-body modal-body">
+            <h5>There were problems loading the following cards. Please check their spelling.</h5>
+            <table class="table">
+              <thead>
+                 <tr>
+                   <th scope="col">#</th>
+                   <th scope="col">Typed row</th>
+                   <th scope="col">Error</th>
+                 </tr>
+               </thead>
+               <tbody id="import-error-table-body">
+               </tbody>
+            </table>
+            <textarea id="import-error-text" class="display-none form-control" rows="1"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button id="import-error-copy" type="button" class="btn btn-outline-warning" aria-label="Copy errors to clipboard" alt="Copy errors to clipboard">
+              <i class="bi bi-clipboard2-plus-fill"></i>
+            </button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="settings-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body container-fluid ">
+              <div class="row">
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-checkbox-applyFiltersOnStatusChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnStatusChange" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-applyFiltersOnStatusChange">Apply status filters on card status change</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, filters will be applied whenever you change a card's status</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-checkbox-applyFiltersOnFilterChange" class="form-check-input settings-checkbox" type="checkbox" setting_name="applyFiltersOnFilterChange" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-applyFiltersOnFilterChange">Apply filters on filter change</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, filters will be applied whenever you change a card's status. Deactivate to save on resources</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-checkbox-sldIsSpecial" class="form-check-input settings-checkbox" type="checkbox" setting_name="sldIsSpecial" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-sldIsSpecial">Secret Lair is special</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, the rarity of cards in Secret Lairs will be counted as "Special" (purple) instead of whatever they appear as in the Secret Lair.</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-check form-switch">
+                    <input id="settings-checkbox-useWakeLock" class="form-check-input settings-checkbox" type="checkbox" setting_name="useWakeLock" role="switch">
+                    <label class="form-check-label" for="settings-checkbox-useWakeLock">Use Wakelock</label>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>If activated, we will try to keep the device awake. Doesn't work in all browsers.</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <div class="form-group">
+                    <label class="form-label" for="settings-select-cardImgQuality">Card image quality</label>
+                    <select id="settings-select-cardImgQuality" class="form-select form-select-sm settings-select" setting_name="cardImgQuality">
+                      <option value="small">Small</option>
+                      <option value="normal">Normal</option>
+                      <option value="large">Large</option>
+                      <option value="png">PNG</option>
+                      <option value="border_crop">Border crop</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>Choose the quality in which your images will be shown.</p>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <form class="form-group">
+                    <label class="form-label" for="settings-text-deleteCooldown">Delete timer</label>
+                    <input id="settings-text-deleteCooldown" setting_name="deleteCooldown" class="form-control settings-text" type="text">
+                  </form>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <p>Amount of time, in seconds, for which you have to press the delete button before the card is removed from tyhe list</p>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer align-items-right">
+              changes to settings are saved automatically
+            </div>
+          </div>
+        </div>
+    </div>
+    <div id="text-entry-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Settings</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body container-fluid ">
+              <label for="text-entry-textarea" class="form-label">List entry</label>
+              <textarea id="text-entry-textarea" class="form-control" rows="10"></textarea>
+            </div>
+            <div class="modal-footer align-items-right">
+              <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button id="text-entry-modal-save" class="btn btn-outline-warning">Add</button>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div id="about-modal" class="modal fade">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">About</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body container-fluid">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <h2>General</h2>
+                <p>The site is © Felipe Raffani, 2023. The code is open source and can be found <a href="https://github.com/nerdmor/proto-card-tools" target="_blank">on Github</a></p>
+                <p>Card names, images, set, and color symbols are owned by Wizards of the Coast. Thank you for making this game.</p>
+                <p>Card search, icons, images and data are provided by <a href="https://scryfall.com" target="_blank">Scryfall</a>. Thank you, guys. The MtG world wouldn't be the same without you.</p>
+              </div>
+              <div class="col-12 col-md-6">
+                <h2>Privacy Policy</h2>
+                <p>This website uses cookies. They cannot be disabled. If you want to erase all the cookies that we have set, just click <a id="erase-cookies" href="#">here</a></p>
+                <p>Your behavior is not tracked inside this site. We only collect a small amount of information about your broswer to have an idea of how many people use this website.</p>
+                <p>Data that you decide to share with this site on creating/using an account may be used for website improvement.</p>
+                <p>No third parties get any data that you decide to share with this site. Not event Google Analytics here.</p>
+                <p>These are the cookies that we use:</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Cookie</th>
+                      <th scope="col">Expiration</th>
+                      <th scope="col">Use</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">pct_user</th>
+                      <td>365 days</td>
+                      <td>Unique session identifier. Used so we can have some idea of how many people use this website.</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">pct_jwt</th>
+                      <td>30 days</td>
+                      <td>Used to keep your login alive</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>In addition to these, any lists that you create are saved in local storage.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="file-import-modal" class="modal fade" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Import File</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Select the file you want to use and its type</p>
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <label for="file-import-input" class="form-label">File to import</label>
+                <input class="form-control" type="file" id="file-import-input">
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-archidekt">
+                  <label class="form-check-label" for="file-import-type-archidekt">
+                    Archidekt
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-arena">
+                  <label class="form-check-label" for="file-import-type-arena">
+                    Arena
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtggoldfish">
+                  <label class="form-check-label" for="file-import-type-mtggoldfish">
+                    MtgGoldfish
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtgotxt">
+                  <label class="form-check-label" for="file-import-type-mtgotxt">
+                    MTGO Text
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mtgodek">
+                  <label class="form-check-label" for="file-import-type-mtgodek">
+                    MTGO .dek
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="file-import-type" id="file-import-type-mwdeck">
+                  <label class="form-check-label" for="file-import-type-mwdeck">
+                    .mwdeck
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="file-import-modal-ok" type="button" class="btn btn-outline-warning">Load</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="login-modal" class="modal fade" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Log in or sign up</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-xs-12 col-md-6 mr-2">
+                <form id="login-form">
+                  <h1 class="h3 mb-3 fw-normal">Log in</h1>
+                  <div class="form-floating mb-1">
+                    <input type="email" class="form-control" id="login-email" placeholder="name@example.com">
+                    <label for="login-email">Email address</label>
+                  </div>
+                  <div class="form-floating mb-1">
+                    <input type="password" class="form-control" id="login-password" placeholder="Password">
+                    <label for="login-password">Password</label>
+                  </div>
+                  <button class="btn btn-warning w-100 py-1 mb-2" type="submit">Log in</button>
+                </form>
+              </div>
+              <div class="col-xs-12 col-md-6 ml-2">
+                <form id="signup-form">
+                  <h1 class="h3 mb-3 fw-normal">Sign up</h1>
+                  <div class="form-floating mb-1">
+                    <input type="email" class="form-control" id="signup-email" placeholder="name@example.com">
+                    <label for="signup-email">Email address</label>
+                  </div>
+                  <div class="form-floating">
+                    <input type="password" class="form-control" id="signup-password" placeholder="Password">
+                    <label for="signup-password">Password</label>
+                  </div>
+                  <div class="form-floating mb-1">
+                    <input type="password" class="form-control" id="signup-password-conf" placeholder="Password (again)">
+                    <label for="signup-password-conf">Password (again)</label>
+                  </div>
+                  <button class="btn btn-warning w-100 py-1 mb-2" type="submit">Sign up</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- End of Modals -->
+
+    <!-- Headers start -->
+    <!-- Main Header -->
+    <div id="header-block" class="sticky-top">
+      <nav id="main-header" class="py-2 text-bg-dark">
+        <div id="menu-container" class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <div id="header-collapse-wrapper" class="d-block d-flex d-lg-none mb-2 mb-md-0">
+              <button id="header-collapse" type="button" class="btn btn-outline-secondary btn-collapse"><i class="bi bi-caret-up-fill"></i></button>
+              <button id="header-expand" type="button" class="btn btn-outline-secondary btn-collapse start-hidden"><i class="bi bi-caret-down-fill"></i></button>
+            </div>
+            <a href="/" class="d-flex mb-2 mb-md-0 text-white text-decoration-none logo-link">PCT LOGO</a>
+            <ul id="header-menu" class="nav col-12 col-md-auto me-md-auto mb-2 justify-content-center mb-md-0">
+              <li class="header-collapsible">
+                <div class="dropdown">
+                  <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">List</button>
+                  <ul class="dropdown-menu header-dropdown">
+                    <li><button id="header-list-properties" class="dropdown-item"><i class="bi bi-x-diamond-fill"></i>&nbsp;Properties</button></li>
+                    <li><button id="header-list-new" class="dropdown-item"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</button></li>
+                    <li><button id="header-list-open" class="dropdown-item"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</button></li>
+                    <li><button id="header-list-export" class="dropdown-item"><i class="bi bi-download"></i>&nbsp;Export</button></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="header-collapsible">
+                <div class="dropdown">
+                  <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Add Cards</button>
+                  <ul class="dropdown-menu header-dropdown">
+                    <li><button id="header-import-text" class="dropdown-item" ><i class="bi bi-file-text-fill"></i>&nbsp;Text</button></li>
+                    <li><button id="header-import-url" class="dropdown-item" ><i class="bi bi-globe2"></i>&nbsp;Url</button></li>
+                    <li><button id="header-import-file" class="dropdown-item" ><i class="bi bi-upload"></i>&nbsp;&nbsp;File</button></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="header-collapsible">
+                <a id="header-settings" href="#" class="nav-link px-2 text-white">Settings</a>
+              </li>
+              <li class="header-collapsible">
+                <div class="dropdown">
+                  <button class="nav-link px-2 text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Help</button>
+                  <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
+                    <li><button id="header-help-howtouse" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-question-square"></i>&nbsp;How to use</button></li>
+                    <li><button id="header-help-about" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#about-modal"><i class="bi bi-info-square"></i>&nbsp;About</button></li>
+                    <li><button id="header-help-faq" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-chat-left-dots-fill"></i>&nbsp;FAQ</button></li>
+                    <li><button id="header-help-clear" class="dropdown-item"><i class="bi bi-radioactive"></i>&nbsp;Clear data</button></li>
+                  </ul>
+                </div>
+              </li>
+              <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li> -->
+              <!-- <li><a href="#" class="nav-link px-2 text-white">About</a></li> -->
+            </ul>
+
+
+
+            <div class="text-end header-collapsible">
+              <button id="header-account-login" type="button" class="btn btn-outline-warning">Login/Sign-up</button>
+              <button id="header-account-account" type="button" class="btn btn-outline-warning" aria-label="my account"><i class="bi bi-person-fill"></i></button>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <!-- End of Main Header -->
+
+      <!-- Filter Header -->
+
+      <header id="filter-header" class="py-1 text-bg-dark border-bottom align-items-left header-collapsible">
+        <div class="container d-flex flex-wrap filter-wrapper row-gap-1">
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <span class="header-filter-title">Filters</span>
+          </div>
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-white" class="form-check-input filter-check-color filter-check" type="checkbox" value="w">
+              <label class="form-check-label" for="filters-white" aria-label="white mana symbol"><i class="ms ms-w ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-blue" class="form-check-input filter-check-color filter-check" type="checkbox" value="u">
+              <label class="form-check-label" for="filters-blue" aria-label="blue mana symbol"><i class="ms ms-u ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-black" class="form-check-input filter-check-color filter-check" type="checkbox" value="b">
+              <label class="form-check-label" for="filters-black" aria-label="black mana symbol"><i class="ms ms-b ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-red" class="form-check-input filter-check-color filter-check" type="checkbox" value="r">
+              <label class="form-check-label" for="filters-red" aria-label="red mana symbol"><i class="ms ms-r ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-green" class="form-check-input filter-check-color filter-check" type="checkbox" value="g">
+              <label class="form-check-label" for="filters-green" aria-label="green mana symbol"><i class="ms ms-g ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-golden" class="form-check-input filter-check-color filter-check" type="checkbox" value="multi">
+              <label class="form-check-label" for="filters-golden" aria-label="golden mana symbol"><i class="ms ms-multicolor ms-duo ms-duo-color ms-grad ms-2x"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-colorless" class="form-check-input filter-check-color filter-check" type="checkbox" value="c">
+              <label class="form-check-label" for="filters-colorless" aria-label="colorless mana symbol"><i class="ms ms-c ms-cost ms-shadow"></i> </label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-land" class="form-check-input filter-check-color filter-check" type="checkbox" value="land">
+              <label class="form-check-label" for="filters-land" aria-label="land mana symbol"><i class="ms ms-c ms-cost ms-shadow ms-land"></i> </label>
+            </div>
+            <button id="filters-color-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-common" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="common">
+              <label class="form-check-label" for="filters-rarity-common" aria-label="common rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-common"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-uncommon" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="uncommon">
+              <label class="form-check-label" for="filters-rarity-uncommon" aria-label="uncommon rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-uncommon"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-rare" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="rare">
+              <label class="form-check-label" for="filters-rarity-rare" aria-label="rare rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-rare"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-mythic" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="mythic">
+              <label class="form-check-label" for="filters-rarity-mythic" aria-label="mythic rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-mythic"></i></label>
+            </div>
+            <div class="form-check form-check-inline filter-check-group">
+              <input id="filters-rarity-special" class="form-check-input filter-check-rarity filter-check" type="checkbox" value="special">
+              <label class="form-check-label" for="filters-rarity-special" aria-label="special rarity"><i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-special"></i></label>
+            </div>
+            <button id="filters-rarity-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <div id="filter-status-wrapper"></div>
+            <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
+          </div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto d-none d-sm-none d-md-none d-lg-block filter-spacer">|</div>
+
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-md-0 filter-block">
+            <button id="filters-apply" type="button" class="btn btn-sm btn-outline-warning btn-extra-small">Apply</i></button>
+          </div>
+        </div>
+      </header>
+      <!-- End of Filter Header -->
+
+      <!-- Quick add header -->
+      <header id="control-header" class="py-1 mb-4 text-bg-dark border-bottom align-items-left header-collapsible">
+        <div class="container d-flex flex-wrap filter-wrapper">
+
+          <div id="header-input" class="py-1 nav col-12 col-md-auto me-md-auto align-items-left">
+            <form id="header-quick-add-form" class="input-group input-group-sm">
+              <input id="header-quick-add-txt" type="text" class="form-control form-control-sm" aria-label="quick add" aria-describedby="header-quick-add-btn">
+              <button id="header-quick-add-btn" type="submit" class="input-group-text">Quick add</button>
+            </form>
+          </div>
+
+          <div class="py-1 nav col-12 col-md-auto me-md-auto align-items-center">
+            <div id="header-sort-wrapper" class="row row-cols-lg-auto g-3 align-items-center">
+              <div id="header-sort-select-wrapper" class="col-auto">
+                <select id="header-sort" class="form-select form-select-sm">
+                  <option value="name">Name</option>
+                  <option value="color">Color</option>
+                  <option value="manavalue">Mana Value</option>
+                  <option value="collectornumber">Collector Number</option>
+                </select>
+              </div>
+              <div id="header-sort-button-wrapper" class="col-auto btn-group">
+                <button id="header-sort-asc" type="button" class="btn btn-outline-secondary btn-sort"><i class="bi bi-sort-down"></i></button>
+                <button id="header-sort-desc" type="button" class="btn btn-outline-secondary btn-sort"><i class="bi bi-sort-up"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="py-1 nav col-12 col-md-auto me-md-auto align-items-center">
+            <button id="header-trash" type="button" class="btn btn-sm" alt="Deletes visible cards" aria-description="Deletes visible cards"><i class="bi bi-trash"></i></button>
+          </div>
+
+          <div id="header-display-mode" class="py-1 nav text-end align-items-right">
+            <div id="header-display-wrapper" class="row row-cols-lg-auto g-3 align-items-right">
+              <select id="header-display-select" class="form-select form-select-sm" aria-label="select display mode">
+                <option value="find">Finder</option>
+                <option value="table">Table</option>
+                <option value="proxy">Proxies</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </header>
+      <!-- End of Quick add header -->
+    </div>
+  <!-- End of Headers -->
+
+    <div id="main-container" class="container">
+      <div id="alert-row" class="row start-hidden"></div>
+      <div id="draw-area" class="row"></div>
+    </div>
+    <div id="invisible-area">
+      <textarea id="transfer-area"></textarea>
+    </div>
+    <script type="text/javascript">
+      window.loadedModules = [];
+    </script>
+    <script src="js/libs/bootstrap.bundle.min.js"></script>
+    <script src="js/libs/js-cookie.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/alert.js"></script>
+    <script src="js/scryfall.js"></script>
+    <script src="js/protocard.js"></script>
+    <script src="js/cardlist.js"></script>
+    <script src="js/wakelock.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/main-controller.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

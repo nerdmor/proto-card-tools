@@ -1,0 +1,11 @@
+.alert-element{
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+.alert-element-spinner{
+    padding-left: 0rem;
+    padding-right: 0rem;
+    margin-right: 0.5rem;
+    margin-top: 0.2rem;
+}

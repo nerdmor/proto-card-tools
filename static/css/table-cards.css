@@ -1,0 +1,318 @@
+:root {
+  --tbl-crd-bg-white: rgba(249, 250, 244, 1);
+  --tbl-crd-bg-blue: rgba(179, 206, 234, 1);
+  --tbl-crd-bg-black: rgba(166, 159, 157, 1);
+  --tbl-crd-bg-red: rgba(235, 159, 130, 1);
+  --tbl-crd-bg-green: rgba(196, 211, 202, 1);
+  --tbl-crd-bg-artifact: #d8e2ec;
+  --tbl-crd-bg-land: #d5cccd;
+  --tbl-crd-bg-colorless: #f9f9ff;
+
+  --tbl-crd-brd-white: rgba(248, 231, 185, 1);
+  --tbl-crd-brd-blue: rgba(14, 104, 171, 1);
+  --tbl-crd-brd-black: rgba(21, 11, 0, 1);
+  --tbl-crd-brd-red: rgba(211, 32, 42, 1);
+  --tbl-crd-brd-green: rgba(0, 115, 62, 1);
+  --tbl-crd-brd-artifact: rgba(22, 32, 40, 1);
+  --tbl-crd-brd-land: #7f6e64;
+  --tbl-crd-brd-colorless: #e9e9e9;
+  --tbl-crd-brd-gold: rgba(82, 70, 46, 1);
+}
+
+.cost-icon{
+    margin-left: 3px !important;
+}
+
+
+.table-card-set-span{
+}
+
+.table-card-set-icon{
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.table-card-row-quantity{
+    min-width: 2em;
+    width: 2em;
+}
+
+.table-card-rarity-icon{
+    aspect-ratio: 1 / 1;
+    max-width: 1.5em;
+    border-left: 2px;
+    border-right: 2px;
+    margin-left: 2px;
+}
+
+.table-card-quantity-control{
+    text-align: center;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.table-card-name{
+}
+.table-card-type{
+    height: 2em;
+    max-height: 2em;
+    overflow: clip;
+}
+
+.table-card-row{
+    color: #101010;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    padding-top:0.2em;
+    padding-bottom:0.2em;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.ms-cost{
+/*    border-style: solid;
+    border-width: 0.5px;
+    border-color: #000;*/
+}
+
+.table-card-white{
+    border-color: var(--tbl-crd-brd-white);
+    background-color: var(--tbl-crd-bg-white);
+}
+
+.table-card-blue{
+    border-color: var(--tbl-crd-brd-blue);
+    background-color: var(--tbl-crd-bg-blue);
+}
+
+.table-card-black{
+    border-color: var(--tbl-crd-brd-black);
+    background-color: var(--tbl-crd-bg-black);
+}
+
+.table-card-red{
+    border-color: var(--tbl-crd-brd-red);
+    background-color: var(--tbl-crd-bg-red);
+}
+
+.table-card-green{
+    border-color: var(--tbl-crd-brd-green);
+    background-color: var(--tbl-crd-bg-green);
+}
+
+.table-card-azorius{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 10%, var(--tbl-crd-bg-blue) 100%);
+}
+
+.table-card-dimir{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-blue) 13%, var(--tbl-crd-bg-black) 100%);
+}
+
+.table-card-rakdos{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-black) 27%, var(--tbl-crd-bg-red) 100%);
+}
+
+.table-card-gruul{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-red) 1%, var(--tbl-crd-bg-green) 90%);
+}
+
+.table-card-selesnya{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-green) 1%, var(--tbl-crd-bg-white) 82%);
+}
+
+.table-card-orzhov{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 10%, var(--tbl-crd-bg-black) 100%);
+}
+
+.table-card-izzet{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-blue) 15%, var(--tbl-crd-bg-red) 100%);
+}
+
+.table-card-golgari{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-black) 13%, var(--tbl-crd-bg-green) 100%);
+}
+
+.table-card-boros{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-red) 0%, var(--tbl-crd-bg-white) 84%);
+}
+
+.table-card-simic{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-green) 12%, var(--tbl-crd-bg-blue) 100%);
+}
+
+
+.table-card-esper{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 10%, var(--tbl-crd-bg-blue) 50%, var(--tbl-crd-bg-black) 90%);
+}
+
+
+.table-card-grixis{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-blue) 10%, var(--tbl-crd-bg-black) 50%, var(--tbl-crd-bg-red) 90%);
+}
+
+.table-card-jund{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-black) 10%, var(--tbl-crd-bg-red) 50%, var(--tbl-crd-bg-green) 90%);
+}
+
+.table-card-naya{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-red) 10%, var(--tbl-crd-bg-green) 50%, var(--tbl-crd-bg-white) 90%);
+}
+
+.table-card-bant{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-green) 10%, var(--tbl-crd-bg-white) 50%, var(--tbl-crd-bg-blue) 90%);
+}
+
+.table-card-abzan{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 10%, var(--tbl-crd-bg-black) 50%, var(--tbl-crd-bg-green) 90%);
+}
+
+.table-card-temur{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-red) 10%, var(--tbl-crd-bg-blue) 50%, var(--tbl-crd-bg-green) 90%);
+}
+
+.table-card-sultai{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-blue) 10%, var(--tbl-crd-bg-green) 50%, var(--tbl-crd-bg-black) 90%);
+}
+
+.table-card-jeskai{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 10%, var(--tbl-crd-bg-red) 50%, var(--tbl-crd-bg-blue) 90%);
+}
+
+.table-card-mardu{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-black) 10%, var(--tbl-crd-bg-white) 50%, var(--tbl-crd-bg-red) 90%);
+}
+
+.table-card-notwhite{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-blue) 5%, var(--tbl-crd-bg-black) 33%, var(--tbl-crd-bg-red) 66%, var(--tbl-crd-bg-green) 95%);
+}
+
+.table-card-notblue{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 5%, var(--tbl-crd-bg-black) 33%, var(--tbl-crd-bg-red) 66%, var(--tbl-crd-bg-green) 95%);
+}
+
+.table-card-notblack{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 5%, var(--tbl-crd-bg-blue) 33%, var(--tbl-crd-bg-red) 66%, var(--tbl-crd-bg-green) 95%);
+}
+
+.table-card-notred{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 5%, var(--tbl-crd-bg-blue) 33%, var(--tbl-crd-bg-black) 66%, var(--tbl-crd-bg-green) 95%);
+}
+
+.table-card-notgreen{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 5%, var(--tbl-crd-bg-blue) 33%, var(--tbl-crd-bg-black) 66%, var(--tbl-crd-bg-red) 95%);
+}
+
+.table-card-wubrg{
+    border-color: var(--tbl-crd-brd-gold);
+    background: linear-gradient(90deg, var(--tbl-crd-bg-white) 3%, var(--tbl-crd-bg-blue) 25%, var(--tbl-crd-bg-black) 50%, var(--tbl-crd-bg-red) 75%, var(--tbl-crd-bg-green) 97%);
+}
+
+.table-card-artifact{
+    border-color: var(--tbl-crd-brd-artifact);
+    background-color: var(--tbl-crd-bg-artifact);
+}
+
+.table-card-land{
+    border-color: var(--tbl-crd-brd-land);
+    background-color: var(--tbl-crd-bg-land);
+}
+
+.table-card-colorless{
+    border-color: var(--tbl-crd-brd-colorless);
+    background-color: var(--tbl-crd-bg-colorless);
+}
+
+.table-card-status-button{
+    height: 100%;
+    border-width: 0px;
+}
+
+.table-card-rarity-span{
+  display: inline;
+}
+
+.table-card-status-symbol{
+  display: inline;
+  text-align: center;
+}
+
+.table-card-status-symbol button{
+  width: 100%;
+}
+
+.table-card-name{
+  font-weight: 600;
+  display: inline;
+}
+
+.table-card-control{
+  text-align: right;
+}
+
+.table-card-trash{
+  display: inline-block;
+  padding: 0.1em;
+  font-size: 1.1em;
+  font-weight: 400;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #dc3546;
+  vertical-align: middle;
+  transition: all 1s;
+  position: relative;
+  border-radius: 4px;
+  width: 50%;
+  color: #fff;
+  z-index: 1;
+}
+
+.table-card-trash::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-color: #dc3546;
+}
+
+.table-card-trash::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: #b02a37;
+  transition: all 1s;
+  z-index: -1;
+}
+
+.table-card-trash:active::before{
+  width: 100%;
+}

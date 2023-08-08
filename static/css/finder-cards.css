@@ -1,0 +1,213 @@
+.rarity-icon-wrapper{
+}
+
+.rarity-icon{
+  max-height: 2.1em;
+}
+
+.finder-card-details{
+/*  float: right;*/
+  aspect-ratio: 1 / 1;
+}
+
+.finder-card-status{
+  position: absolute;
+  margin-top: 20%;
+  text-align: center;
+  cursor: default;
+  font-size: 14em;
+  width: 100%;
+  min-width: 100%;
+}
+
+.finder-card-quantity-wrapper{
+  text-align: center;
+  align-items: center;
+}
+
+.finder-card-quantity{
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #6c757d;
+}
+
+.finder-card-body{
+  padding: 0.1em 0.5em 0.5em 0.5em;
+  text-align: center;
+  object-fit: contain;
+}
+
+.proxy-card-body{
+  padding: 0.1em 0.5em 0.5em 0.5em;
+  text-align: center;
+  object-fit: contain;
+}
+
+.finder-card-image{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.proxy-card-image{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.finder-icon-group{
+  min-height: 3.65rem;
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 1275px) {
+  .finder-icon-group {
+    min-height: 1rem;
+    display: inline-block;
+  }
+}
+
+.finder-card-rarity-icon{
+    aspect-ratio: 1 / 1;
+    max-width: 2.5em;
+    font-size: 120%;
+}
+
+.finder-card-quantity-control{
+  padding: 0px 0.2em 0px 0.2em;
+}
+
+.finder-card-set-icon{
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.finder-card-control-col{
+  align-items: center;
+  display: flex;
+}
+
+.finder-card-control-group{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.finder-card-trash{
+  float:right;
+  display: inline-block;
+  padding: 0.1em;
+  font-size: 1.1em;
+  font-weight: 400;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #dc3546;
+  vertical-align: middle;
+  transition: all 1s;
+  position: relative;
+  border-radius: 4px;
+  width: 100%;
+  color: #fff;
+  z-index: 1;
+}
+
+.finder-card-trash::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-color: #dc3546;
+}
+
+.finder-card-trash::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: #b02a37;
+  transition: all 1s;
+  z-index: -1;
+}
+
+.finder-card-trash:active::before{
+  width: 100%;
+}
+
+
+/* *****************************************************************************
+ * PRINTABLE
+ * ****************************************************************************/
+@media print{
+  .finder-card-header {
+    display:none !important;
+    visibility:hidden;
+    background-color: #ffffff;
+    height: 0px;
+  }
+  .finder-card-wrapper{
+    border-style:none;
+    box-shadow: none !important;
+    margin-bottom: 0mm !important;
+    margin-top: 0mm !important;
+    margin-left: 0mm !important;
+    margin-right: 0mm !important;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .finder-card-body {
+    background-color: #ffffff;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .finder-card-status{
+    display:none;
+  }
+  .finder-card-image{
+    width: 63.5mm;
+    height: 88mm;
+    margin-left: 0mm;
+    margin-right: 0mm;
+  }
+  .finder-card{
+    padding-left: 0mm;
+    padding-right: 0mm;
+    max-width: 33%;
+    max-height: 88mm;
+  }
+
+
+  .proxy-card-wrapper{
+    border-style:none;
+    box-shadow: none !important;
+    margin-bottom: 0mm !important;
+    margin-top: 0mm !important;
+    margin-left: 0mm !important;
+    margin-right: 0mm !important;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .proxy-card-body {
+    background-color: #ffffff;
+    padding-left: 0mm;
+    padding-right: 0mm;
+  }
+  .proxy-card-image{
+    width: 63.5mm;
+    height: 88mm;
+    margin-left: 0mm;
+    margin-right: 0mm;
+  }
+  .proxy-card{
+    padding-left: 1mm;
+    padding-right: 1mm;
+    max-width: 33%;
+    max-height: 88mm;
+  }
+}
