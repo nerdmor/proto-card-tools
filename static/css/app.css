@@ -2,6 +2,22 @@
     margin-right: 1em;
 }
 
+.header-collapsible{
+    margin-top: 0;
+    transition: all 200ms;
+}
+
+.header-collapsed{
+    margin-top: -100% !important;
+    overflow: hidden;
+/*    height: 0px !important;*/
+    border-bottom-style: none !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+
+
 #header-menu li{
     margin-right: 1em;
 }

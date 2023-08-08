@@ -7,34 +7,37 @@ class MainController{
 
 
     constructor(){
-        this.collapsedTop = false;
-
         // registering listeners
         window.settings.registerTrigger('useWakeLock', (value) => window.wakeLock.setActive(value));
 
     }
 
-    toggleCollapseTop(setCollapsed = null){
-        if(setCollapsed !== null){
-            this.collapsedTop = !setCollapsed;
-        }else if(this.collapsedTop === null) return;
+    async toggleCollapseTop(setCollapsed=null){
+        const headerCollapseButton = document.querySelector('#header-collapse');
+        const headerExpandButton = document.querySelector('#header-expand');
 
-        if(this.collapsedTop){
-            this.collapsedTop = null;
-            document.querySelector('#header-collapse').classList.remove('start-hidden');
-            document.querySelector('#header-expand').classList.add('start-hidden');
+        if(setCollapsed===null){
+            setCollapsed = headerExpandButton.classList.contains('start-hidden');
+        }
+
+
+        if(setCollapsed){
+            headerCollapseButton.classList.add('start-hidden');
+            headerExpandButton.classList.remove('start-hidden');
             for(const element of document.querySelectorAll('.header-collapsible')){
-                element.classList.remove('start-hidden');
+                element.classList.add('header-collapsed');
             }
-            this.collapsedTop = false;
-        }else{
-            this.collapsedTop = null;
-            document.querySelector('#header-collapse').classList.add('start-hidden');
-            document.querySelector('#header-expand').classList.remove('start-hidden');
+            await delay(450);
             for(const element of document.querySelectorAll('.header-collapsible')){
                 element.classList.add('start-hidden');
             }
-            this.collapsedTop = true;
+        }else{
+            headerCollapseButton.classList.remove('start-hidden');
+            headerExpandButton.classList.add('start-hidden');
+            for(const element of document.querySelectorAll('.header-collapsible')){
+                element.classList.remove('start-hidden');
+                element.classList.remove('header-collapsed');
+            }
         }
     }
 
