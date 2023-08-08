@@ -321,3 +321,5 @@ class MainController{
     }
 
 }
+
+window.loadedModules.push('main-controller');

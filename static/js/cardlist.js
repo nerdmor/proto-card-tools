@@ -997,3 +997,6 @@ class CardList{
         return result;
     }
 }
+
+
+window.loadedModules.push('cardlist');

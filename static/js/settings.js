@@ -78,3 +78,5 @@ class SettingsManager{
 
 
 }
+
+window.loadedModules.push('settings');

@@ -839,3 +839,6 @@ class ProtoCard{
 
 
 }
+
+
+window.loadedModules.push('protocard');

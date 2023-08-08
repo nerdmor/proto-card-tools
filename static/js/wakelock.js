@@ -92,3 +92,5 @@ class WakeLockController{
     }
 
 }
+
+window.loadedModules.push('wakelock');

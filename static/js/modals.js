@@ -724,3 +724,5 @@ class ListPropertiesModal extends ProtoModal{
         super.call();
     }
 }
+
+window.loadedModules.push('modals');

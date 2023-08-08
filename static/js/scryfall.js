@@ -74,3 +74,6 @@ class Scryfall{
         return response;
     }
 }
+
+
+window.loadedModules.push('scryfall');

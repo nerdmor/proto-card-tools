@@ -58,3 +58,6 @@ class AlertManager{
     }
 
 }
+
+
+window.loadedModules.push('alert');
