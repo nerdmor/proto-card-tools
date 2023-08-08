@@ -261,8 +261,17 @@ class MainController{
         }
     }
 
-    changeDrawType(element){
+/*    changeDrawType(element){
         const drawType = element.checked ? 'find': 'table';
+        window.settings.setValue('displayMode', drawType);
+        window.listManager.setCardMode(drawType);
+        window.drawCardList(window.listElement);
+    }*/
+
+    changeDrawType(element){
+        const drawType = element.value;
+        if(window.settings.displayMode == drawType) return;
+
         window.settings.setValue('displayMode', drawType);
         window.listManager.setCardMode(drawType);
         window.drawCardList(window.listElement);

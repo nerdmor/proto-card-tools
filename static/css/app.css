@@ -4,17 +4,17 @@
 
 .header-collapsible{
     margin-top: 0;
-    transition: all 200ms;
+    transition: all 400ms;
 }
 
 .header-collapsed{
     margin-top: -100% !important;
     overflow: hidden;
-/*    height: 0px !important;*/
     border-bottom-style: none !important;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
 }
+
 
 
 
@@ -36,24 +36,7 @@
     border-color: #7f6105;
 }
 
-#header-toggle-wrapper{
-    float: right;
-    padding-top: 0.4em;
-}
-
-#header-toggle-wrapper span{
-    margin-top: 0.1em;
-}
-
-#header-toggle .form-check{
-    padding-left: 0px;
-    margin-right: 0.4em;
-    margin-left: 0.4em;
-}
-
-#header-display-toggle{
-    margin-left: 0px;
-}
+#header-display-select{}
 
 .filter-wrapper{
     max-width: 90%;
@@ -239,11 +222,9 @@
 }
 
 @page {
-  size: 210mm 297 mm;
+/*  size: 210mm 297 mm;*/
   margin-top: 254mm;
   margin-bottom: 254mm;
-  /*margin-left: 50mm;
-  margin-right: 50mm;*/
   margin-left: 0mm;
   margin-right: 0mm;
 }

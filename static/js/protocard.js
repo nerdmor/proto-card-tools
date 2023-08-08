@@ -53,6 +53,21 @@ class ProtoCard{
         rarityIconModel: `<span class="finder-card-rarity-icon" alt="%%alt%%"> <i class="ms ms-cost ms-shadow ms-grad ms-rarity ms-%%rarityletter%%"></i> </span>`,
     };
 
+    static proxyModels = {
+        innerModel : `
+            <div class="card mb-4 rounded-3 shadow-sm proxy-card-wrapper">
+              <div class="card-body proxy-card-body">
+                <img class="proxy-card-image" src="%%cardimageurl%%" alt="%%cardname%%">
+              </div>
+            </div>
+            `,
+        outerModel : `
+            <div class="proxy-card col-4" card_key="%%cardkey%%">
+                %%inner-model%%
+            </div>
+            `
+    };
+
     static tableModels = {
         innerModel: `
           <div class="col-6 col-md-1 table-card-quantity">
@@ -300,6 +315,8 @@ class ProtoCard{
             return this._drawFind(setData);
         else if(printmode == 'table')
             return this._drawTable(setData);
+        else if(printmode == 'proxy')
+            return this._drawProxy(setData);
         throw new Error('Invalid printmode');
     }
 
@@ -328,6 +345,23 @@ class ProtoCard{
     _drawFind(setData){
         var html = ProtoCard.findModels.outerModel.replaceAll('%%cardkey%%', this.key)
                                                   .replaceAll('%%inner-model%%', this._drawInnerFind(setData));
+        return html;
+    }
+
+    _drawProxy(setData){
+        var html = [];
+
+        const innerHtml = ProtoCard.proxyModels.innerModel.replaceAll('%%cardname%%', this.name)
+                                                         .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality]);
+        const outerHtml = ProtoCard.proxyModels.outerModel.replaceAll('%%cardkey%%', this.key)
+                                                          .replaceAll('%%inner-model%%', innerHtml);
+
+        for (var i = 1; i <= this.quantity; i++) {
+            html.push(outerHtml);
+        }
+
+        html = html.join('\n');
+
         return html;
     }
 

@@ -567,13 +567,13 @@
             <button id="header-trash" type="button" class="btn btn-sm" alt="Deletes visible cards" aria-description="Deletes visible cards"><i class="bi bi-trash"></i></button>
           </div>
 
-          <div id="header-toggle" class="nav text-end align-items-right">
-            <div id="header-toggle-wrapper" class="form-group d-flex">
-              <span class="form-text ">table</span>
-              <div class="form-check form-switch form-check-inline">
-                <input id="header-display-toggle" class="form-check-input" type="checkbox" role="switch">
-              </div>
-              <span class="form-text">finder</span>
+          <div id="header-display-mode" class="py-1 nav text-end align-items-right">
+            <div id="header-display-wrapper" class="row row-cols-lg-auto g-3 align-items-right">
+              <select id="header-display-select" class="form-select form-select-sm" aria-label="select display mode">
+                <option value="find">Finder</option>
+                <option value="table">Table</option>
+                <option value="proxy">Proxies</option>
+              </select>
             </div>
           </div>
 

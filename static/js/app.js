@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // drawing/setting dynamic things
     window.mainController.redrawStatusFilters(window.statusFilterElement);
-    document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
+    // document.querySelector('#header-display-toggle').checked = window.settings.displayMode == 'find' ? true : false;
     window.mainController.setInterfaceFilters();
 
 
@@ -149,7 +149,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // change draw type
-    document.querySelector('#header-display-toggle').addEventListener('change', function(event){
+    // document.querySelector('#header-display-toggle').addEventListener('change', function(event){
+    //     window.mainController.changeDrawType(event.target);
+    // });
+    document.getElementById('header-display-select').addEventListener('change', function(event){
         window.mainController.changeDrawType(event.target);
     });
 

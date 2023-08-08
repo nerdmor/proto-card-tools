@@ -28,7 +28,7 @@ class SettingsManager{
         'displayMode': {
             'default': 'find',
             'type': 'string',
-            'possibleValues': ['find', 'table']
+            'possibleValues': ['find', 'table', 'proxy']
         },
         'useWakeLock': {
             'default': true,

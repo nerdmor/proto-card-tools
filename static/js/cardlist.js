@@ -1,5 +1,5 @@
 class CardList{
-    static allowedModes = ['find', 'table'];
+    static allowedModes = ['find', 'table', 'proxy'];
     static modeOuterClass = {
         'find': 'finder-card',
         'table': 'table-card-row'
