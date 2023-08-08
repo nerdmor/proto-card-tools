@@ -334,7 +334,7 @@ class MainController{
     clearData(){
         var confirmation = confirm('Are you sure you want to delete all local data?');
         if(confirmation === false) return;
-        window.storage.clear();
+        window.storage.clearAll();
         location.reload();
     }
 

@@ -1,6 +1,7 @@
 class StorageManager{
     constructor(){
         this.enabled = this._storageAvailable();
+        this._setUserCookie();
     }
 
     setCookie(name, value, duration=null){
@@ -34,14 +35,28 @@ class StorageManager{
     }
 
     clear(){
+        if(!this.enabled) return;
         localStorage.clear();
-        for(k of Object.keys(Cookies.get())){
+    }
+
+    clearCookies(){
+        for(const k of Object.keys(Cookies.get())){
             Cookies.remove(k);
         }
     }
 
+    clearAll(){
+        this.clear();
+        this.clearCookes();
+    }
 
-
+    _setUserCookie(){
+        var userCookie = Cookies.get('pct_user');
+        if(!userCookie){
+            userCookie = makeRandomId(5,'-');
+        }
+        this.setCookie('pct_user', userCookie, 364);
+    }
 
     _storageAvailable() {
         let storage;
@@ -57,10 +72,6 @@ class StorageManager{
             );
         }
     }
-
-
-
-
 }
 
 
