@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if(!window.loadedModules.includes('scryfall')) continue;
         if(!window.loadedModules.includes('settings')) continue;
         if(!window.loadedModules.includes('storage')) continue;
+        if(!window.loadedModules.includes('session')) continue;
         break;
     }
 
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // storage, so we can load everything from there
     window.storage = new StorageManager()
+
+    window.session = new SessionManager(window.constants.domain, window.storage);
 
     // settings
     window.settings = new SettingsManager(window.storage.getObject('settings'));
@@ -232,12 +235,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.mainController.clearData();
     });
 
+    //login
+    document.getElementById('header-account-login').addEventListener('click', function(event){
+        window.session.requestLogin();
+    });
+
 
     // DEBUG login
-    window.loginModal = new bootstrap.Modal('#login-modal');
-    document.getElementById('header-account-login').addEventListener('click', function(event){
-        window.loginModal.show();
-    });
+    // window.loginModal = new bootstrap.Modal('#login-modal');
+    // document.getElementById('header-account-login').addEventListener('click', function(event){
+    //     window.loginModal.show();
+    // });
 
 
 // end of bindings

@@ -1,6 +1,5 @@
 class ProductionConfig():
-    DATABASE_URI = 'mysql://user@localhost/foo'
+    OAUTH_REDIRECT_URL = 'https://protocardtools.com/oauth'
 
 class DevelopmentConfig():
-    DATABASE_URI = "sqlite:////tmp/foo.db"
-    STATIC_FOLDER = '/'
+    OAUTH_REDIRECT_URL = 'http://127.0.0.1/oauth'
