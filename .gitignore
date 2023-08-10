@@ -157,4 +157,5 @@ config/secrets.json
 config/secrets/*
 config/config.json
 config/flask.py
+test.py
 

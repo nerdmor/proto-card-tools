@@ -3,13 +3,18 @@ import google.oauth2.credentials
 import google_auth_oauthlib.flow
 
 from libs.helpers import random_string
+from config import configs
 
-
-ENV = 'dev'
+ENV = configs.env
 
 app = Flask(__name__,
             static_url_path='/static',
             static_folder='static')
+
+app.config.from_object(configs.flask)
+if ENV == 'dev':
+    app.static_url_path='/static'
+    app.static_folder='static'
 
 @app.route("/")
 def home():
@@ -58,11 +63,4 @@ def oauth():
 
 
 if __name__ == '__main__':
-    if ENV == 'dev':
-        app.config.from_object('config.flask.DevelopmentConfig')
-        app.static_url_path='/static'
-        app.static_folder='static'
-    elif ENV == 'prod':
-        app.config.from_object('config.flask.ProductionConfig')
-
     app.run(host='0.0.0.0', debug=True,port=80)
