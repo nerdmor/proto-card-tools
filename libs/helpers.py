@@ -5,10 +5,12 @@ import secrets
 from cryptography.fernet import Fernet
 from cryptography.fernet import InvalidToken
 
-alphabet = string.ascii_letters + string.digits
+from ua_parser import user_agent_parser
+
+ALPHABET = string.ascii_letters + string.digits
 
 def random_string(lenght):
-    return ''.join(secrets.choice(alphabet) for i in range(lenght))
+    return ''.join(secrets.choice(ALPHABET) for i in range(lenght))
 
 
 def sign_message(message, key):
@@ -43,3 +45,16 @@ def check_signed_payload(payload, key):
         return True, decoded_message[0]
 
     return False, None
+
+
+def user_agent_signature(ua_obj):
+    if not isinstance(ua_obj, str):
+        ua_obj = str(ua_obj)
+
+    parsed_ua = user_agent_parser.Parse(ua_obj)
+    user_agent = "{agent}@{os_family}-{os_major}".format(
+        agent=parsed_ua['user_agent']['family'],
+        os_family=parsed_ua['os']['family'],
+        os_major=parsed_ua['os']['major']
+    )
+    return user_agent

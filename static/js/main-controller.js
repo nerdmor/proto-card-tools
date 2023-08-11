@@ -16,7 +16,7 @@ class MainController{
         window.settings.registerTrigger('useWakeLock', (key, value) => window.wakeLock.setActive(value));
         window.settings.registerTrigger('all', (k, v) => { window.storage.setItem('settings', window.settings.toString()) });
 
-        window.listManager.changeCallback = (lm) => {window.storage.setItem('listManager', lm.toString())};
+        window.listManager.changeCallback = (lm) => {window.storage.syncItem('listManager', listManager)};
         window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
     }
 

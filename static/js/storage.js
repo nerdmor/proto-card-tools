@@ -1,7 +1,13 @@
 class StorageManager{
     constructor(){
-        this.enabled = this._storageAvailable();
+        this.storageEnabled = this._storageAvailable();
         this._setUserCookie();
+        this.sessionManager = null;
+        this.syncQueue = {};
+    }
+
+    setSessionManager(sessionManager){
+        this.sessionManager = this.sessionManager || sessionManager;
     }
 
     setCookie(name, value, duration=null){
@@ -12,18 +18,26 @@ class StorageManager{
         Cookies.set(name, value, options);
     }
 
+    getCookie(name){
+        return Cookies.get(name);
+    }
+
+    removeCookie(name){
+        Cookies.remove(name);
+    }
+
     setItem(key, value){
-        if(!this.enabled) return;
+        if(!this.storageEnabled) return;
         return localStorage.setItem(key, value);
     }
 
     getItem(key){
-        if(!this.enabled) return null;
+        if(!this.storageEnabled) return null;
         return localStorage.getItem(key);
     }
 
     getObject(key){
-        if(!this.enabled) return null;
+        if(!this.storageEnabled) return null;
         var stored = localStorage.getItem(key);
         if(stored === null) return null;
         try{
@@ -35,7 +49,7 @@ class StorageManager{
     }
 
     clear(){
-        if(!this.enabled) return;
+        if(!this.storageEnabled) return;
         localStorage.clear();
     }
 
@@ -48,6 +62,33 @@ class StorageManager{
     clearAll(){
         this.clear();
         this.clearCookes();
+    }
+
+    syncItem(itemType, item){
+        item = item.toString();
+        if(itemType == 'listManager'){
+            this.setItem(itemType, item);
+            this._addToSyncQueue(itemType, item);
+        }
+    }
+
+    async _addToSyncQueue(itemType, item){
+        if(this.sessionManager === null || this.sessionManager.token === null) return;
+        const timestamp = (new Date()).getTime();
+        this.syncQueue[itemType] = {
+            'timestamp': timestamp,
+            'value': item
+        }
+
+        setTimeout((tp, ts) => {
+            if(this.syncQueue[tp].timestamp == ts)
+                this._triggerSync(tp);
+        }, 5000, itemType, timestamp);
+    }
+
+    async _triggerSync(itemType){
+        // TODO: call the API and save the list to the backend
+        console.log(this.syncQueue[itemType]);
     }
 
     _setUserCookie(){

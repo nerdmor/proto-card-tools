@@ -1,28 +1,29 @@
 from datetime import datetime, timedelta
 
-import flask
 from flask import Blueprint, jsonify, request, redirect
+from flask import current_app
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import jwt
-from ua_parser import user_agent_parser
 
 from libs.helpers import random_string
 from libs.helpers import sign_message
 from libs.helpers import check_signed_payload
+from libs.helpers import user_agent_signature
+from libs.flask.decorators import token_required
+from libs.flask.auth import make_token
 
 from libs import db as dbm
 
-bp_login = Blueprint('login', __name__)
+auth = Blueprint('auth', __name__)
 
-@bp_login.route("/login")
-def login_init():
-    state = sign_message(random_string(32), flask.current_app.config.get('CRYTO_KEY'))
+@auth.route("/login", methods=['GET'])
+def login():
+    state = sign_message(random_string(32), current_app.config.get('CRYTO_KEY'))
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         'config/secrets/google-client-secret.json',
         ['openid']
     )
-    flow.redirect_uri = flask.current_app.config.get('OAUTH_REDIRECT_URL')
+    flow.redirect_uri = current_app.config.get('OAUTH_REDIRECT_URL')
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
@@ -31,14 +32,14 @@ def login_init():
     return jsonify({'authorization_url': authorization_url})
 
 
-@bp_login.route('/oauth')
+@auth.route('/oauth', methods=['GET'])
 def oauth():
     error = request.args.get('error')
     if error is not None:
         return jsonify({'error': error}), 401
 
     state = request.args.get('state')
-    valid, _ = check_signed_payload(state, flask.current_app.config.get('CRYTO_KEY'))
+    valid, _ = check_signed_payload(state, current_app.config.get('CRYTO_KEY'))
     if valid is False:
         return jsonify({'error': 'invalid signature'}), 401
 
@@ -47,9 +48,9 @@ def oauth():
         scopes=['openid'],
         state=state
     )
-    flow.redirect_uri = flask.current_app.config.get('OAUTH_REDIRECT_URL')
+    flow.redirect_uri = current_app.config.get('OAUTH_REDIRECT_URL')
 
-    if flask.current_app.config.get('ENV') == 'dev':
+    if current_app.config.get('ENV') == 'dev':
         request_url = request.url.replace('http://', 'https://')
     else:
         request_url = request.url
@@ -73,31 +74,32 @@ def oauth():
         VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP());
         """
         user_id = db.execute(query, (credentials.client_id, credentials.client_secret, credentials.refresh_token, credentials.token, ))
+        client_id = credentials.client_id
         next_action = 'send_settings'
     else:
         user_id = existing_users[0]['id']
+        client_id = existing_users[0]['client_id']
         next_action = None
 
-    parsed_ua = user_agent_parser.Parse(str(request.user_agent))
-    user_agent = "{agent}@{os_family}-{os_major}".format(
-        agent=parsed_ua['user_agent']['family'],
-        os_family=parsed_ua['os']['family'],
-        os_major=parsed_ua['os']['major']
-    )
-
-    response_payload = {
-        'user_id': user_id,
-        'valid_until': (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S'),
-        'user_agent': user_agent
-    }
-
-    jwt_token = jwt.encode(response_payload, flask.current_app.config.get('JWT_KEY'), algorithm="HS256")
-
+    jwt_token = make_token(user_id, client_id, user_agent_signature(request.user_agent))
     redirect_url = "{protocol}{domain}/?token={jwt_token}&next_action={next_action}".format(
-        protocol=flask.current_app.config.get('PROTOCOL'),
-        domain=flask.current_app.config.get('DOMAIN'),
+        protocol=current_app.config.get('PROTOCOL'),
+        domain=current_app.config.get('DOMAIN'),
         jwt_token=jwt_token,
         next_action=next_action
     )
 
     return redirect(redirect_url, code=302)
+
+
+@auth.route("/login/renew", methods=['GET'])
+@token_required
+def login_renew(decoded_token):
+    jwt_token = make_token(
+        decoded_token['user_id'],
+        decoded_token['client_id'],
+        user_agent_signature(request.user_agent)
+    )
+
+    return jsonify({'token': jwt_token})
+

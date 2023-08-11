@@ -2,7 +2,7 @@ from flask import Flask, json, jsonify, request
 
 from config import configs
 
-from routes.login import bp_login
+from routes.auth import auth
 
 ENV = configs.env
 
@@ -15,7 +15,7 @@ if ENV == 'dev':
     app.static_url_path='/static'
     app.static_folder='static'
 
-app.register_blueprint(bp_login)
+app.register_blueprint(auth)
 
 @app.route("/")
 def home():
