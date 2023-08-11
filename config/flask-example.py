@@ -1,13 +1,23 @@
 class ProductionConfig():
+    ENV = 'prod'
+    PROTOCOL = 'https://'
+    DOMAIN = 'protocardtools.com'
     OAUTH_REDIRECT_URL = 'https://protocardtools.com/oauth'
     DB_HOSTNAME = ''
     DB_USERNAME = ''
     DB_PASSWORD = ''
     DB_DATABASE = ''
+    CRYTO_KEY = ''
+    JWT_KEY = ''
 
 class DevelopmentConfig():
+    ENV = 'dev'
+    PROTOCOL = 'http://'
+    DOMAIN = '127.0.0.1'
     OAUTH_REDIRECT_URL = 'http://127.0.0.1/oauth'
     DB_HOSTNAME = ''
     DB_USERNAME = ''
     DB_PASSWORD = ''
     DB_DATABASE = ''
+    CRYTO_KEY = ''
+    JWT_KEY = ''

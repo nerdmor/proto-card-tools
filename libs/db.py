@@ -32,7 +32,7 @@ class DbManager():
         self.conn.autocommit(True)
 
     def fetch(self, sql, params=None):
-        cursor = self.conn.cursor()
+        cursor = self.conn.cursor(MySQLdb.cursors.DictCursor)
         if params:
             cursor.execute(sql, params)
         else:
