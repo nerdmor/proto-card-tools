@@ -18,6 +18,8 @@ class MainController{
 
         window.listManager.changeCallback = (lm) => {window.storage.syncItem('listManager', listManager)};
         window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
+
+        window.session.registerChangeCallback((token) => this.drawSessionButtons(token));
     }
 
     loadFromStorage(){
@@ -174,9 +176,6 @@ class MainController{
     }
 
 
-    /* *****************************************************************************
-     * Loading-modal handling functions
-     **************************************************************************** */
     async loadQueueFromScryfallModalHandler(){
         window.listManager.loadQueueFromScryfall(
             null,  // scryfallClient
@@ -272,13 +271,6 @@ class MainController{
         }
     }
 
-/*    changeDrawType(element){
-        const drawType = element.checked ? 'find': 'table';
-        window.settings.setValue('displayMode', drawType);
-        window.listManager.setCardMode(drawType);
-        window.drawCardList(window.listElement);
-    }*/
-
     changeDrawType(element){
         const drawType = element.value;
         if(window.settings.displayMode == drawType) return;
@@ -336,6 +328,16 @@ class MainController{
         if(confirmation === false) return;
         window.storage.clearAll();
         location.reload();
+    }
+
+    async drawSessionButtons(token){
+        if(token === null){
+            document.getElementById('header-account-login').classList.remove('start-hidden');
+            document.getElementById('header-account-account').classList.add('start-hidden');
+        }else{
+            document.getElementById('header-account-login').classList.add('start-hidden');
+            document.getElementById('header-account-account').classList.remove('start-hidden');
+        }
     }
 
 }

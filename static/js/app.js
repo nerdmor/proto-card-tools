@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // storage, so we can load everything from there
     window.storage = new StorageManager()
-
     window.session = new SessionManager(window.constants.domain, window.storage);
 
     // settings
