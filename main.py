@@ -3,6 +3,8 @@ from flask import Flask, json, jsonify, request
 from config import configs
 
 from routes.auth import auth
+from routes.user import user
+from routes.static import static
 
 ENV = configs.env
 
@@ -16,10 +18,12 @@ if ENV == 'dev':
     app.static_folder='static'
 
 app.register_blueprint(auth)
+app.register_blueprint(user)
+app.register_blueprint(static)
 
-@app.route("/")
-def home():
-    return app.send_static_file('index.html')
+# @app.route("/")
+# def home():
+#     return app.send_static_file('index.html')
 
 
 

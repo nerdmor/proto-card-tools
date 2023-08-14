@@ -331,7 +331,7 @@ class MainController{
     }
 
     async drawSessionButtons(token){
-        if(token === null){
+        if(token === null || token == 0){
             document.getElementById('header-account-login').classList.remove('start-hidden');
             document.getElementById('header-account-account').classList.add('start-hidden');
         }else{

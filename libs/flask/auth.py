@@ -12,6 +12,7 @@ def make_token(user_id, client_id, user_agent):
         'user_id': user_id,
         'client_id': fernet.encrypt(client_id.encode()).decode(),
         'user_agent': fernet.encrypt(user_agent.encode()).decode(),
+        'role': 'user',  # someday This is where "admin" will go
         'valid_until': (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
     }
 

@@ -110,6 +110,14 @@ function makeRandomId(blocks=1, separator='-'){
     return result.join(separator);
 }
 
+function printDateTime(datetime){
+    var dt = new Date(datetime);
+    const utcDate = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds(), 0));
+    const offset = new Date().getTimezoneOffset() * -1 * 60000;
+    const newDateObj = new Date(utcDate.getTime() + offset);
+    return newDateObj.toISOString().replaceAll('T', ' ').split('.')[0];
+}
+
 
 // md5 ugly block
 function md5(d){var r = md5m(md5v(md5y(md5x(encodeURIComponent(d)),8*d.length)));return r.toLowerCase()};

@@ -19,7 +19,9 @@ class StorageManager{
     }
 
     getCookie(name){
-        return Cookies.get(name);
+        const cookie = Cookies.get(name);
+        if(cookie == 'null') return null;
+        return cookie;
     }
 
     removeCookie(name){

@@ -12,6 +12,56 @@
 }
 
 
+#user-modal-delete-wrapper{
+    justify-content: flex-end;
+    display: flex;
+/*    padding-right: 1rem;*/
+}
+
+#user-modal-delete{
+    padding: 0.3rem 0.1rem 0.3rem 0.1rem;
+    font-size: 1.1em;
+    font-weight: 400;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid #dc3546;
+    transition: all 10s;
+    position: relative;
+    border-radius: 4px;
+    min-width: 9rem;
+    width: 9rem;
+    color: #fff;
+    z-index: 1;
+}
+
+#user-modal-delete::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-color: #dc3546;
+}
+
+#user-modal-delete::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: #b02a37;
+  transition: all 3.1s;
+  z-index: -1;
+}
+
+#user-modal-delete:active::before{
+  width: 100%;
+}
+
+
 
 
 .card-select-body{

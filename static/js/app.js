@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     // storage, so we can load everything from there
-    window.storage = new StorageManager()
+    window.storage = new StorageManager();
     window.session = new SessionManager(window.constants.domain, window.storage);
 
     // settings
@@ -60,6 +60,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             'applyFiltersOnStatusChange': document.querySelector('#settings-checkbox-applyFiltersOnStatusChange'),
             'useWakeLock': document.querySelector('#settings-checkbox-useWakeLock')
         }
+    );
+    window.accountModal = new AccountModal(
+        document.getElementById('account-modal'),  // domElement
+        document.getElementById('user-modal-delete'),  // deleteButtonElement
+        document.getElementById('user-modal-save'),  // saveButtonElement
+        document.getElementById('user-modal-username'),  // usernameElement
+        document.getElementById('user-modal-createdat'),  // createdAtElement
+        window.session,  // sessionManager
+        (updateData) => {console.log(updateData)},  // saveCallback
+        () => {console.log('delete account')}  // deleteCallback
     );
 
     // global managers
@@ -185,6 +195,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // settings button
     document.querySelector('#header-settings').addEventListener('click', function(event){
         window.settingsModal.call();
+    });
+
+    // account button
+    document.getElementById('header-account-account').addEventListener('click', function(event){
+        window.accountModal.call();
     });
 
     // call text load modal

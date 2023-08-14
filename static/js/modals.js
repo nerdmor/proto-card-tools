@@ -725,4 +725,56 @@ class ListPropertiesModal extends ProtoModal{
     }
 }
 
+class AccountModal extends ProtoModal{
+    constructor(domElement, deleteButtonElement, saveButtonElement, usernameElement, createdAtElement, sessionManager, saveCallback, deleteCallback){
+        super(domElement);
+        this.deleteButtonElement = deleteButtonElement;
+        this.saveButtonElement = saveButtonElement;
+        this.usernameElement = usernameElement;
+        this.createdAtElement = createdAtElement;
+        this.sessionManager = sessionManager;
+        this.saveCallback = saveCallback;
+        this.deleteCallback = deleteCallback;
+
+        this._bind();
+    }
+
+    _bind(){
+        this.deleteButtonElement.addEventListener('mousedown', (event) => {
+            if(!event.target.hasAttribute('mouse_down')){
+                event.target.addEventListener('mouseup',  function(evt){
+                    event.target.setAttribute('mouse_down', '0');
+                });
+            }
+            event.target.setAttribute('mouse_down', '1');
+
+            setTimeout((element, deleteCallback) => {
+                if(element.getAttribute('mouse_down') == '1'){
+                    deleteCallback();
+                }
+            }, 10000, event.target, this.deleteCallback);
+        });
+
+        this.saveButtonElement.addEventListener('click', (event) => {
+            this.saveCallback({
+                'username': this.usernameElement.value
+            });
+        });
+    }
+
+    async draw(){
+        const user = await this.sessionManager.getUserDetails();
+        if(user === null) throw new Error('Failed to get user data');
+        console.log(user);
+        this.usernameElement.value = user.username;
+        this.createdAtElement.value = printDateTime(user.created_at);
+    }
+
+    async call(){
+        if(this.modal === null) this.modal = new bootstrap.Modal(this.element, this.options);
+        await this.draw();
+        this.modal.show();
+    }
+}
+
 window.loadedModules.push('modals');
