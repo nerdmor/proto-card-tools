@@ -15,7 +15,6 @@
 #user-modal-delete-wrapper{
     justify-content: flex-end;
     display: flex;
-/*    padding-right: 1rem;*/
 }
 
 #user-modal-delete{
@@ -24,7 +23,6 @@
     text-align: center;
     box-sizing: border-box;
     border: 1px solid #dc3546;
-/*    transition: all 10s;*/
     position: relative;
     border-radius: 4px;
     min-width: 9rem;
@@ -41,7 +39,6 @@
   width: 9rem;
   height: 100%;
   z-index: -2;
-/*  background-color: #dc3546;*/
 }
 
 #user-modal-delete::before{
@@ -58,6 +55,10 @@
 
 #user-modal-delete:active::before{
   width: 100%;
+}
+
+.user-modal-error{
+    border-color: #e01111;
 }
 
 

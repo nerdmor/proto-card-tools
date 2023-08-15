@@ -22,8 +22,8 @@ class MainController{
         window.session.registerChangeCallback((token) => this.drawSessionButtons(token));
 
         window.accountModal.registerCallbacks(
-            (updateData) => {window.session.updateUser(updateData)},  // saveCallback
-            () => {window.session.deleteUser()}
+            async (updateData) => {return await window.session.updateUser(updateData)},  // saveCallback
+            async () => {return await window.session.deleteUser()}
         );
     }
 

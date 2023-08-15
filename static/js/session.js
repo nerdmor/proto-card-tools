@@ -108,16 +108,14 @@ class SessionManager{
         if(!Object.hasOwn(response.json, 'data')){
             if(Object.hasOwn(response.json, 'error')){
                 console.error(response.json.error);
-            }else{
-                console.error('failed getting user details. Failed getting errors.');
-                console.error(response.response);
+                return {'success': false, 'message': response.json.error};
             }
-            return null
+            console.error('failed getting user details. Failed getting errors.');
+            console.error(response.response);
+            return {'success': false, 'message': 'failed getting user details'};
         };
 
-        console.log(response.json.data);
-
-        return response.json.data;
+        return {'success': true, 'data': response.json.data};
     }
 
     async updateUser(updateData){
@@ -127,14 +125,14 @@ class SessionManager{
         if(!Object.hasOwn(response.json, 'message')){
             if(Object.hasOwn(response.json, 'error')){
                 console.error(response.json.error);
-            }else{
-                console.error('failed updating user. Failed getting errors.');
-                console.error(response.response);
+                return {'success': false, 'message': response.json.error};
             }
-            return null
+            console.error('failed updating user. Failed getting errors.');
+            console.error(response.response);
+            return {'success': false, 'message': 'failed updating user'};
         };
 
-        return response.json.message;
+        return {'success': true, 'message': response.json.message};
     }
 
     async deleteUser(){
@@ -144,15 +142,15 @@ class SessionManager{
         if(!Object.hasOwn(response.json, 'message')){
             if(Object.hasOwn(response.json, 'error')){
                 console.error(response.json.error);
-            }else{
-                console.error('failed deleting user. Failed getting errors.');
-                console.error(response.response);
+                return {'success': false, 'message': response.json.error};
             }
-            return null
+            console.error('failed updating user. Failed getting errors.');
+            console.error(response.response);
+            return {'success': false, 'message': 'failed updating user'};
         };
 
         this.logout();
-        return response.json.message;
+        return {'success': true, 'message': response.json.message};
     }
 }
 window.loadedModules.push('session');

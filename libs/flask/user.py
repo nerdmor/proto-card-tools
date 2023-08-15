@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+import re
 
 from flask import jsonify
+from MySQLdb import IntegrityError
 
 from libs import db as dbm
 
@@ -8,6 +10,10 @@ from libs import db as dbm
 USER_EDITABLE_FIELDS = ['username', 'settings']
 SYSTEM_EDITABLE_FIELDS = ['client_id', 'client_secret', 'refresh_token', 'token']
 
+def validate_username(username):
+    if re.match('^[A-z0-9_-]{5,25}$', username):
+        return True
+    return False
 
 def get_user(user_id):
     db = dbm.DbManager()
@@ -35,6 +41,9 @@ def update_user(user_id, user_data, system=False):
 
     for k in USER_EDITABLE_FIELDS:
         if k in user_data:
+            if k == 'username' and validate_username(user_data[k]) is False:
+                return jsonify({"error": "username can only contain letters, numbers, dashes and underscores"}), 400
+
             fields.append(k)
             values.append(user_data[k])
 
@@ -59,6 +68,8 @@ def update_user(user_id, user_data, system=False):
     """.format(fields=fields)
     try:
         _ = db.execute(query, values)
+    except IntegrityError:
+        return jsonify({'error': 'that username is taken'}), 500
     except Exception as e:
         raise e
         return jsonify({'error': 'failed to update user'}), 500

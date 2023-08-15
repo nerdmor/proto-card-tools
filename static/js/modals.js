@@ -747,6 +747,25 @@ class AccountModal extends ProtoModal{
         this.deleteCallback = deleteCallback;
     }
 
+    _validateUsername(username){
+        if(username.match(/^[A-z0-9_-]{5,25}$/g)) return true;
+        return false;
+    }
+
+    _setUsernameAsInvalid(message){
+        const pseudoform = this.usernameElement.parentElement.parentElement;
+        const feedbackElement = document.querySelector(`#${this.usernameElement.id}-feedback`);
+        feedbackElement.innerHTML = message;
+        pseudoform.classList.add('was-validated');
+        this.usernameElement.setCustomValidity('invalid');
+    }
+
+    _resetValidation(){
+        const pseudoform = this.usernameElement.parentElement.parentElement;
+        pseudoform.classList.remove('was-validated');
+        this.usernameElement.setCustomValidity('');
+    }
+
     _bind(){
         this.deleteButtonElement.addEventListener('mousedown', (event) => {
             if(this.deleteCallback === null) return;
@@ -764,22 +783,35 @@ class AccountModal extends ProtoModal{
             }, 10000, event.target, this, this.deleteCallback);
         });
 
-        this.saveButtonElement.addEventListener('click', (event) => {
+        this.saveButtonElement.addEventListener('click', async (event) => {
+            const username = this.usernameElement.value;
+            if(username === null || username == '') return;
+            this._resetValidation();
+            if(!this._validateUsername(this.usernameElement.value)){
+                this._setUsernameAsInvalid('Usernames can contain 5 to 25 letters and/or numbers and nothing else');
+                return;
+            }
+
             if(this.saveCallback !== null){
-                this.saveCallback({
+                const response = await this.saveCallback({
                     'username': this.usernameElement.value
                 });
+                if(response.success == false){
+                    this._setUsernameAsInvalid(response.message);
+                }else{
+                    this.dismiss();
+                }
+            }else{
+                this.dismiss();
             }
-            this.dismiss();
         });
     }
 
     async draw(){
         const user = await this.sessionManager.getUserDetails();
-        if(user === null) throw new Error('Failed to get user data');
-        console.log(user);
-        this.usernameElement.value = user.username;
-        this.createdAtElement.value = printDateTime(user.created_at);
+        if(user.success == false) throw new Error('Failed to get user data');
+        this.usernameElement.value = user.data.username;
+        this.createdAtElement.value = printDateTime(user.data.created_at);
     }
 
     async call(){
