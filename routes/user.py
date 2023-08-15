@@ -1,32 +1,27 @@
 from flask import Blueprint, jsonify, request
-from flask import current_app
 from libs.flask.decorators import token_required
+from libs.flask.user import get_user, update_user, delete_user
 
-from libs import db as dbm
 
 user = Blueprint('user', __name__)
 
-@user.route("/user/<int:user_id>", methods=['GET'])
+
+@user.route("/user/<int:user_id>", methods=['GET', 'POST', 'DELETE'])
 @token_required
-def get_user(token, user_id):
+def user_route(token, user_id):
     if user_id == 0:
         user_id = token['user_id']
     elif token['user_id'] != user_id:
+        # this is where we can verify if the calling user is an admin
         return jsonify({'error': 'unauthorized'}), 403
 
-    db = dbm.DbManager()
-    query = """
-    SELECT  id
-           ,username
-           ,settings
-           ,DATE_FORMAT(created_at, '%%Y-%%m-%%d %%H:%%i:%%s') AS created_at
-      FROM users AS us
-     WHERE us.id = %s
-    ;
-    """
-    existing_users = db.fetch(query, (token['user_id'], ))
-
-    if len(existing_users) != 1:
-        return jsonify({'error': 'invalid user_id'}), 403
-
-    return jsonify({'data': existing_users[0]})
+    if request.method == 'POST':
+        if not request.is_json:
+            return jsonify({"error": "this method requires a mimetype of 'application/json'"}), 400
+        return update_user(user_id, request.get_json(), system=False)
+    elif request.method == 'DELETE':
+        return delete_user(user_id)
+    elif request.method == 'GET':
+        return get_user(user_id)
+    else:
+        return jsonify({'error': 'method not allowed'}), 405

@@ -21,11 +21,10 @@
 #user-modal-delete{
     padding: 0.3rem 0.1rem 0.3rem 0.1rem;
     font-size: 1.1em;
-    font-weight: 400;
     text-align: center;
     box-sizing: border-box;
     border: 1px solid #dc3546;
-    transition: all 10s;
+/*    transition: all 10s;*/
     position: relative;
     border-radius: 4px;
     min-width: 9rem;
@@ -39,10 +38,10 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 9rem;
   height: 100%;
   z-index: -2;
-  background-color: #dc3546;
+/*  background-color: #dc3546;*/
 }
 
 #user-modal-delete::before{
@@ -50,10 +49,10 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 0%;
+  width: 0px;
   height: 100%;
   background-color: #b02a37;
-  transition: all 3.1s;
+  transition: all 10s;
   z-index: -1;
 }
 

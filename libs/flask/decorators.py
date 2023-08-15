@@ -32,10 +32,10 @@ def token_required(f):
             token['user_agent'] = fernet.decrypt(token['user_agent'].encode()).decode()
         except Exception as e:
             print(e)
-            return jsonify({"error": "invalid token 1"}), 401
+            return jsonify({"error": "invalid token"}), 401
 
         if token['valid_until'] <= datetime.now():
-            return jsonify({"error": "expired token 2"}), 401
+            return jsonify({"error": "expired token"}), 401
 
         db = dbm.DbManager()
         query = """
@@ -47,7 +47,7 @@ def token_required(f):
         """
         existing_users = db.fetch(query, (token['user_id'], token['client_id'], ))
         if len(existing_users) < 1:
-            return jsonify({"error": "invalid token 3"}), 401
+            return jsonify({"error": "invalid token"}), 401
 
         if token['user_agent'] != user_agent_signature(request.user_agent):
             return jsonify({"error": "invalid user agent"}), 401

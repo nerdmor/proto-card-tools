@@ -726,21 +726,30 @@ class ListPropertiesModal extends ProtoModal{
 }
 
 class AccountModal extends ProtoModal{
-    constructor(domElement, deleteButtonElement, saveButtonElement, usernameElement, createdAtElement, sessionManager, saveCallback, deleteCallback){
+    constructor(domElement, deleteButtonElement, saveButtonElement, usernameElement, createdAtElement, sessionManager){
         super(domElement);
+        this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+
         this.deleteButtonElement = deleteButtonElement;
         this.saveButtonElement = saveButtonElement;
         this.usernameElement = usernameElement;
         this.createdAtElement = createdAtElement;
         this.sessionManager = sessionManager;
-        this.saveCallback = saveCallback;
-        this.deleteCallback = deleteCallback;
+        this.saveCallback = null;
+        this.deleteCallback = null;
 
         this._bind();
     }
 
+    registerCallbacks(saveCallback, deleteCallback){
+        this.saveCallback = saveCallback;
+        this.deleteCallback = deleteCallback;
+    }
+
     _bind(){
         this.deleteButtonElement.addEventListener('mousedown', (event) => {
+            if(this.deleteCallback === null) return;
             if(!event.target.hasAttribute('mouse_down')){
                 event.target.addEventListener('mouseup',  function(evt){
                     event.target.setAttribute('mouse_down', '0');
@@ -748,17 +757,20 @@ class AccountModal extends ProtoModal{
             }
             event.target.setAttribute('mouse_down', '1');
 
-            setTimeout((element, deleteCallback) => {
+            setTimeout((element, modalObj, deleteCallback) => {
                 if(element.getAttribute('mouse_down') == '1'){
-                    deleteCallback();
+                    modalObj.dismiss(() => {deleteCallback()});
                 }
-            }, 10000, event.target, this.deleteCallback);
+            }, 10000, event.target, this, this.deleteCallback);
         });
 
         this.saveButtonElement.addEventListener('click', (event) => {
-            this.saveCallback({
-                'username': this.usernameElement.value
-            });
+            if(this.saveCallback !== null){
+                this.saveCallback({
+                    'username': this.usernameElement.value
+                });
+            }
+            this.dismiss();
         });
     }
 

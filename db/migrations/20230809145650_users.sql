@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     token VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    INDEX(client_id)
+    INDEX(client_id),
+    UNIQUE KEY unique_username(username)
 );
 ALTER TABLE users AUTO_INCREMENT = 1001;

@@ -67,9 +67,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('user-modal-save'),  // saveButtonElement
         document.getElementById('user-modal-username'),  // usernameElement
         document.getElementById('user-modal-createdat'),  // createdAtElement
-        window.session,  // sessionManager
-        (updateData) => {console.log(updateData)},  // saveCallback
-        () => {console.log('delete account')}  // deleteCallback
+        window.session  // sessionManager
     );
 
     // global managers

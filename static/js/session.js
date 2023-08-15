@@ -4,6 +4,7 @@ class SessionManager{
         this.storageManager = storageManager;
 
         this.token = 0;
+        this.user_id = null;
         if(this.loadTokenFromUrl() == true){
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.delete('token');
@@ -26,7 +27,14 @@ class SessionManager{
     _setToken(token){
         if(this.token === token) return;
         this.token = token;
-        this.storageManager.setCookie('pct_jwt', token, 29);
+
+        if(this.token !== null){
+            this.storageManager.setCookie('pct_jwt', token, 29);
+            this.user_id = JSON.parse(atob(this.token.split('.')[1])).user_id;
+        }else{
+            this.storageManager.removeCookie('pct_jwt');
+            this.user_id = null;
+        }
         if(this.sessionChangeCallback) this.sessionChangeCallback(this.token);
     }
 
@@ -73,9 +81,7 @@ class SessionManager{
         }
 
         const response = await fetch(`${this.domain}${urlPath}`, options);
-        console.log(response);
         const json = await response.json();
-        console.log(json);
         return {'response': response, 'json': json};
     }
 
@@ -85,28 +91,68 @@ class SessionManager{
 
         if(!response.json || !Object.hasOwn(response.json, 'token')){
             console.error('invalid token refresh');
+            if(response.response.status == 401) this.logout();
             return;
         }
         this._setToken(response.json.token);
     }
 
     logout(){
-        this.token = null;
-        this.storageManager.removeCookie('pct_jwt');
-        this.sessionChangeCallback(this.token);
+        this._setToken(null);
     }
 
     async getUserDetails(){
         if(!this.token) return null;
-        const response = await this._apiRequest('/user/0', 'GET');
+        const response = await this._apiRequest(`/user/${this.user_id}`, 'GET');
 
         if(!Object.hasOwn(response.json, 'data')){
-            return null;
-        }
+            if(Object.hasOwn(response.json, 'error')){
+                console.error(response.json.error);
+            }else{
+                console.error('failed getting user details. Failed getting errors.');
+                console.error(response.response);
+            }
+            return null
+        };
 
         console.log(response.json.data);
 
         return response.json.data;
+    }
+
+    async updateUser(updateData){
+        if(!this.token) return null;
+        const response = await this._apiRequest(`/user/${this.user_id}`, 'POST', updateData);
+
+        if(!Object.hasOwn(response.json, 'message')){
+            if(Object.hasOwn(response.json, 'error')){
+                console.error(response.json.error);
+            }else{
+                console.error('failed updating user. Failed getting errors.');
+                console.error(response.response);
+            }
+            return null
+        };
+
+        return response.json.message;
+    }
+
+    async deleteUser(){
+        if(!this.token) return null;
+        const response = await this._apiRequest(`/user/${this.user_id}`, 'DELETE');
+
+        if(!Object.hasOwn(response.json, 'message')){
+            if(Object.hasOwn(response.json, 'error')){
+                console.error(response.json.error);
+            }else{
+                console.error('failed deleting user. Failed getting errors.');
+                console.error(response.response);
+            }
+            return null
+        };
+
+        this.logout();
+        return response.json.message;
     }
 }
 window.loadedModules.push('session');

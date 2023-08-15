@@ -20,6 +20,11 @@ class MainController{
         window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
 
         window.session.registerChangeCallback((token) => this.drawSessionButtons(token));
+
+        window.accountModal.registerCallbacks(
+            (updateData) => {window.session.updateUser(updateData)},  // saveCallback
+            () => {window.session.deleteUser()}
+        );
     }
 
     loadFromStorage(){
