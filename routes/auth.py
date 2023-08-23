@@ -24,6 +24,7 @@ def login():
         ['openid']
     )
     flow.redirect_uri = current_app.config.get('OAUTH_REDIRECT_URL')
+    print(f"/login {current_app.config.get('OAUTH_REDIRECT_URL')}")
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
@@ -75,18 +76,17 @@ def oauth():
         """
         user_id = db.execute(query, (credentials.client_id, credentials.client_secret, credentials.refresh_token, credentials.token, ))
         client_id = credentials.client_id
-        next_action = 'send_settings'
     else:
         user_id = existing_users[0]['id']
         client_id = existing_users[0]['client_id']
-        next_action = None
 
     jwt_token = make_token(user_id, client_id, user_agent_signature(request.user_agent))
-    redirect_url = "{protocol}{domain}/?token={jwt_token}&next_action={next_action}".format(
+    port = f":{current_app.config.get('PORT')}" if current_app.config.get('PORT') != '80' else ''
+    redirect_url = "{protocol}{domain}{port}/?token={jwt_token}".format(
         protocol=current_app.config.get('PROTOCOL'),
         domain=current_app.config.get('DOMAIN'),
-        jwt_token=jwt_token,
-        next_action=next_action
+        port=port,
+        jwt_token=jwt_token
     )
 
     return redirect(redirect_url, code=302)

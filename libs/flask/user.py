@@ -29,9 +29,9 @@ def get_user(user_id):
     existing_users = db.fetch(query, (user_id, ))
 
     if len(existing_users) != 1:
-        return jsonify({'error': 'invalid user_id'}), 403
+        return jsonify({"success": False, "message": 'invalid user_id'}), 403
 
-    return jsonify({'data': existing_users[0]})
+    return jsonify({"success": True, 'data': existing_users[0]})
 
 def update_user(user_id, user_data, system=False):
     db = dbm.DbManager()
@@ -42,7 +42,7 @@ def update_user(user_id, user_data, system=False):
     for k in USER_EDITABLE_FIELDS:
         if k in user_data:
             if k == 'username' and validate_username(user_data[k]) is False:
-                return jsonify({"error": "username can only contain letters, numbers, dashes and underscores"}), 400
+                return jsonify({"success": False, "message": "username can only contain letters, numbers, dashes and underscores"}), 400
 
             fields.append(k)
             values.append(user_data[k])
@@ -54,7 +54,7 @@ def update_user(user_id, user_data, system=False):
                 values.append(user_data[k])
 
     if len(values) == 0:
-        return jsonify({"error": "no valid fields to update"}), 400
+        return jsonify({"success": False, "message": "no valid fields to update"}), 400
 
     values.append(user_id)
 
@@ -69,16 +69,28 @@ def update_user(user_id, user_data, system=False):
     try:
         _ = db.execute(query, values)
     except IntegrityError:
-        return jsonify({'error': 'that username is taken'}), 500
+        return jsonify({"success": False, "message": 'that username is taken'}), 500
     except Exception as e:
         raise e
-        return jsonify({'error': 'failed to update user'}), 500
+        return jsonify({"success": False, "message": 'failed to update user'}), 500
 
-    return jsonify({'message': 'success'})
+    return jsonify({"success": True, 'message': 'success'})
 
 
 def delete_user(user_id):
     db = dbm.DbManager()
+
+    query = """
+    DELETE
+      FROM lists
+     WHERE user_id = %s
+    ;
+    """
+
+    try:
+        _ = db.execute(query, (user_id, ))
+    except Exception:
+        return jsonify({"success": False, "message": 'failed to delete user lists'}), 500
 
     query = """
     DELETE
@@ -90,7 +102,7 @@ def delete_user(user_id):
     try:
         _ = db.execute(query, (user_id, ))
     except Exception:
-        return jsonify({'error': 'failed to delete user'}), 500
+        return jsonify({"success": False, "message": 'failed to delete user'}), 500
 
-    return jsonify({'message': 'success'})
+    return jsonify({"success": True, 'message': 'success'})
 

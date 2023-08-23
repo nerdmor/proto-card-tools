@@ -267,19 +267,20 @@
           </div>
           <div class="modal-body container-fluid">
             <div class="row">
-              <div class="col-12 col-md-6">
-                <h2>General</h2>
-                <p>The site is © Felipe Raffani, 2023. The code is open source and can be found <a href="https://github.com/nerdmor/proto-card-tools" target="_blank">on Github</a></p>
-                <p>Card names, images, set, and color symbols are owned by Wizards of the Coast. Thank you for making this game.</p>
-                <p>Card search, icons, images and data are provided by <a href="https://scryfall.com" target="_blank">Scryfall</a>. Thank you, guys. The MtG world wouldn't be the same without you.</p>
-              </div>
-              <div class="col-12 col-md-6">
-                <h2>Privacy Policy</h2>
-                <p>This website uses cookies. They cannot be disabled. If you want to erase all the cookies that we have set, just click <a id="erase-cookies" href="#">here</a></p>
-                <p>Your behavior is not tracked inside this site. We only collect a small amount of information about your broswer to have an idea of how many people use this website.</p>
-                <p>Data that you decide to share with this site on creating/using an account may be used for website improvement.</p>
-                <p>No third parties get any data that you decide to share with this site. Not event Google Analytics here.</p>
-                <p>These are the cookies that we use:</p>
+              <h2>General</h2>
+              <p>The site is © Felipe Raffani, 2023. The code is open source and can be found <a href="https://github.com/nerdmor/proto-card-tools" target="_blank">on Github</a></p>
+              <p>Card names, images, set, and color symbols are owned by Wizards of the Coast. Thank you for making this game.</p>
+              <p>Card search, icons, images and data are provided by <a href="https://scryfall.com" target="_blank">Scryfall</a>. Thank you, guys. The MtG world wouldn't be the same without you.</p>
+            </div>
+            <div class="row">
+              <h2>Legal stuff</h2>
+              <h5>The short version</h5>
+              <p class="ps-3">This website uses cookies. They cannot be disabled. If you want to erase all the cookies that we have set, just click <a id="erase-cookies" href="#">here</a>
+              <br>Your behavior is not tracked inside this site. We only collect a small amount of information about your browser to have an idea of how many people use this website.
+              <br>Data that you decide to share with this site on creating/using an account may be used for website improvement.
+              <br>No third parties get any data that you decide to share with this site. Not event Google Analytics here.</p>
+              <p class="ps-3">These are the cookies that we use:</p>
+              <div class="px-3">
                 <table class="table">
                   <thead>
                     <tr>
@@ -301,8 +302,10 @@
                     </tr>
                   </tbody>
                 </table>
-                <p>In addition to these, any lists that you create are saved in local storage.</p>
               </div>
+              <p class="ps-3">In addition to these, any lists that you create are saved in local storage.</p>
+              <h5>The long version</h5>
+              <p class="ps-3">Please read our full <a href="/privacy-policy" target="_blank">Privacy Policy</a> and <a href="/terms-of-service" target="_blank">Terms of use</a></p>
             </div>
           </div>
         </div>
@@ -369,6 +372,19 @@
         </div>
       </div>
     </div>
+    <div id="list-select-modal" class="modal fade modal-lg modal-dialog-scrollable" aria-labelledby="list-select-modal-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header py-1">
+            <h1 id="list-select-modal-label" class="modal-title fs-5">Select a list</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="list-select-modal-body" class="modal-body px-1">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- End of Modals -->
 
     <!-- Headers start -->
@@ -389,7 +405,7 @@
                   <ul class="dropdown-menu header-dropdown">
                     <li><button id="header-list-properties" class="dropdown-item"><i class="bi bi-x-diamond-fill"></i>&nbsp;Properties</button></li>
                     <li><button id="header-list-new" class="dropdown-item"><i class="bi bi-file-earmark-plus-fill"></i>&nbsp;New</button></li>
-                    <li><button id="header-list-open" class="dropdown-item"><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</button></li>
+                    <li><button id="header-list-open" class="dropdown-item" ><i class="bi bi-folder-fill"></i>&nbsp;Open/Load</button></li>
                     <li><button id="header-list-export" class="dropdown-item"><i class="bi bi-download"></i>&nbsp;Export</button></li>
                   </ul>
                 </div>
@@ -418,15 +434,16 @@
                   </ul>
                 </div>
               </li>
-              <!-- <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li> -->
-              <!-- <li><a href="#" class="nav-link px-2 text-white">About</a></li> -->
             </ul>
-
-
-
             <div class="text-end header-collapsible">
               <button id="header-account-login" type="button" class="btn btn-outline-warning start-hidden"><img src="static/img/google.png" class="google-logo">&nbsp;Login/Sign-up</button>
-              <button id="header-account-account" type="button" class="btn btn-outline-warning start-hidden" aria-label="my account"><i class="bi bi-person-fill"></i></button>
+              <div id="header-account-dropdown" class="dropdown start-hidden">
+                <button class="btn btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-fill"></i></button>
+                <ul class="dropdown-menu header-dropdown" data-bs-theme="dark" z-index>
+                  <li><button id="header-account-account" type="button" class="dropdown-item" aria-label="my account"><i class="bi bi-person-vcard-fill"></i>&nbsp;My Account</button></li>
+                  <li><button id="header-account-logout" type="button" class="dropdown-item" aria-label="logout"><i class="bi bi-box-arrow-right"></i>&nbsp;Logout</button></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

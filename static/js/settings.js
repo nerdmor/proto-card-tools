@@ -63,11 +63,13 @@ class SettingsManager{
         return JSON.stringify(result);
     }
 
-    setValue(key, value){
+    setValue(key, value, suppressTriggers=false){
         if(!this.validKeys.includes(key)) return;
         if(SettingsManager.keys[key].type == 'Array' && !Array.isArray(value)) return;
         if(SettingsManager.keys[key].type != typeof(value)) return;
         this[key] = value;
+
+        if(suppressTriggers === true) return;
         if(Object.keys(this.changeTriggers).includes(key)){
             for(const callback of this.changeTriggers[key]){
                 callback(key, value);
@@ -79,6 +81,23 @@ class SettingsManager{
             }
         }
     }
+
+    loadFromObj(obj, callback=null){
+        if(callback){
+            const originalValue = this.toString();
+        }
+
+        for(const key of Object.keys(obj)){
+            this.setValue(key, obj[key], true);
+        }
+
+        if(callback){
+            const finalValue = this.toString();
+            if(originalValue != finalValue) callback(this);
+        }
+    }
+
+
 
     registerTrigger(key, callback){
         if(!this.validKeys.includes(key) && key != 'all') return;

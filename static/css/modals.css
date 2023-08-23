@@ -222,6 +222,66 @@
     max-height: 3rem;
 }
 
+.small-font{
+    font-size: 0.9rem;
+}
+
+#list-select-modal-body{
+    max-width: 100%;
+    overflow-x: hidden;
+}
+.list-select-modal-row{
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(33, 37, 41);
+}
+
+.list-select-modal-row:hover{
+    background-color: #303030;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #909090;
+    border-radius: 5px 5px 5px 5px;
+}
+
+.list-select-modal-list-delete-button{
+    padding: 0.3rem 0.1rem 0.3rem 0.1rem;
+    font-size: 1.1em;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid #dc3546;
+    position: relative;
+    border-radius: 4px;
+    color: #fff;
+    z-index: 1;
+}
+
+.list-select-modal-list-delete-button::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 9rem;
+  height: 100%;
+  z-index: -2;
+}
+
+.list-select-modal-list-delete-button::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0px;
+  height: 100%;
+  background-color: #b02a37;
+  transition: all 3s;
+  z-index: -1;
+}
+
+.list-select-modal-list-delete-button:active::before{
+  width: 100%;
+}
+
 
 /* *****************************************************************************
  * PRINTABLE

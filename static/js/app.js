@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.settings = new SettingsManager(window.storage.getObject('settings'));
 
     // modal handlers
+    window.listSelectModal = new ListSelectModal(
+        document.getElementById('list-select-modal'),  // domElement
+        document.getElementById('list-select-modal-body'),  // modalBodyElement
+        async (listId) => await window.mainController.selectList(listId),  // selectListCallback
+        async (listId) => await window.mainController.deleteList(listId)  // deleteListCallback
+    );
     window.textLoadModal = new TextLoadModal(document.querySelector('#text-entry-modal'), (txt) => window.mainController.ingestTextFromModal(txt));
     window.settingsModal = new SettingsModal(
         document.querySelector('#settings-modal'),
@@ -195,10 +201,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.settingsModal.call();
     });
 
-    // account button
+    // account buttons
     document.getElementById('header-account-account').addEventListener('click', function(event){
         window.accountModal.call();
     });
+    document.getElementById('header-account-logout').addEventListener('click', function(event){
+        window.session.logout();
+    });
+
+
 
     // call text load modal
     document.querySelector('#header-import-text').addEventListener('click', function(event){
@@ -215,6 +226,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // list settings modal
     document.querySelector('#header-list-properties').addEventListener('click', function(event){
         window.listManager.callPropertiesModal();
+    });
+
+    // open list
+    document.getElementById('header-list-open').addEventListener('click', function(event){
+        window.mainController.callListSelectModal();
     });
 
     // export menu

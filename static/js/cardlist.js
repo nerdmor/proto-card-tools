@@ -27,6 +27,8 @@ class CardList{
 
     constructor(statusList=null, cardMode=null){
         this.id = null;
+        this.user_id = null;
+        this.comments = null;
         this.cardMode = cardMode || Cardlist.allowedModes[0];
         this.name = makeFunnyName();
         this.cardQueue = [];
@@ -37,7 +39,7 @@ class CardList{
         this.filters = {};
         this.filteredCards = [];
         this.public = false;
-        this.lastUpdate = Math.floor((new Date()).getTime() / 1000);
+        this.lastUpdate = getTimeAsUtc();
 
         this.sortField = 'name';
         this.sortDirection = 'asc';
@@ -75,23 +77,28 @@ class CardList{
                         newCard.buildFromParams(values.cards[cardKey], true);
                         this.cards[newCard.key] = newCard;
                     }
-                    continue;
+                }else{
+                    this[key] = values[key];
                 }
-                this[key] = values[key];
             }
         }
     }
 
     async _callChangeCallback(){
-        this.lastUpdate = Math.floor((new Date()).getTime() / 1000);
+        this.lastUpdate = getTimeAsUtc();
         if(this.changeCallback !== null){
-            this.changeCallback(this);
+            if(this.changeCallback.constructor.name === 'AsyncFunction'){
+                await this.changeCallback(this);
+            }else{
+                this.changeCallback(this);
+            }
         }
     }
 
     toString(){
         var result = {
             'id': this.id,
+            'user_id': this.user_id,
             'cardMode': this.cardMode,
             'name': this.name,
             'cards': {},
@@ -197,31 +204,25 @@ class CardList{
     }
 
     _saveSettings(settings){
-        var changed = false;
-        if(settings.name != this.name){
-            this.name = settings.name;
-            changed = true;
+        const initialStatus = JSON.stringify({
+            'name': this.name,
+            'public': this.public,
+            'statusList': this.statusList
+        });
+
+        const possibleKeys = ['name', 'public', 'statusList'];
+        for(const k of possibleKeys){
+            if(!Object.hasOwn(settings, k)) continue;
+            this[ḱ] = settings[k];
         }
 
-        if(settings.public != this.public){
-            this.public = settings.public;
-            changed = true;
-        }
+        const finalStatus = JSON.stringify({
+            'name': this.name,
+            'public': this.public,
+            'statusList': this.statusList
+        });
 
-        if(settings.statusList.length != this.statusList.length){
-            this.statusList = settings.statusList;
-            changed = true;
-        }else{
-            for (var i = 0; i < settings.statusList.length; i++) {
-                if(settings.statusList[i] != this.statusList[i]){
-                    this.statusList = settings.statusList;
-                    changed = true;
-                    break;
-                }
-            }
-        }
-
-        if(changed == true){
+        if(initialStatus !== finalStatus){
             this._callChangeCallback();
         }
 

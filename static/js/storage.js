@@ -10,6 +10,22 @@ class StorageManager{
         this.sessionManager = this.sessionManager || sessionManager;
     }
 
+    async ensureRemoteSettings(){
+        if(this.sessionManager === null) return;
+        const userDetails = await this.sessionManager.getUserDetails();
+        if(userDetails === null || userDetails.success === false) return;
+        if(userDetails.data.settings === null){
+            this.saveSettings(window.settings.toString());
+        }
+    }
+
+    saveSettings(settings){
+        if(this.sessionManager === null) return;
+        if(typeof settings !== 'string') settings = JSON.stringify(settings);
+        this.setItem('settings', settings);
+        this.sessionManager.updateUser({'settings': settings});
+    }
+
     setCookie(name, value, duration=null){
         var options = { 'SameSite': 'Strict' };
         if(duration){
@@ -67,7 +83,7 @@ class StorageManager{
     }
 
     syncItem(itemType, item){
-        item = item.toString();
+        // item = item.toString();
         if(itemType == 'listManager'){
             this.setItem(itemType, item);
             this._addToSyncQueue(itemType, item);
@@ -89,8 +105,40 @@ class StorageManager{
     }
 
     async _triggerSync(itemType){
-        // TODO: call the API and save the list to the backend
-        console.log(this.syncQueue[itemType]);
+        // DEBUG
+        // console.log(`syncing: ${itemType}`);
+        // console.log(this.syncQueue[itemType]);
+        if(itemType == 'listManager'){
+            if(!Object.hasOwn(this.syncQueue, itemType)) return;
+            await this._syncList(this.syncQueue[itemType].value);
+            delete this.syncQueue[itemType];
+        }
+    }
+
+
+    async _syncList(list){
+        const listDetails = {
+            'name': list.name,
+            'comments': list.comments,
+            'body': list.toString(),
+            'public': list.public
+        };
+        var response = null
+        if(list.id === null){
+            console.log('storage.sync is calling createList');
+            response = await this.sessionManager.createList(listDetails);
+            if(response.success == true){
+                list.id = response.data.id;
+                list.user_id = this.sessionManager.user_id;
+            }else{
+                // TODO: improve this
+                console.error(response.error);
+            }
+        }else{
+            console.log('storage.sync is calling updateList');
+            response = await this.sessionManager.updateList(list.id, listDetails);
+            // TODO: continue from here
+        }
     }
 
     _setUserCookie(){

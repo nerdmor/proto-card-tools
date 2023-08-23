@@ -7,6 +7,8 @@ class MainController{
 
 
     constructor(){
+        window.storage.ensureRemoteSettings();
+
         this.registerListeners();
         this.loadFromStorage();
         window.drawCardList(window.listElement);
@@ -14,9 +16,9 @@ class MainController{
 
     registerListeners(){
         window.settings.registerTrigger('useWakeLock', (key, value) => window.wakeLock.setActive(value));
-        window.settings.registerTrigger('all', (k, v) => { window.storage.setItem('settings', window.settings.toString()) });
+        window.settings.registerTrigger('all', (k, v) => { window.storage.saveSettings(window.settings.toString()) });
 
-        window.listManager.changeCallback = (lm) => {window.storage.syncItem('listManager', listManager)};
+        window.listManager.changeCallback = async (lm) => {window.storage.syncItem('listManager', listManager)};
         window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
 
         window.session.registerChangeCallback((token) => this.drawSessionButtons(token));
@@ -29,6 +31,26 @@ class MainController{
 
     loadFromStorage(){
         window.listManager.loadFromStorage(window.storage.getObject('listManager'));
+    }
+
+    async callListSelectModal(){
+        const alertId = window.alertManager.addAlert('loading', true, 'info');
+        const lists = await window.session.listLists();
+        window.alertManager.removeAlert(alertId);
+        if(lists.success == false){
+            window.alertManager.addAlert('Could not load list of lists', false, 'danger', 2000);
+            return;
+        }
+
+        window.listSelectModal.call(lists.data);
+    }
+
+    async selectList(listId){
+        console.log(`selected list is ${listId}`);
+    }
+
+    async deleteList(listId){
+        console.log(`delete list is ${listId}`);
     }
 
     async toggleCollapseTop(setCollapsed=null){
@@ -338,10 +360,10 @@ class MainController{
     async drawSessionButtons(token){
         if(token === null || token == 0){
             document.getElementById('header-account-login').classList.remove('start-hidden');
-            document.getElementById('header-account-account').classList.add('start-hidden');
+            document.getElementById('header-account-dropdown').classList.add('start-hidden');
         }else{
             document.getElementById('header-account-login').classList.add('start-hidden');
-            document.getElementById('header-account-account').classList.remove('start-hidden');
+            document.getElementById('header-account-dropdown').classList.remove('start-hidden');
         }
     }
 

@@ -5,6 +5,7 @@ from config import configs
 from routes.auth import auth
 from routes.user import user
 from routes.static import static
+from routes.list import lists
 
 ENV = configs.env
 
@@ -20,6 +21,7 @@ if ENV == 'dev':
 app.register_blueprint(auth)
 app.register_blueprint(user)
 app.register_blueprint(static)
+app.register_blueprint(lists)
 
 # @app.route("/")
 # def home():
@@ -34,4 +36,4 @@ app.register_blueprint(static)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True,port=80)
+    app.run(host='0.0.0.0', debug=True, port=5000)

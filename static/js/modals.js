@@ -7,6 +7,7 @@ class ProtoModal{
         this.hiddenCallback = null;
         this.eraseOnDismiss = true;
         this.drawBeforeShow = true;
+        this.destroyHiddenCallback = true;
 
         this.element.addEventListener('hidden.bs.modal', (e) => this._afterHidden());
     }
@@ -38,7 +39,7 @@ class ProtoModal{
                 this.hiddenCallback();
             }
         }
-        this.hiddenCallback = null;
+        if(this.destroyHiddenCallback === true) this.hiddenCallback = null;
 
         if(this.eraseOnDismiss == true){
             this.html = '';
@@ -818,6 +819,112 @@ class AccountModal extends ProtoModal{
         if(this.modal === null) this.modal = new bootstrap.Modal(this.element, this.options);
         await this.draw();
         this.modal.show();
+    }
+}
+
+class ListSelectModal extends ProtoModal{
+    static listRowModel = `
+    <div class="row mx-0 px-1 my-1 py-1 list-select-modal-row">
+      <div class="col-4 col-md-3 list-select-modal-list-name d-inline-block text-truncate fw-bold">%%listName%%</div>
+      <div class="col-8 col-md-5 list-select-modal-list-description d-inline-block text-truncate small-font align-middle">%%listComment%%</div>
+      <div class="col-6 col-md-2 list-select-modal-list-select d-flex" list_id="%%listid%%"><button type="button" class="btn btn-sm btn-outline-success w-100 mx-1"><i class="bi bi-folder2-open"></i></button></div>
+      <div class="col-6 col-md-2 list-select-modal-list-delete d-flex" list_id="%%listid%%"><button type="button" class="list-select-modal-list-delete-button w-100 mx-1"><i class="bi bi-trash"></i></button></div>
+    </div>`;
+
+    constructor(domElement, modalBodyElement, selectListCallback, deleteListCallback){
+        super(domElement);
+        this.options = {'focus': true};
+        this.eraseOnDismiss = false;
+        this.drawBeforeShow = true;
+        this.destroyHiddenCallback = false;
+
+        this.modalBodyElement = modalBodyElement;
+        this.selectListCallback = selectListCallback;
+        this.deleteListCallback = deleteListCallback;
+
+        this.selectedListId = null;
+        this.actionOnHide = null;
+
+        this._bind();
+    }
+
+    _bind(){
+        //select list bind
+        this.modalBodyElement.addEventListener('click', (event) => {
+            if(!matchElementAndParent(event.target, ['.list-select-modal-list-select'])) return;
+
+            var listId = null;
+            if(event.target.hasAttribute('list_id')){
+                listId = event.target.getAttribute('list_id');
+            }else if(event.target.parentElement.hasAttribute('list_id')){
+                listId = event.target.parentElement.getAttribute('list_id');
+            }else{
+                console.error('could not find list id');
+                return;
+            }
+
+            this.selectedListId = listId;
+            this.actionOnHide = 'select';
+            this.dismiss();
+        });
+
+        //delete list bind
+        this.modalBodyElement.addEventListener('mousedown', (event) => {
+            if(!matchElementAndParent(event.target, ['.list-select-modal-list-delete'])) return;
+
+            var listId = null;
+            if(event.target.hasAttribute('list_id')){
+                listId = event.target.getAttribute('list_id');
+            }else if(event.target.parentElement.hasAttribute('list_id')){
+                listId = event.target.parentElement.getAttribute('list_id');
+            }else{
+                console.error('could not find list id');
+                return;
+            }
+
+            if(!event.target.hasAttribute('mouse_down')){
+                event.target.addEventListener('mouseup',  function(evt){
+                    event.target.setAttribute('mouse_down', '0');
+                });
+            }
+            event.target.setAttribute('mouse_down', '1');
+
+            setTimeout((element, modalObj, listId) => {
+                if(element.getAttribute('mouse_down') == '1'){
+                    modalObj.selectedListId = listId;
+                    modalObj.actionOnHide = 'delete';
+                    modalObj.dismiss();
+                }
+            }, 3000, event.target, this, listId);
+        });
+
+        this.hiddenCallback = async () => {
+            if(this.selectedListId === null) return;
+            if(this.actionOnHide == 'select'){
+                this.selectListCallback(this.selectedListId);
+            }else if(this.actionOnHide == 'delete'){
+                this.deleteListCallback(this.selectedListId);
+            }
+        };
+    }
+
+    async call(listData){
+        if(this.modal === null) this.modal = new bootstrap.Modal(this.element, this.options);
+        this.selectedListId = null;
+        this.actionOnHide = null;
+        this.draw(listData);
+        this.modal.show();
+    }
+
+    draw(listData){
+        var html = [];
+        for(const row of listData){
+            html.push(ListSelectModal.listRowModel.replaceAll('%%listName%%', row.name)
+                                                  .replaceAll('%%listComment%%', row.comments || '')
+                                                  .replaceAll('%%listid%%', row.id)
+            );
+        }
+        this.modalBodyElement.innerHTML =  html.join('\n');
     }
 }
 
