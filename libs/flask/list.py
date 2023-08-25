@@ -108,7 +108,7 @@ def delete_list(list_id, user_id=None):
     DELETE
       FROM lists
      WHERE id = %s
-       {wheresting}
+       {wherestring}
     ;
     """
 
@@ -118,7 +118,7 @@ def delete_list(list_id, user_id=None):
     except Exception:
         return jsonify({"success": False, "message": 'failed to delete list'}), 500
 
-    return jsonify({"success": True, 'message': 'success'})
+    return jsonify({"success": True, 'data': 'deleted list'})
 
 
 def update_list(list_id, user_id, data):

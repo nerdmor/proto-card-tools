@@ -82,11 +82,11 @@ class StorageManager{
         this.clearCookes();
     }
 
-    syncItem(itemType, item){
+    syncItem(itemType, item, suppressApi=false){
         // item = item.toString();
         if(itemType == 'listManager'){
             this.setItem(itemType, item);
-            this._addToSyncQueue(itemType, item);
+            if(suppressApi == false) this._addToSyncQueue(itemType, item);
         }
     }
 
@@ -125,7 +125,6 @@ class StorageManager{
         };
         var response = null
         if(list.id === null){
-            console.log('storage.sync is calling createList');
             response = await this.sessionManager.createList(listDetails);
             if(response.success == true){
                 list.id = response.data.id;
@@ -135,7 +134,6 @@ class StorageManager{
                 console.error(response.error);
             }
         }else{
-            console.log('storage.sync is calling updateList');
             response = await this.sessionManager.updateList(list.id, listDetails);
             // TODO: continue from here
         }

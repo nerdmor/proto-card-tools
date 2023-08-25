@@ -209,7 +209,6 @@ class SessionManager{
             const listDataBody = JSON.parse(listData.body);
             listDataBody.user_id = this.user_id;
             listData.body = JSON.stringify(listDataBody);
-            console.log('session.updateList is calling createList')
             return this.createList(listData);
         }
         if(Object.hasOwn(listData, 'comments') && listData.comments === null) delete listData.comments;
@@ -229,6 +228,31 @@ class SessionManager{
         if(!this.token) return null;
 
         const response = await this._apiRequest(`/list/by/${this.user_id}`, 'GET');
+        if(response.success == false){
+            console.error(response.error);
+            return {'success': false, 'message': response.error};
+        }
+
+        return {'success': true, 'data': response.json.data};
+    }
+
+    async deleteList(listId){
+        if(!this.token) return null;
+
+        const response = await this._apiRequest(`/list/${listId}`, 'DELETE');
+
+        if(response.success == false){
+            console.error(response.error);
+            return {'success': false, 'message': response.error};
+        }
+
+        return {'success': true, 'data': response.json.data};
+    }
+
+    async getList(listId){
+        if(!this.token) return null;
+        const response = await this._apiRequest(`/list/${listId}`, 'GET');
+
         if(response.success == false){
             console.error(response.error);
             return {'success': false, 'message': response.error};

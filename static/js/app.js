@@ -10,24 +10,17 @@ window.drawCardList = async function(element){
 
 
 document.addEventListener('DOMContentLoaded', async function() {
-    var allModulesLoaded = true;
-    while(true){
+    const moduleList = ['wakelock', 'alert', 'cardlist', 'constants', 'functions', 'main-controller', 'modals', 'protocard', 'scryfall', 'settings', 'storage', 'session', 'momentjs', 'moment-timezone'];
+    var allModulesLoaded = false;
+    while(allModulesLoaded == false){
         await localDelay(50);
-        if(!window.loadedModules.includes('wakelock')) continue;
-        if(!window.loadedModules.includes('alert')) continue;
-        if(!window.loadedModules.includes('cardlist')) continue;
-        if(!window.loadedModules.includes('constants')) continue;
-        if(!window.loadedModules.includes('functions')) continue;
-        if(!window.loadedModules.includes('main-controller')) continue;
-        if(!window.loadedModules.includes('modals')) continue;
-        if(!window.loadedModules.includes('protocard')) continue;
-        if(!window.loadedModules.includes('scryfall')) continue;
-        if(!window.loadedModules.includes('settings')) continue;
-        if(!window.loadedModules.includes('storage')) continue;
-        if(!window.loadedModules.includes('session')) continue;
-        break;
+        allModulesLoaded = true;
+        for(const mod of moduleList){
+            if(window.loadedModules.includes(mod)) continue;
+            allModulesLoaded = false;
+            break;
+        }
     }
-
 
 
     /* *****************************************************************************
@@ -79,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // global managers
     window.wakeLock = new WakeLockController();
     window.scryfall = new Scryfall();
-    window.alertManager = new AlertManager(window.alertElement);
+    window.alertManager = new AlertManager(window.alertElement, document.getElementById('alert-modal'));
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
     window.listManager.setAlertManager(window.alertManager);

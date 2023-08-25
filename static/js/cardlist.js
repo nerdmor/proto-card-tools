@@ -39,7 +39,7 @@ class CardList{
         this.filters = {};
         this.filteredCards = [];
         this.public = false;
-        this.lastUpdate = getTimeAsUtc();
+        this.lastUpdate = moment.tz();
 
         this.sortField = 'name';
         this.sortDirection = 'asc';
@@ -65,27 +65,51 @@ class CardList{
         this.resetFilters(true);
     }
 
-    loadFromStorage(values){
-        if(values === null) return;
-
+    _loadFromObject(values){
         var newCard = null;
         for(const key of Object.keys(this)){
-            if(Object.hasOwn(values, key)){
-                if(key == 'cards'){
-                    for(const cardKey of Object.keys(values.cards)){
-                        newCard = new ProtoCard(Object.keys(this.cards).length);
-                        newCard.buildFromParams(values.cards[cardKey], true);
-                        this.cards[newCard.key] = newCard;
-                    }
-                }else{
-                    this[key] = values[key];
+            if(!Object.hasOwn(values, key)) continue;
+            if(key == 'cards'){
+                for(const cardKey of Object.keys(values.cards)){
+                    newCard = new ProtoCard(Object.keys(this.cards).length);
+                    newCard.buildFromParams(values.cards[cardKey], true);
+                    this.cards[newCard.key] = newCard;
                 }
+            }else if(key == 'lastUpdate'){
+                this[key] = moment.tz(values[key], 'UTC');
+            }else{
+                this[key] = values[key];
             }
         }
     }
 
+    loadFromStorage(values){
+        if(values === null) return;
+        if(!Object.hasOwn(values, 'lastUpdate')) return;
+        values.lastUpdate = moment.tz(values.lastUpdate, 'UTC');
+
+        if(this.id !== null && values.lastUpdate < this.lastUpdate){
+            // TODO: this is the conflict callback
+            console.error('sync error! treat this');
+        }
+        this._loadFromObject(values);
+    }
+
+    loadFromBackend(values){
+        const previousValues = {
+            'id': this.id,
+            'lastUpdate': this.lastUpdate
+        };
+        this.loadFromStorage(values);
+        if(previousValues.id != this.id || previousValues.lastUpdate != this.lastUpdate){
+            this.lastUpdate = moment.tz();
+            return true;
+        }
+        return false;
+    }
+
     async _callChangeCallback(){
-        this.lastUpdate = getTimeAsUtc();
+        this.lastUpdate = moment.tz();
         if(this.changeCallback !== null){
             if(this.changeCallback.constructor.name === 'AsyncFunction'){
                 await this.changeCallback(this);

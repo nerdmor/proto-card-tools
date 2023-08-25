@@ -110,27 +110,6 @@ function makeRandomId(blocks=1, separator='-'){
     return result.join(separator);
 }
 
-function getTimeAsUtc(datetime=null){
-    var dt = null;
-    if(datetime === null){
-        dt = new Date();
-    }else{
-        dt = new Date(datetime);
-    }
-
-    const utcDate = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds(), 0));
-    // const offset = new Date().getTimezoneOffset() * -1 * 60000;
-    // return new Date(utcDate.getTime() + offset);
-    return new Date(utcDate.getTime());
-}
-
-function printDateTime(datetime){
-    const newDateObj = getTimeAsUtc(datetime);
-    return newDateObj.toISOString().replaceAll('T', ' ').split('.')[0];
-}
-
-
-
 // md5 ugly block
 function md5(d){var r = md5m(md5v(md5y(md5x(encodeURIComponent(d)),8*d.length)));return r.toLowerCase()};
 function md5m(d){for(var _,m="0123456789ABCDEF",f="",r=0;r<d.length;r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}

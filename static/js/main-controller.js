@@ -29,12 +29,33 @@ class MainController{
         );
     }
 
-    loadFromStorage(){
-        window.listManager.loadFromStorage(window.storage.getObject('listManager'));
+    async loadFromStorage(){
+        const storedList = window.storage.getObject('listManager');
+        if(storedList === null) return;
+        window.listManager.loadFromStorage(storedList);
+        if(storedList.id != null) this.loadFromBackend(storedList.id);
+    }
+
+    async loadFromBackend(listId){
+        window.alertManager.modalAlert('Loading list...', true, false);
+
+        const listData = await window.session.getList(listId);
+        if(listData.success == false){
+            window.alertManager.addAlert('Could not load list', false, 'danger', 2000);
+            window.alertManager.dismissModalAlert();
+            return;
+        }
+
+        if(window.listManager.loadFromBackend(listData.data.body) == true){
+            window.storage.syncItem('listManager', window.listManager, true);
+        }
+        window.drawCardList(window.listElement);
+
+        window.alertManager.dismissModalAlert();
     }
 
     async callListSelectModal(){
-        const alertId = window.alertManager.addAlert('loading', true, 'info');
+        const alertId = window.alertManager.addAlert('Loading lists...', true, 'info');
         const lists = await window.session.listLists();
         window.alertManager.removeAlert(alertId);
         if(lists.success == false){
@@ -46,11 +67,20 @@ class MainController{
     }
 
     async selectList(listId){
-        console.log(`selected list is ${listId}`);
+        this.loadFromBackend(listId);
     }
 
     async deleteList(listId){
-        console.log(`delete list is ${listId}`);
+        const alertId = window.alertManager.addAlert('Deleting list...', true, 'info');
+        const deleteResult = await session.deleteList(listId);
+        window.alertManager.removeAlert(alertId);
+
+        if(deleteResult.success == false){
+            window.alertManager.addAlert('Could not delete list', false, 'danger', 2000);
+            return;
+        }
+
+        this.callListSelectModal();
     }
 
     async toggleCollapseTop(setCollapsed=null){

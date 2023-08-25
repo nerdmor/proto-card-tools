@@ -812,7 +812,7 @@ class AccountModal extends ProtoModal{
         const user = await this.sessionManager.getUserDetails();
         if(user.success == false) throw new Error('Failed to get user data');
         this.usernameElement.value = user.data.username;
-        this.createdAtElement.value = printDateTime(user.data.created_at);
+        this.createdAtElement.value = printDateTime(moment.tz(user.data.created_at, 'UTC').tz(moment.tz.guess()).format('YYYY-MM-DD hh:mm:ss'));
     }
 
     async call(){
@@ -851,7 +851,7 @@ class ListSelectModal extends ProtoModal{
     _bind(){
         //select list bind
         this.modalBodyElement.addEventListener('click', (event) => {
-            if(!matchElementAndParent(event.target, ['.list-select-modal-list-select'])) return;
+            if(!matchElementAndParent(event.target, ['.list-select-modal-list-select-button'])) return;
 
             var listId = null;
             if(event.target.hasAttribute('list_id')){
@@ -870,24 +870,29 @@ class ListSelectModal extends ProtoModal{
 
         //delete list bind
         this.modalBodyElement.addEventListener('mousedown', (event) => {
-            if(!matchElementAndParent(event.target, ['.list-select-modal-list-delete'])) return;
+            const buttonElement = matchElementAndParent(event.target, ['.list-select-modal-list-delete-button']);
+            if(buttonElement == false) return;
 
             var listId = null;
-            if(event.target.hasAttribute('list_id')){
-                listId = event.target.getAttribute('list_id');
-            }else if(event.target.parentElement.hasAttribute('list_id')){
-                listId = event.target.parentElement.getAttribute('list_id');
-            }else{
-                console.error('could not find list id');
+            var currentElement = event.target;
+            while(!currentElement.classList.contains('modal-body')){
+                if(currentElement.hasAttribute('list_id')){
+                    listId = currentElement.getAttribute('list_id');
+                    break;
+                }
+                currentElement = currentElement.parentElement;
+            }
+            if(listId === null){
+                console.error('could not get a list id for deletion');
                 return;
             }
 
-            if(!event.target.hasAttribute('mouse_down')){
-                event.target.addEventListener('mouseup',  function(evt){
+            if(!buttonElement.hasAttribute('mouse_down')){
+                buttonElement.addEventListener('mouseup',  function(event){
                     event.target.setAttribute('mouse_down', '0');
                 });
             }
-            event.target.setAttribute('mouse_down', '1');
+            buttonElement.setAttribute('mouse_down', '1');
 
             setTimeout((element, modalObj, listId) => {
                 if(element.getAttribute('mouse_down') == '1'){
@@ -895,9 +900,10 @@ class ListSelectModal extends ProtoModal{
                     modalObj.actionOnHide = 'delete';
                     modalObj.dismiss();
                 }
-            }, 3000, event.target, this, listId);
+            }, 3000, buttonElement, this, listId);
         });
 
+        // hiddencallback bind
         this.hiddenCallback = async () => {
             if(this.selectedListId === null) return;
             if(this.actionOnHide == 'select'){
