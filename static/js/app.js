@@ -216,6 +216,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         );
     });
 
+    // new list
+    document.getElementById('header-list-new').addEventListener('click', function(event){
+        window.listManager.newList(window.settings.enabledStatus);
+        window.listManager.callPropertiesModal();
+    });
+
     // list settings modal
     document.querySelector('#header-list-properties').addEventListener('click', function(event){
         window.listManager.callPropertiesModal();

@@ -576,6 +576,7 @@ class ListPropertiesModal extends ProtoModal{
 
         this.saveCallback = null;
         this.statusList = null;
+        this.save = false;
 
         this._setPopOver();
         this._bind();
@@ -583,6 +584,25 @@ class ListPropertiesModal extends ProtoModal{
 
     registerCallbacks(saveCallback){
         this.saveCallback = saveCallback;
+        if(this.saveCallback === null){
+            this.hiddenCallback = async () => {};
+        }else{
+            this.hiddenCallback = async () => {
+                if(this.save == false) return;
+                this.save = false;
+                const payload = {
+                    'name': this.listNameElement.value,
+                    'public': this.listPropertiesPublicElement.checked,
+                    'statusList': this.statusList
+                };
+                if(this.saveCallback.constructor.name === 'AsyncFunction'){
+                    await this.saveCallback(payload);
+                }else{
+                    this.saveCallback(payload);
+                }
+            };
+            this.destroyHiddenCallback = false;
+        }
     }
 
     _setPopOver(){
@@ -610,7 +630,7 @@ class ListPropertiesModal extends ProtoModal{
         });
         this.listPropertiesStatusListElement.addEventListener('click', (event) => {
             var buttonAction = null;
-            var parentElement = event.target.parentElement;
+            const parentElement = event.target.parentElement;
             if(event.target.matches('.status-options-btn-up') || parentElement.matches('.status-options-btn-up')){
                 buttonAction = 'up';
             }else if(event.target.matches('.status-options-btn-down') || parentElement.matches('.status-options-btn-down')){
@@ -629,18 +649,10 @@ class ListPropertiesModal extends ProtoModal{
 
             this._updateStatusList(statusIndex, buttonAction);
         });
+
         this.listPropertiesSaveElement.addEventListener('click', (event)=>{
-            if(this.saveCallback){
-                this.dismiss(() => {
-                    this.saveCallback({
-                        'name': this.listNameElement.value,
-                        'public': this.listPropertiesPublicElement.checked,
-                        'statusList': this.statusList
-                    });
-                });
-            }else{
-                this.dismiss();
-            }
+            this.save = true;
+            this.dismiss();
         });
     }
 
@@ -704,16 +716,7 @@ class ListPropertiesModal extends ProtoModal{
     draw(cardList){
         this.listNameElement.value = cardList.name;
         this.listPropertiesPublicElement.checked = cardList.public;
-
-        // I hate working with time
-        const lastUpdate = new Date(0);
-        lastUpdate.setUTCSeconds(cardList.lastUpdate);
-        const lastUpdateMonth = `${lastUpdate.getMonth() < 9 ? '0': ''}${lastUpdate.getMonth()+1}`;
-        const lastUpdateDay = `${lastUpdate.getDate() < 10 ? '0': ''}${lastUpdate.getDate()}`;
-        const lastUpdateHour = `${lastUpdate.getHours() < 10 ? '0': ''}${lastUpdate.getHours()}`;
-        const lastUpdateMinute = `${lastUpdate.getMinutes() < 10 ? '0': ''}${lastUpdate.getMinutes()}`;
-        const lastUpdateSecond = `${lastUpdate.getSeconds() < 10 ? '0': ''}${lastUpdate.getSeconds()}`;
-        this.listPropertiesLastUpdateElement.value = `${lastUpdate.getFullYear()}-${lastUpdateMonth}-${lastUpdateDay} ${lastUpdateHour}:${lastUpdateMinute}:${lastUpdateSecond}`;
+        this.listPropertiesLastUpdateElement.value = cardList.lastUpdate.tz(moment.tz.guess()).format('YYYY-MM-DD hh:mm:ss');
 
         this._drawStatusList();
         this.html = 'html';
@@ -812,7 +815,7 @@ class AccountModal extends ProtoModal{
         const user = await this.sessionManager.getUserDetails();
         if(user.success == false) throw new Error('Failed to get user data');
         this.usernameElement.value = user.data.username;
-        this.createdAtElement.value = printDateTime(moment.tz(user.data.created_at, 'UTC').tz(moment.tz.guess()).format('YYYY-MM-DD hh:mm:ss'));
+        this.createdAtElement.value = moment.tz(user.data.created_at, 'UTC').tz(moment.tz.guess()).format('YYYY-MM-DD hh:mm:ss');
     }
 
     async call(){

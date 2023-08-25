@@ -65,6 +65,29 @@ class CardList{
         this.resetFilters(true);
     }
 
+    newList(statusList=null){
+        this.id = null;
+        this.user_id = null;
+        this.comments = null;
+        this.name = makeFunnyName();
+        this.cardQueue = [];
+        this.quickQueue = [];
+        this.cards = {};
+        this.sets = {};
+        this.statusList = statusList || [];
+        this.filters = {};
+        this.filteredCards = [];
+        this.public = false;
+        this.lastUpdate = moment.tz();
+
+        this.sortField = 'name';
+        this.sortDirection = 'asc';
+
+        this.errors = [];
+
+        this.resetFilters(true);
+    }
+
     _loadFromObject(values){
         var newCard = null;
         for(const key of Object.keys(this)){
