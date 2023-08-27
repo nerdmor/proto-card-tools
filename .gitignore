@@ -159,3 +159,6 @@ config/config.json
 config/flask.py
 test.py
 
+tmp/*
+new_ids.txt
+static/img/usr/*
