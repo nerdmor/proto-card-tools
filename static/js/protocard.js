@@ -229,6 +229,7 @@ class ProtoCard{
         this.status = null;
         this.printmode = null;
         this.loaded = 0;
+        this.trustName = false;
     }
 
     toString(){
@@ -263,7 +264,8 @@ class ProtoCard{
         'statType': this.statType,
         'isBasicLand': this.isBasicLand,
         'colorSortValue': this.colorSortValue,
-        'status': this.status
+        'status': this.status,
+        'trustName': this.trustName
       };
 
       result.sets[this.selectedSet] = {};
@@ -317,8 +319,6 @@ class ProtoCard{
         this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}${this.selectedNumber}-${this.foil?'foil':'nonfoil'}`);
     }
 
-
-
     drawInner(setData, printmode=null){
         if(printmode === null){
             if(this.printmode === null){
@@ -353,10 +353,14 @@ class ProtoCard{
         throw new Error('Invalid printmode');
     }
 
+    getSelectedImageUrl(){
+      return this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality];
+    }
+
     _drawInnerFind(setData){
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
-                                                  .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality])
+                                                  .replaceAll('%%cardimageurl%%', this.getSelectedImageUrl())
                                                   .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status)
                                                   .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name)
@@ -385,7 +389,7 @@ class ProtoCard{
         var html = [];
 
         const innerHtml = ProtoCard.proxyModels.innerModel.replaceAll('%%cardname%%', this.name)
-                                                         .replaceAll('%%cardimageurl%%', this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality]);
+                                                         .replaceAll('%%cardimageurl%%', this.getSelectedImageUrl());
         const outerHtml = ProtoCard.proxyModels.outerModel.replaceAll('%%cardkey%%', this.key)
                                                           .replaceAll('%%inner-model%%', innerHtml);
 
@@ -595,14 +599,10 @@ class ProtoCard{
 
     buildFromParams(params, calculate=false){
         for (const [key, value] of Object.entries(params)) {
-            if(Object.hasOwn(this, key)){
-                this[key] = value;
-            }
+            if(Object.hasOwn(this, key)) this[key] = value;
         }
 
-        if(calculate){
-            this.makeKey();
-        }
+        if(calculate) this.makeKey();
     }
 
     async buildFromScryFall(client=null, params=null){
@@ -621,7 +621,17 @@ class ProtoCard{
         }
         params = {...params, 'page': 0, 'index':this.index};
 
-        var scryData = await this.scryfallClient.cardsNamed(this.typedName);
+        if(this.trustName == true){
+            if(this.name === null && this.typedName !== null) this.name = this.typedName;
+
+            params['page'] = 1;
+            var scryData = await this.scryfallClient.cardsSearch(
+                `!"${this.name}"`,
+                {'unique': 'prints'}
+            );
+        }else{
+            var scryData = await this.scryfallClient.cardsNamed(this.typedName);
+        }
 
         const responseStatus = scryData.status || 200;
         if(responseStatus != 200){
@@ -641,10 +651,7 @@ class ProtoCard{
         }
 
         var firstFace = {};
-        var scrycard = {};
-        for (var i = 0; i < scryData.length; i++) {
-            scrycard = scryData[i];
-
+        for (const scrycard of scryData) {
             // ensuring we don't try to parse weird layouts
             if(window.constants.invalid_layouts.includes(scrycard.layout)){
                 console.error(`invalid layout for ${this.typedName}: ${scrycard.layout}`);
@@ -723,7 +730,7 @@ class ProtoCard{
 
         // now we search for "all versions"
         await delay(100);
-        params['page'] = 1;
+        params['page'] += 1;
         const scryResponse = await this.scryfallClient.cardsSearch(
             `!"${this.name}"`,
             {'unique': 'prints'}
@@ -829,6 +836,7 @@ class ProtoCard{
 
 
             this.urls.ligamagic = `https://www.ligamagic.com.br/?view=cards/card&card=${this._makeLigaName()}`;
+            this.trustName = true;
             this.loaded = 2;
 
             if(this.selectedSet === null || !Object.keys(this.sets).includes(this.selectedSet)){

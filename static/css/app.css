@@ -1,3 +1,7 @@
+.dropdown i{
+    margin-right: 0.2rem;
+}
+
 #header-collapse-wrapper{
     margin-right: 1em;
 }
@@ -29,7 +33,11 @@
 }
 
 #main-container{
-    max-width: 90%;
+    max-width: 100%;
+}
+
+#draw-area{
+    max-width: 100%;
 }
 
 #main-header{

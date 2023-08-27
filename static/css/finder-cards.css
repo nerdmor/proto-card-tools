@@ -63,6 +63,11 @@
   align-items: center;
 }
 
+.finder-icon-container{
+  max-height: 1.8rem;
+  overflow-x: hidden;
+}
+
 @media (min-width: 1275px) {
   .finder-icon-group {
     min-height: 1rem;

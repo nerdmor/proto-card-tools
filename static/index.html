@@ -394,6 +394,63 @@
         </div>
       </div>
     </div>
+    <div id="list-export-modal" class="modal fade modal-lg" aria-labelledby="list-export-modal-aria" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="list-export-modal-aria">Export list</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="list-export-modal-body-1" class="modal-body">
+            <div class="row">
+              <div class="col-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">To Clipboard</h5>
+                    <p class="card-text">Export the list to your clipboard to use it somewhere else</p>
+                    <button id="list-export-modal-clipboard" type="button" class="btn btn-primary"><i class="bi bi-clipboard-fill"></i>&nbsp;Export</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Wantlist Image</h5>
+                    <p class="card-text">Make an image, ideal for wantlist sharing on social media</p>
+                    <button id="list-export-modal-image" type="button" class="btn btn-primary"><i class="bi bi-image-fill"></i>&nbsp;Download</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="list-export-modal-body-2" class="modal-body start-hidden"></div>
+        </div>
+      </div>
+    </div>
+    <div id="import-card-url-modal" class="modal fade" aria-labelledby="import-card-url-aria" aria-hidden="true">
+      <div class="modal-dialog">
+        <form id="import-card-url-form" name="import-card-url-form" class="modal-content" target="#">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="import-card-url-aria">Import cards from URL</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="input-group">
+              <span class="input-group-text" id="import-card-url-label">URL</span>
+              <input id="import-card-url-txt" type="text" class="form-control" placeholder="URL" aria-label="URL" aria-describedby="import-card-url-label">
+            </div>
+            <div id="import-card-url-modal-error" class="alert alert-danger py-1 mt-1 start-hidden" role="alert"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="import-card-url-button" type="submit" class="btn btn-outline-warning">Import</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
 
     <!-- End of Modals -->
 

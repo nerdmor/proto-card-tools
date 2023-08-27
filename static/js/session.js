@@ -67,6 +67,18 @@ class SessionManager{
         return url.join('');
     }
 
+    async cardsFromUrl(url){
+        if(this.token === null) return;
+        url = btoa(url).replaceAll('/', '.');
+        const response = await this._apiRequest(`/cards/from/${url}`, 'GET');
+
+        if(response.success == false){
+            console.error(response.error);
+            return {'success': false, 'message': response.error};
+        }
+        return {'success': true, 'data': response.json.data};
+    }
+
     async requestLogin(){
         const response = await fetch(this._makeURL('/login'));
         const details = await response.json();
@@ -253,6 +265,17 @@ class SessionManager{
         if(!this.token) return null;
         const response = await this._apiRequest(`/list/${listId}`, 'GET');
 
+        if(response.success == false){
+            console.error(response.error);
+            return {'success': false, 'message': response.error};
+        }
+
+        return {'success': true, 'data': response.json.data};
+    }
+
+    async makeListImage(cardlist){
+        if(!this.token) return null;
+        const response = await this._apiRequest(`/image/wantlist`, 'POST', {'wantlist': cardlist});
         if(response.success == false){
             console.error(response.error);
             return {'success': false, 'message': response.error};

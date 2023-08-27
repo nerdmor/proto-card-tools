@@ -246,6 +246,15 @@ class MainController{
         this.loadQueueFromScryfallModalHandler();
     }
 
+    async importFromUrl(url){
+        const response = await window.session.cardsFromUrl(url);
+        if(response.success == false){
+            window.alertManager.addAlert('Failed to import from url', false, 'danger', 1500);
+            return;
+        }
+        window.listManager.ingestFromUrl(response.data);
+    }
+
     async filterSelectAll(filterType, suppressLoad=false, forceValue=null){
         if(filterType == 'all'){
             await this.filterSelectAll('color', true, forceValue);
@@ -380,6 +389,13 @@ class MainController{
         window.alertManager.addAlert('List copied to clipboard', false, 'warning', 1500);
     }
 
+    async exportToImage(modal){
+        const payload = window.listManager.exportCardsToImage();
+        const response = await window.session.makeListImage(payload);
+        if(response.success != true) return;
+        modal.showImageUrls(response.data);
+    }
+
     clearData(){
         var confirmation = confirm('Are you sure you want to delete all local data?');
         if(confirmation === false) return;
@@ -395,6 +411,13 @@ class MainController{
             document.getElementById('header-account-login').classList.add('start-hidden');
             document.getElementById('header-account-dropdown').classList.remove('start-hidden');
         }
+    }
+
+    newList(){
+        window.listManager.newList(window.settings.enabledStatus);
+        window.drawCardList(window.listElement);
+        window.storage.syncItem('listManager', window.listManager, true);
+        window.listManager.callPropertiesModal();
     }
 
 }

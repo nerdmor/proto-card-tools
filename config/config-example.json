@@ -1,3 +1,7 @@
 {
-    "env": "dev"
+    "env": "dev",
+    "img_cardshare_raw_dir": "static/img/usr/cardshare/raw",
+    "img_cardshare_work_dir": "static/img/usr/cardshare/work",
+    "img_cardshare_ready_dir":"static/img/usr/cardshare/ready",
+    "tmp_dir": "tmp"
 }

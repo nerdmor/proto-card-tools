@@ -1,0 +1,13 @@
+-- 20230827134812_cards.sql
+
+
+DROP TABLE IF EXISTS cards;
+
+CREATE TABLE IF NOT EXISTS cards (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    printed_name VARCHAR(300) NOT NULL,
+    name VARCHAR(300) NOT NULL,
+    scryfall_id VARCHAR(300) NOT NULL,
+    UNIQUE KEY unique_name(printed_name)
+);
+ALTER TABLE cards AUTO_INCREMENT = 1001;

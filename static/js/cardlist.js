@@ -260,7 +260,7 @@ class CardList{
         const possibleKeys = ['name', 'public', 'statusList'];
         for(const k of possibleKeys){
             if(!Object.hasOwn(settings, k)) continue;
-            this[ḱ] = settings[k];
+            this[k] = settings[k];
         }
 
         const finalStatus = JSON.stringify({
@@ -571,7 +571,7 @@ class CardList{
         return response;
     }
 
-    _digestText(text){
+    _digestText(text, trustNames=false){
         if(!text) return;
 
         var typedList = text.split('\n').filter(e => e.length >= 2);
@@ -597,7 +597,8 @@ class CardList{
                 typedName: parsedLine.typedName,
                 foil: parsedLine.foil,
                 selectedSet: parsedLine.set,
-                quantity: parsedLine.quantity
+                quantity: parsedLine.quantity,
+                trustName: trustNames
             });
             queue.push(newCard);
         }
@@ -618,6 +619,7 @@ class CardList{
         if(ingestedText.queue.length != 1) return;
 
         const newCard = ingestedText.queue[0];
+        newCard.trustName = true;
         const alertId = this.alertManager.addAlert(`adding ${newCard.typedName}`, true, 'info');
         var loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': this.cards.length});
         if(newCard.loaded == 2){
@@ -628,9 +630,14 @@ class CardList{
             }
         }else{
             if(newCard.errors.length > 0){
-                this.alertManager.addAlert(newCard.errors.join('<br>'), false, 'danger', 1500);
+                var alertText = [];
+                for(const err of newCard.errors){
+                    console.log(err);
+                    alertText.push(err.error);
+                }
+                this.alertManager.addAlert(alertText.join('<br>'), false, 'danger', 3000);
             }else{
-                this.alertManager.addAlert(`could not load ${newCard.typedName}`, false, 'danger', 1500);
+                this.alertManager.addAlert(`could not load ${newCard.typedName}`, false, 'danger', 3000);
             }
             this.alertManager.removeAlert(alertId);
             return;
@@ -654,11 +661,11 @@ class CardList{
 
 
 
-    async ingestText(text){
+    async ingestText(text, trustNames=false){
         if(!text) return;
         this.errors = [];
 
-        const ingestedText = this._digestText(text);
+        const ingestedText = this._digestText(text, trustNames);
         this.errors = ingestedText.errors;
         if(ingestedText.queue.length == 0){
             this.cardQueue = [];
@@ -738,22 +745,33 @@ class CardList{
                 this._callChangeCallback();
             });
         }
-
     }
 
-    ingestFile(fileContents, fileType){
+    ingestFromUrl(contents){
+        var innerContents = [];
+        for(const catName of Object.keys(contents)){
+            innerContents.push(catName);
+            for(const card of contents[catName]){
+                innerContents.push(`${card['quantity']} ${card['name']}`);
+            }
+        }
+
+        this.ingestFile(innerContents, 'archidekt', true);
+    }
+
+    ingestFile(fileContents, fileType, trustNames=false){
         if(fileType == 'archidekt'){
-            this._ingestArchidektFile(fileContents);
+            this._ingestArchidektFile(fileContents, trustNames);
         }else if(fileType == 'arena'){
-            this._ingestArenaFile(fileContents);
+            this._ingestArenaFile(fileContents, trustNames);
         }else if(fileType == 'mtggoldfish'){
-            this._ingestMtgGoldFishFile(fileContents);
+            this._ingestMtgGoldFishFile(fileContents, trustNames);
         }else if(fileType == 'mtgotxt'){
-            this.ingestText(fileContents.join('\n'));
+            this.ingestText(fileContents.join('\n'), trustNames);
         }else if(fileType == 'mtgodek'){
-            this._ingestDek(fileContents.join('\n'));
+            this._ingestDek(fileContents.join('\n'), trustNames);
         }else if(fileType == 'mwdeck'){
-            this._ingestMwdeck(fileContents);
+            this._ingestMwdeck(fileContents, trustNames);
         }else{
             return;
         }
@@ -792,7 +810,7 @@ class CardList{
         }
     }
 
-    async _ingestMwdeck(splitList){
+    async _ingestMwdeck(splitList, trustNames=false){
         var text = '';
         var match = null;
         var newCard = null;
@@ -808,7 +826,8 @@ class CardList{
             newCard = new ProtoCard(this.cardQueue.length);
             newCard.buildFromParams({
                 typedName: match[2],
-                quantity: match[1]
+                quantity: match[1],
+                trustName: trustNames
             });
             this.cardQueue.push(newCard);
         }
@@ -828,7 +847,7 @@ class CardList{
         }
     }
 
-    async _ingestMtgGoldFishFile(splitList){
+    async _ingestMtgGoldFishFile(splitList, trustNames=false){
         if(splitList.length < 1) return;
 
         const reWithExtra = /^(\d+) (.+) (\<.+\>)? \[(.+)\]$/;
@@ -876,7 +895,8 @@ class CardList{
             newCard.buildFromParams({
                 typedName: parsedLine.typedName,
                 selectedSet: parsedLine.set,
-                quantity: parsedLine.quantity
+                quantity: parsedLine.quantity,
+                trustName: trustNames
             });
             this.cardQueue.push(newCard);
         }
@@ -896,7 +916,7 @@ class CardList{
         }
     }
 
-    async _ingestArenaFile(splitList){
+    async _ingestArenaFile(splitList, trustNames=false){
         if(splitList.length < 1) return;
         var cards = [];
         var parsedLine = null;
@@ -913,7 +933,8 @@ class CardList{
             newCard.buildFromParams({
                 typedName: parsedLine.typedName,
                 selectedSet: parsedLine.set,
-                quantity: parsedLine.quantity
+                quantity: parsedLine.quantity,
+                trustName: trustNames
             });
             this.cardQueue.push(newCard);
         }
@@ -933,7 +954,7 @@ class CardList{
         }
     }
 
-    _ingestArchidektFile(splitList){
+    _ingestArchidektFile(splitList, trustNames=false){
         var categories = {};
         var currentCategory = '';
 
@@ -947,7 +968,8 @@ class CardList{
                 newCard = new ProtoCard(0);
                 newCard.buildFromParams({
                     typedName: match[2],
-                    quantity: parseInt(match[1])
+                    quantity: parseInt(match[1]),
+                    trustName: trustNames
                 });
                 categories[currentCategory].push(newCard);
             }else if(!Object.entries(categories).includes(row)){
@@ -1101,6 +1123,17 @@ class CardList{
         var result = [];
         for(const key of Object.keys(this.cards)){
             result.push(`${this.cards[key].quantity} ${this.cards[key].names.compiled}`);
+        }
+        return result;
+    }
+
+    exportCardsToImage(){
+        var result = [];
+        for(const key of Object.keys(this.cards)){
+            result.push({
+                'quantity': this.cards[key].quantity,
+                'url': this.cards[key].getSelectedImageUrl()
+            });
         }
         return result;
     }

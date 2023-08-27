@@ -110,7 +110,6 @@ class FileSelectModal extends ProtoModal{
         this.drawBeforeShow = false;
 
         this.fileImportInputElement = fileImportInputElement;
-        this.fileImportButtonElement = fileImportButtonElement;
         this.fileTypeElementName = fileTypeElementName;
         this.fileTypeIdPrefix = fileTypeIdPrefix;
         this.fileIngestCallback = null;
@@ -118,14 +117,14 @@ class FileSelectModal extends ProtoModal{
         this.file = null;
         this.selectedFileType = null;
 
-        this._bind();
+        this._bind(fileImportButtonElement);
     }
 
     registerCallbacks(fileIngestCallback){
         this.fileIngestCallback = fileIngestCallback;
     }
 
-    _bind(){
+    _bind(fileImportButtonElement){
         this.fileImportInputElement.addEventListener('change', (event) => {
             try {
                 this.file = event.target.files[0];
@@ -134,7 +133,7 @@ class FileSelectModal extends ProtoModal{
             }
         });
 
-        this.fileImportButtonElement.addEventListener('click', (event) => {
+        fileImportButtonElement.addEventListener('click', (event) => {
             this._processModalConfirm();
         });
     }
@@ -178,15 +177,12 @@ class ArchidektFileImportModal extends ProtoModal {
         this.options = {'focus': true};
         this.eraseOnDismiss = false;
 
-        this.okButtonElement = okButtonElement;
         this.switchWrapperElement = switchWrapperElement;
-        this.selectAllCategoriesElement = selectAllCategoriesElement;
-        this.selectNoCategoriesElement = selectNoCategoriesElement;
 
         this.confirmCallback = null;
         this.cancelCallback = null;
 
-        this._bind();
+        this._bind(okButtonElement, selectAllCategoriesElement, selectNoCategoriesElement);
     }
 
     registerCallbacks(confirmCallback, cancelCallback){
@@ -211,11 +207,11 @@ class ArchidektFileImportModal extends ProtoModal {
         this.switchWrapperElement.innerHTML = toggles;
     }
 
-    _bind(){
+    _bind(okButtonElement, selectAllCategoriesElement, selectNoCategoriesElement){
         this.element.addEventListener('hide.bs.modal', (e) => this._callCancelCallback());
-        this.okButtonElement.addEventListener('click', (e) => this._callConfirmCallBack());
-        this.selectAllCategoriesElement.addEventListener('click', (e) => this.setAllCategories(true), true);
-        this.selectNoCategoriesElement.addEventListener('click', (e) => this.setAllCategories(false), true);
+        okButtonElement.addEventListener('click', (e) => this._callConfirmCallBack());
+        selectAllCategoriesElement.addEventListener('click', (e) => this.setAllCategories(true), true);
+        selectNoCategoriesElement.addEventListener('click', (e) => this.setAllCategories(false), true);
     }
 
     dismiss(){
@@ -934,6 +930,107 @@ class ListSelectModal extends ProtoModal{
             );
         }
         this.modalBodyElement.innerHTML =  html.join('\n');
+    }
+}
+
+class ListExportModal extends ProtoModal{
+    static imageButtonModel = `
+    <a class="btn btn-sm btn-outline-warning download-image-button" download="%%filename%%" href="%%imageurl%%"><i class="bi bi-arrow-down-circle-fill"></i>&nbsp;Image %%imagenumber%%</a>
+    `;
+
+    constructor(domElement, clipboardButtonElement, clipboardCallback, imageButtonElement, imageCallback){
+        super(domElement);
+        this.clipboardCallback = clipboardCallback;
+        this.imageButtonElement = imageButtonElement;
+        this.imageCallback = imageCallback;
+
+        this.eraseOnDismiss = false;
+
+        this._bind(clipboardButtonElement, imageButtonElement);
+    }
+
+    _bind(clipboardButtonElement, imageButtonElement){
+        clipboardButtonElement.addEventListener('click', () => {
+            this.dismiss(() => this.clipboardCallback());
+        });
+        imageButtonElement.addEventListener('click', () => this.imageCallback(this));
+    }
+
+    draw(){
+        this.element.getElementById("list-export-modal-body-1").classList.remove('start-hidden');
+        this.element.getElementById("list-export-modal-body-2").classList.add('start-hidden');
+    }
+
+    showImageUrls(urlList){
+        const secondBodyElement = this.element.getElementById("list-export-modal-body-2");
+        this.element.getElementById("list-export-modal-body-1").classList.add('start-hidden');
+        secondBodyElement.classList.remove('start-hidden');
+        var body = [];
+        var filename = '';
+        for (var i = 0; i < urlList.length; i++) {
+            filename = urlList[i].split('/')
+            body.push(ListExportModal.imageButtonModel.replaceAll('%%filename%%', urlList[i].split('/').slice(-1)[0])
+                                                      .replaceAll('%%imageurl%%', urlList[i])
+                                                      .replaceAll('%%imagenumber%%', i)
+                     );
+        }
+        secondBodyElement.innerHTML = body.join('\n');
+    }
+}
+
+class ImportCardsFromUrlModal extends ProtoModal{
+    constructor(domElement, formElement, urlTxtElement, urlEnterCallback){
+        super(domElement);
+        this.eraseOnDismiss = false;
+        this.drawBeforeShow = false;
+        this.destroyHiddenCallback = true;
+
+        this.urlTxtElement = urlTxtElement;
+        this.selectedUrl = null;
+        this.urlEnterCallback = urlEnterCallback;
+        this.hiddenCallback = () => {
+            if(this.selectedUrl === null) return;
+            this.urlEnterCallback(this.selectedUrl);
+        };
+
+        this._bind(formElement);
+    }
+
+    call(){
+        this.element.querySelector('.alert').classList.add('start-hidden');
+        super.call();
+    }
+
+    _bind(formElement){
+        formElement.addEventListener('submit', (event) => {
+            event.preventDefault();
+            this.element.querySelector('.alert').classList.add('start-hidden');
+
+            this.selectedUrl = null;
+            const url = this.urlTxtElement.value;
+            if(url !== null && url != ''){
+                this.selectedUrl = url;
+            }
+
+            var validUrl = false;
+            if(this.selectedUrl !== null){
+                if(this.selectedUrl.match(/^https:\/\/archidekt\.com\/decks\/\d+\/?.+$/g)
+                   || this.selectedUrl.match(/^https:\/\/www\.moxfield\.com\/decks\/([A-z0-9\_]+)/g)
+                   || this.selectedUrl.match(/^https:\/\/www\.ligamagic\.com\.br\/\?view=dks\/deck\&id=\d+/g)){
+                    validUrl = true;
+                }
+
+            }
+
+            if(validUrl == false){
+                this.element.querySelector('.alert').innerHTML = 'This URL is not supported';
+                this.element.querySelector('.alert').classList.remove('start-hidden');
+                this.selectedUrl = null;
+                return;
+            }
+
+            this.dismiss();
+        });
     }
 }
 

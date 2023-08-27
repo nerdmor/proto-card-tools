@@ -33,18 +33,11 @@ parser.add_argument('-o', '--order',
                     help="When using 'add seed', the order of the file. If suppressed, will use the sequence of existing files.")
 args = parser.parse_args()
 
-
-
-if args.action == 'add':
-    if args.type is None:
-        raise ArgumentException('--type is mandatory when using add')
-    if args.name is None:
-        raise ArgumentException('--name is mandatory when using add')
-
-    if args.type == 'migration':
-        new_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{args.name}.sql"
+def action_add(tp, name):
+    if tp == 'migration':
+        new_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{name}.sql"
         full_path = path.join(MIGRATION_PATH, new_filename)
-    if args.type == 'seed':
+    if tp == 'seed':
         existing_seeds = [f for f in os.listdir(SEED_PATH) if path.isfile(path.join(SEED_PATH, f)) and f[-4:] == '.sql']
         if args.order is None:
             orders = [int(f.split('_')[0]) for f in existing_seeds]
@@ -55,7 +48,7 @@ if args.action == 'add':
         else:
             order = args.order
 
-        new_filename = f"{str(order).zfill(4)}_{args.name}.sql"
+        new_filename = f"{str(order).zfill(4)}_{name}.sql"
 
         if new_filename in existing_seeds:
             raise NameException('duplicate name for seed')
@@ -64,9 +57,11 @@ if args.action == 'add':
 
     with open(full_path, 'w+', encoding='utf-8') as f:
         f.write(f'-- {new_filename}')
-    print(f"created {full_path}")
 
-elif args.action == 'migrate':
+    return full_path
+
+
+def action_migrate():
     db = db.DbManager()
     dblist = db.fetch("SHOW TABLES LIKE 'migrations';")
     if len(dblist) == 0:
@@ -111,7 +106,8 @@ elif args.action == 'migrate':
         result = db.execute(insert_query, (migfile, ))
         print("\tsuccess!")
 
-elif args.action == 'seed':
+
+def action_seed():
     db = db.DbManager()
     seed_files = [f for f in os.listdir(SEED_PATH) if path.isfile(path.join(SEED_PATH, f)) and f[-4:] == '.sql']
     seed_files.sort()
@@ -132,6 +128,23 @@ elif args.action == 'seed':
             break
 
         print("\tsuccess!")
+
+
+
+if args.action == 'add':
+    if args.type is None:
+        raise ArgumentException('--type is mandatory when using add')
+    if args.name is None:
+        raise ArgumentException('--name is mandatory when using add')
+
+    full_path = action_add(args.type, args.name)
+    print(f"created {full_path}")
+
+elif args.action == 'migrate':
+    action_migrate()
+
+elif args.action == 'seed':
+    action_seed()
 
 
 

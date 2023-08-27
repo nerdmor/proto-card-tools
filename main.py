@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from flask import Flask, json, jsonify, request
 
 from config import configs
@@ -6,8 +9,16 @@ from routes.auth import auth
 from routes.user import user
 from routes.static import static
 from routes.list import lists
+from routes.image import image
+from routes.cards import cards
 
 ENV = configs.env
+
+# ensuring directories
+for ndir in configs.dir_attrs():
+    ldir = configs[ndir].split('/')
+    dirpath = os.path.join(os.getcwd(), *ldir)
+    Path(dirpath).mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__,
             static_url_path='/static',
@@ -22,10 +33,10 @@ app.register_blueprint(auth)
 app.register_blueprint(user)
 app.register_blueprint(static)
 app.register_blueprint(lists)
+app.register_blueprint(image)
+app.register_blueprint(cards)
 
-# @app.route("/")
-# def home():
-#     return app.send_static_file('index.html')
+
 
 
 

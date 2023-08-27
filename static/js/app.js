@@ -68,6 +68,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('user-modal-createdat'),  // createdAtElement
         window.session  // sessionManager
     );
+    window.listExportModal = new ListExportModal(
+        document.getElementById('list-export-modal'), // domElement
+        document.getElementById('list-export-modal-clipboard'),  // clipboardButtonElement
+        function(){ window.mainController.exportToClipboard(); },  // clipboardCallback
+        document.getElementById('list-export-modal-image'),  // imageButtonElement
+        function(modal){ window.mainController.exportToImage(modal); } // imageCallback
+    );
+    window.cardsFromUrlModal = new ImportCardsFromUrlModal(
+        document.getElementById('import-card-url-modal'),  // domElement
+        document.getElementById('import-card-url-form'),  // formElement
+        document.getElementById('import-card-url-txt'),  // urlTxtElement
+        (url) => {window.mainController.importFromUrl(url)}  // urlEnterCallback
+    );
 
     // global managers
     window.wakeLock = new WakeLockController();
@@ -218,8 +231,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // new list
     document.getElementById('header-list-new').addEventListener('click', function(event){
-        window.listManager.newList(window.settings.enabledStatus);
-        window.listManager.callPropertiesModal();
+        window.mainController.newList();
     });
 
     // list settings modal
@@ -233,7 +245,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // export menu
-    document.getElementById('header-list-export').addEventListener('click', function(){ window.mainController.exportToClipboard(); });
+    document.getElementById('header-list-export').addEventListener('click', function(){ window.listExportModal.call(); });
+
+    // import from url
+    document.getElementById('header-import-url').addEventListener('click', function(){ window.cardsFromUrlModal.call() });
 
     // quickadd
     document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){

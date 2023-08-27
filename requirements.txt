@@ -12,3 +12,5 @@ oauthlib
 cryptography
 PyJWT
 ua-parser
+beautifulsoup4
+unidecode
