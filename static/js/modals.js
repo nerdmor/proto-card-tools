@@ -957,13 +957,13 @@ class ListExportModal extends ProtoModal{
     }
 
     draw(){
-        this.element.getElementById("list-export-modal-body-1").classList.remove('start-hidden');
-        this.element.getElementById("list-export-modal-body-2").classList.add('start-hidden');
+        this.element.querySelector("#list-export-modal-body-1").classList.remove('start-hidden');
+        this.element.querySelector("#list-export-modal-body-2").classList.add('start-hidden');
     }
 
     showImageUrls(urlList){
-        const secondBodyElement = this.element.getElementById("list-export-modal-body-2");
-        this.element.getElementById("list-export-modal-body-1").classList.add('start-hidden');
+        const secondBodyElement = this.element.querySelector("#list-export-modal-body-2");
+        this.element.querySelector("#list-export-modal-body-1").classList.add('start-hidden');
         secondBodyElement.classList.remove('start-hidden');
         var body = [];
         var filename = '';
