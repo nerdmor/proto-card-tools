@@ -93,6 +93,7 @@ class CardList{
         for(const key of Object.keys(this)){
             if(!Object.hasOwn(values, key)) continue;
             if(key == 'cards'){
+                this.cards = {};
                 for(const cardKey of Object.keys(values.cards)){
                     newCard = new ProtoCard(Object.keys(this.cards).length);
                     newCard.buildFromParams(values.cards[cardKey], true);
@@ -104,18 +105,16 @@ class CardList{
                 this[key] = values[key];
             }
         }
+
     }
 
     loadFromStorage(values){
         if(values === null) return;
         if(!Object.hasOwn(values, 'lastUpdate')) return;
         values.lastUpdate = moment.tz(values.lastUpdate, 'UTC');
-
-        if(this.id !== null && values.lastUpdate < this.lastUpdate){
-            // TODO: this is the conflict callback
-            console.error('sync error! treat this');
-        }
         this._loadFromObject(values);
+        const neededKeys = this._getSetKeysInUse();
+        if(neededKeys.length > 0) this.loadSetData(neededKeys);
     }
 
     loadFromBackend(values){
@@ -436,6 +435,30 @@ class CardList{
         }
     }
 
+    _getSetKeysInUse(neededOnly=true){
+        var setsInUse = {};
+        for(const cardKey of Object.keys(this.cards)){
+            if(this.cards[cardKey].selectedSet === null) continue;
+            setsInUse[this.cards[cardKey].selectedSet] = true;
+        }
+
+        if(neededOnly == true){
+            var deadKeys = [];
+            for(const setCode of Object.keys(setsInUse)){
+                if(Object.hasOwn(this.sets, setCode) && this.sets[setCode] !== null){
+                    deadKeys.push(setCode);
+                }
+            }
+
+            for(const setCode of deadKeys){
+                delete setsInUse[setCode];
+            }
+        }
+
+        return Object.keys(setsInUse);
+    }
+
+
     async loadSetData(setList=null, forceBasics=false){
         if(this.scryfallClient == null){
             if(scryfallClient === null){
@@ -454,7 +477,7 @@ class CardList{
             if(forceBasics == true){
                 nonBasicSets = Object.keys(this.sets);
             }else{
-                for(const cardKey of this.cards){
+                for(const cardKey of Object.keys(this.cards)){
                     if(this.cards[cardKey].isBasicLand == false){
                         nonBasicSets = nonBasicSets.concat(Object.keys(this.cards[cardKey].sets));
                     }
@@ -658,8 +681,6 @@ class CardList{
         if(successCallback){successCallback(newCard.key);}
         this._callChangeCallback();
     }
-
-
 
     async ingestText(text, trustNames=false){
         if(!text) return;

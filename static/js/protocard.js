@@ -358,6 +358,9 @@ class ProtoCard{
     }
 
     _drawInnerFind(setData){
+        if(!Object.hasOwn(setData, this.selectedSet) || setData[this.selectedSet] === null){
+            console.log(this.selectedSet);
+        }
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
                                                   .replaceAll('%%cardimageurl%%', this.getSelectedImageUrl())

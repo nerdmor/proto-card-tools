@@ -99,7 +99,6 @@ class LoadingCardsModal extends ProtoModal{
             e.innerHTML = LoadingCardsModal.cardNameModel.replaceAll('%%cardname%%', cardName);
         }
     }
-
 }
 
 class FileSelectModal extends ProtoModal{
@@ -826,7 +825,7 @@ class ListSelectModal extends ProtoModal{
     <div class="row mx-0 px-1 my-1 py-1 list-select-modal-row">
       <div class="col-4 col-md-3 list-select-modal-list-name d-inline-block text-truncate fw-bold">%%listName%%</div>
       <div class="col-8 col-md-5 list-select-modal-list-description d-inline-block text-truncate small-font align-middle">%%listComment%%</div>
-      <div class="col-6 col-md-2 list-select-modal-list-select d-flex" list_id="%%listid%%"><button type="button" class="btn btn-sm btn-outline-success w-100 mx-1"><i class="bi bi-folder2-open"></i></button></div>
+      <div class="col-6 col-md-2 list-select-modal-list-select d-flex" list_id="%%listid%%"><button type="button" class="list-select-modal-list-select-button btn btn-sm btn-outline-success w-100 mx-1"><i class="bi bi-folder2-open"></i></button></div>
       <div class="col-6 col-md-2 list-select-modal-list-delete d-flex" list_id="%%listid%%"><button type="button" class="list-select-modal-list-delete-button w-100 mx-1"><i class="bi bi-trash"></i></button></div>
     </div>`;
 

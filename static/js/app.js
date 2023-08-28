@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.storage = new StorageManager();
     window.session = new SessionManager(window.constants.domain, window.storage);
 
+
     // settings
     window.settings = new SettingsManager(window.storage.getObject('settings'));
 
@@ -86,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.wakeLock = new WakeLockController();
     window.scryfall = new Scryfall();
     window.alertManager = new AlertManager(window.alertElement, document.getElementById('alert-modal'));
+        window.session.registerAlertManager(window.alertManager);
 
     window.listManager = new CardList(window.settings.enabledStatus, window.settings.displayMode);
     window.listManager.setAlertManager(window.alertManager);
