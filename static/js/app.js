@@ -250,7 +250,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('header-list-export').addEventListener('click', function(){ window.listExportModal.call(); });
 
     // import from url
-    document.getElementById('header-import-url').addEventListener('click', function(){ window.cardsFromUrlModal.call() });
+    document.getElementById('header-import-url').addEventListener('click', function(){
+        if(!window.session.token){
+            alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return;
+        }
+        window.cardsFromUrlModal.call()
+    });
 
     // quickadd
     document.querySelector('#header-quick-add-form').addEventListener('submit', function(event){

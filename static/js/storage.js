@@ -23,7 +23,7 @@ class StorageManager{
         if(this.sessionManager === null) return;
         if(typeof settings !== 'string') settings = JSON.stringify(settings);
         this.setItem('settings', settings);
-        this.sessionManager.updateUser({'settings': settings});
+        if(this.sessionManager.token) this.sessionManager.updateUser({'settings': settings});
     }
 
     setCookie(name, value, duration=null){
@@ -79,7 +79,7 @@ class StorageManager{
 
     clearAll(){
         this.clear();
-        this.clearCookes();
+        this.clearCookies();
     }
 
     syncItem(itemType, item, suppressApi=false){

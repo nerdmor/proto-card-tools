@@ -74,7 +74,7 @@ class SessionManager{
     }
 
     async cardsFromUrl(url){
-        if(this.token === null) return;
+        if(this.token === null) return null;
         url = btoa(url).replaceAll('/', '.');
         const response = await this._apiRequest(`/cards/from/${url}`, 'GET');
 
@@ -141,13 +141,13 @@ class SessionManager{
     }
 
     async refreshToken(){
-        if(this.token === null) return;
+        if(this.token === null) return null;
         const response = await this._apiRequest('/login/renew', 'GET');
 
         if(response.success === false){
             console.error(`invalid token refresh: ${response.error}`);
             if(response.response.status == 401) this.logout();
-            return;
+            return null;
         }
 
         this._setToken(response.json.token);
@@ -159,9 +159,9 @@ class SessionManager{
 
     async getUserDetails(){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
         const response = await this._apiRequest(`/user/${this.user_id}`, 'GET');
 
@@ -175,9 +175,9 @@ class SessionManager{
 
     async updateUser(updateData){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
         const response = await this._apiRequest(`/user/${this.user_id}`, 'POST', updateData);
 
@@ -191,9 +191,9 @@ class SessionManager{
 
     async deleteUser(){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
         const response = await this._apiRequest(`/user/${this.user_id}`, 'DELETE');
 
@@ -208,9 +208,9 @@ class SessionManager{
 
     async createList(listData){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
 
         if(!Object.hasOwn(listData, 'name')) return {'success': false, 'message': 'list name is empty'};
@@ -230,9 +230,9 @@ class SessionManager{
 
     async updateList(listId, listData){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
 
         if(!Object.hasOwn(listData, 'name') || listData.name === null || listData.name == '') return {'success': false, 'message': 'list name is empty'};
@@ -264,9 +264,9 @@ class SessionManager{
 
     async listLists(){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
 
         const response = await this._apiRequest(`/list/by/${this.user_id}`, 'GET');
@@ -280,9 +280,9 @@ class SessionManager{
 
     async deleteList(listId){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
 
         const response = await this._apiRequest(`/list/${listId}`, 'DELETE');
@@ -297,9 +297,9 @@ class SessionManager{
 
     async getList(listId){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
         const response = await this._apiRequest(`/list/${listId}`, 'GET');
 
@@ -313,9 +313,9 @@ class SessionManager{
 
     async makeListImage(cardlist){
         if(this.token === null){
-            if(this.alertManager === null) return;
-            this.alertManager.addAlert('You need to be logged in for that', false, 'werning', 2000);
-            return;
+            if(this.alertManager === null) return null;
+            this.alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return null;
         }
         const response = await this._apiRequest(`/image/wantlist`, 'POST', {'wantlist': cardlist});
         if(response.success == false){

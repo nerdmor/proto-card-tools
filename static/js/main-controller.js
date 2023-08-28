@@ -7,7 +7,7 @@ class MainController{
 
 
     constructor(){
-        window.storage.ensureRemoteSettings();
+        if(window.session.token) window.storage.ensureRemoteSettings();
 
         this.registerListeners();
         this.loadFromStorage();
@@ -33,7 +33,7 @@ class MainController{
         const storedList = window.storage.getObject('listManager');
         if(storedList === null) return;
         window.listManager.loadFromStorage(storedList);
-        if(storedList.id != null) this.loadFromBackend(storedList.id);
+        if(storedList.id != null && window.session.token) this.loadFromBackend(storedList.id);
     }
 
     async loadFromBackend(listId){
@@ -58,6 +58,9 @@ class MainController{
         const alertId = window.alertManager.addAlert('Loading lists...', true, 'info');
         const lists = await window.session.listLists();
         window.alertManager.removeAlert(alertId);
+        if(lists === null){
+            return;
+        }
         if(lists.success == false){
             window.alertManager.addAlert('Could not load list of lists', false, 'danger', 2000);
             return;
@@ -390,9 +393,19 @@ class MainController{
     }
 
     async exportToImage(modal){
+        if(!window.session.token){
+            modal.dismiss();
+            alertManager.addAlert('You need to be logged in for that', false, 'warning', 2000);
+            return;
+        }
+
         const payload = window.listManager.exportCardsToImage();
         const response = await window.session.makeListImage(payload);
-        if(response.success != true) return;
+        if(response.success != true){
+            modal.dismiss();
+            lertManager.addAlert(response.message, false, 'warning', 2000);
+            return;
+        }
         modal.showImageUrls(response.data);
     }
 
