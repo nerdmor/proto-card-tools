@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from flask import Blueprint, jsonify, request, redirect
 from flask import current_app
 import google.oauth2.credentials
@@ -24,7 +22,6 @@ def login():
         ['openid']
     )
     flow.redirect_uri = current_app.config.get('OAUTH_REDIRECT_URL')
-    print(f"/login {current_app.config.get('OAUTH_REDIRECT_URL')}")
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
@@ -57,7 +54,6 @@ def oauth():
         request_url = request.url
 
     flow.fetch_token(authorization_response=request_url)
-
     credentials = flow.credentials
 
     db = dbm.DbManager()
@@ -74,7 +70,9 @@ def oauth():
                (client_id, client_secret, refresh_token, token, created_at)
         VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP());
         """
-        user_id = db.execute(query, (credentials.client_id, credentials.client_secret, credentials.refresh_token, credentials.token, ))
+        refresh_token = 'none' if credentials.refresh_token is None else credentials.refresh_token
+
+        user_id = db.execute(query, (credentials.client_id, credentials.client_secret, refresh_token, credentials.token, ))
         client_id = credentials.client_id
     else:
         user_id = existing_users[0]['id']

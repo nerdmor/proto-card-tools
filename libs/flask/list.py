@@ -157,7 +157,8 @@ def update_list(list_id, user_id, data):
     fields = ', '.join([f"{k} = %s" for k in fields])
     query = """
     UPDATE lists
-       SET {fields}
+       SET updated_at = CURRENT_TIMESTAMP,
+           {fields}
      WHERE id = %s
        {wherestring}
     ;

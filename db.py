@@ -69,7 +69,7 @@ def action_migrate():
         CREATE TABLE IF NOT EXISTS migrations (
             id INT AUTO_INCREMENT PRIMARY KEY,
             filename VARCHAR(255) NOT NULL,
-            execution_date DATE DEFAULT CURRENT_DATE NOT NULL
+            execution_date DATE DEFAULT (CURRENT_DATE) NOT NULL
         );
         """
         print('creating migrations table...', end='')

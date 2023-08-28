@@ -105,9 +105,6 @@ class StorageManager{
     }
 
     async _triggerSync(itemType){
-        // DEBUG
-        console.log(`syncing: ${itemType}`);
-        console.log(this.syncQueue[itemType]);
         if(itemType == 'listManager'){
             if(!Object.hasOwn(this.syncQueue, itemType)) return;
             await this._syncList(this.syncQueue[itemType].value);

@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import re
 
 from flask import jsonify
@@ -62,7 +61,8 @@ def update_user(user_id, user_data, system=False):
 
     query = """
     UPDATE users
-       SET {fields}
+       SET updated_at = CURRENT_TIMESTAMP
+           ,{fields}
      WHERE id = %s
     ;
     """.format(fields=fields)
