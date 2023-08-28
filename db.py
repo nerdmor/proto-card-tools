@@ -3,7 +3,7 @@ import argparse
 import os
 from os import path
 
-from libs import db
+from libs import db as dbm
 
 
 class ArgumentException(Exception):
@@ -62,7 +62,7 @@ def action_add(tp, name):
 
 
 def action_migrate():
-    db = db.DbManager()
+    db = dbm.DbManager()
     dblist = db.fetch("SHOW TABLES LIKE 'migrations';")
     if len(dblist) == 0:
         query = """
@@ -108,7 +108,7 @@ def action_migrate():
 
 
 def action_seed():
-    db = db.DbManager()
+    db = dbm.DbManager()
     seed_files = [f for f in os.listdir(SEED_PATH) if path.isfile(path.join(SEED_PATH, f)) and f[-4:] == '.sql']
     seed_files.sort()
 
