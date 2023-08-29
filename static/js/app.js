@@ -8,6 +8,14 @@ window.drawCardList = async function(element){
     element.innerHTML = window.listManager.draw();
 }
 
+// ensure that we are in https if not in a local address
+if(window.location.protocol == 'http:'){
+    const domain_start = window.location.hostname.split('.')[0];
+    if(domain_start != '127' && domain_start != '192'){
+        window.location.replace(`https${window.location.href.substring(4)}`);
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', async function() {
     const moduleList = ['wakelock', 'alert', 'cardlist', 'constants', 'functions', 'main-controller', 'modals', 'protocard', 'scryfall', 'settings', 'storage', 'session', 'momentjs', 'moment-timezone'];

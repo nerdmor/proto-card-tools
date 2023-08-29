@@ -15,7 +15,7 @@
   margin-top: 20%;
   text-align: center;
   cursor: default;
-  font-size: 14em;
+  font-size: 12vw;
   width: 100%;
   min-width: 100%;
 }
@@ -78,7 +78,7 @@
 .finder-card-rarity-icon{
     aspect-ratio: 1 / 1;
     max-width: 2.5em;
-    font-size: 120%;
+    font-size: 1.4vw;
 }
 
 .finder-card-quantity-control{

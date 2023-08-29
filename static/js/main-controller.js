@@ -291,12 +291,19 @@ class MainController{
         window.listManager.emptyFilters();
 
         var filterValue = null;
-        for(const filterType of ['color', 'rarity', 'status']){
+        for(const filterType of ['color', 'rarity']){
             for(const filterBox of document.querySelectorAll(`.filter-check-${filterType}`)){
                 if(filterBox.checked == false) continue;
                 filterValue = filterBox.checked ? filterBox.value : null;
                 window.listManager.addFilter(filterType, filterValue);
             }
+        }
+
+        for(const filterBox of document.querySelectorAll(`.filter-check-status`)){
+            if(filterBox.checked == false) continue;
+            filterValue = filterBox.checked ? parseInt(filterBox.getAttribute('id').split('-').slice(-1)[0]) : null;
+            if(isNaN(filterValue)) filterValue = null;
+            window.listManager.addFilter('status', filterValue);
         }
 
         if(window.settings.applyFiltersOnFilterChange){
@@ -306,11 +313,16 @@ class MainController{
 
     async processFilterChange(element){
         const filterChecked = element.checked ? true : false;
-        const filterValue = element.value;
         const filterType = element.classList.contains('filter-check-color') ? 'color' :
                            element.classList.contains('filter-check-rarity') ? 'rarity' :
                            element.classList.contains('filter-check-status') ? 'status' : null;
         if(!filterType) return;
+
+        var filterValue = element.value;
+        if(filterType == 'status'){
+            filterValue = parseInt(element.getAttribute('id').split('-').slice(-1)[0]);
+            if(isNaN(filterValue)) filterValue = null;
+        }
 
         if(filterChecked){
             window.listManager.addFilter(filterType, filterValue);
@@ -330,10 +342,17 @@ class MainController{
                 await this.filterSelectAll(filterType, true, true);
             }else{
                 await this.filterSelectAll(filterType, true, false);
-                for(const filterValue of window.listManager.filters[filterType]){
-                    targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
-                    if(targetElement){
-                        targetElement.checked = true;
+                if(filterType == 'status'){
+                    for(const filterValue of window.listManager.filters[filterType]){
+                        targetElement = document.getElementById(`filters-status-${filterValue}`);
+                        if(targetElement) targetElement.checked = true;
+                    }
+                }else{
+                    for(const filterValue of window.listManager.filters[filterType]){
+                        targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
+                        if(targetElement){
+                            targetElement.checked = true;
+                        }
                     }
                 }
             }

@@ -410,7 +410,7 @@ class SettingsModal extends ProtoModal{
                         const newValue = parseFloat(this.keyElements[key].value) * 1000.0;
                         window.settings.setValue('deleteCooldown', newValue);
                     } catch(e) {
-                        console.log(e);
+                        console.warning(e);
                         return;
                     }
                 });
@@ -852,11 +852,16 @@ class ListSelectModal extends ProtoModal{
             if(!matchElementAndParent(event.target, ['.list-select-modal-list-select-button'])) return;
 
             var listId = null;
-            if(event.target.hasAttribute('list_id')){
-                listId = event.target.getAttribute('list_id');
-            }else if(event.target.parentElement.hasAttribute('list_id')){
-                listId = event.target.parentElement.getAttribute('list_id');
-            }else{
+            var currentElement = event.target;
+            while(listId === null && !currentElement.classList.contains('modal-body')){
+                if(currentElement.hasAttribute('list_id')){
+                    listId = currentElement.getAttribute('list_id');
+                }else{
+                    currentElement = currentElement.parentElement;
+                }
+            }
+
+            if(listId === null){
                 console.error('could not find list id');
                 return;
             }

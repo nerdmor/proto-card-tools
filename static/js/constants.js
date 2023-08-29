@@ -10,4 +10,6 @@ window.constants = {
 	'nouns': ['Tentacle', 'Doohickey', 'Bagpipes', 'Modifier', 'Whammy', 'Baldness', 'Beard', 'Radiation', 'Bomb', 'Night', 'Watchman', 'Magic', 'Pudding', 'Cannon', 'Piranha', 'Bear', 'Object', 'Preposition', 'Meat', 'Wagon', 'Atom', 'Energy', 'Agency', 'Swampland', 'Path', 'Resistance', 'Bones', 'Gangplank', 'Godmother', 'Hoof', 'Eye', 'Hindquarters', 'Chicanery', 'Grandfather', 'Clock', 'Tail', 'Feather', 'Sense', 'Direction', 'Gizmo', 'Garbage', 'Dump', 'Pandemonium', 'Wizardry', 'Power', 'Hood', 'Ornament', 'Boogeyman', 'Warrant', 'Mission', 'Chocolate', 'Eclair', 'Elixir', 'Life', 'Bread', 'Butter', 'Goat', 'Whacko', 'Goblet', 'Choo-Choo', 'Voodoo', 'Enchantment', 'Tumbleweed', 'Gargoyle', 'Road-Kill', 'Sasquatch', 'Underworld', 'Tribute', 'Barnacle', 'Vegetable', 'Thunderbird', 'Vision', 'Horseradish', 'Superstructure', 'Megabucks', 'Combustion', 'Murderess', 'Zone', 'Werewolf', 'Poutine', 'Whitch', 'Slug', 'Brushwagg']
 };
 
+window.constants.domain = `${window.location.protocol}//${window.location.host.split(':')[0]}`; // + (window.location.port ? `:${window.location.port}` : '');
+
 window.loadedModules.push('constants');

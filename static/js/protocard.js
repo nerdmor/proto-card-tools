@@ -230,6 +230,7 @@ class ProtoCard{
         this.printmode = null;
         this.loaded = 0;
         this.trustName = false;
+        this.statusIndex = null;
     }
 
     toString(){
@@ -265,7 +266,8 @@ class ProtoCard{
         'isBasicLand': this.isBasicLand,
         'colorSortValue': this.colorSortValue,
         'status': this.status,
-        'trustName': this.trustName
+        'trustName': this.trustName,
+        'statusIndex': this.statusIndex
       };
 
       result.sets[this.selectedSet] = {};
@@ -273,43 +275,49 @@ class ProtoCard{
       return result;
     }
 
+    _matchesColorFilter(filters){
+        if(filters.length == 0) return false;
+
+        if(this.isMulticolor) return filters.includes('multi');
+        if(this.isLand) return filters.includes('land');
+        if(this.isColorless) return filters.includes('c');
+
+        if(this.colors.length > 0){
+            for(const colorKey of this.colors){
+                if(filters.includes(colorKey)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    _matchesRarityFilters(filters){
+        if(filters.length == 0) return false;
+        for(const rarityKey of filters){
+            if(this.rarities.includes(rarityKey)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     matchesFilters(filters){
         var result = true;
         if(Object.hasOwn(filters, 'color')){
-            if(filters.color.length == 0) return false;
-
-            if(this.isMulticolor && !filters.color.includes('multi')) return false;
-            if(this.isLand && !filters.color.includes('land')) return false;
-            if(this.isColorless && !filters.color.includes('c')) return false;
-
-            if(this.colors.length > 0){
-                result = false;
-                for(const colorKey of this.colors){
-                    if(filters.color.includes(colorKey)){
-                        result = true;
-                        break;
-                    }
-                }
-            }
+            result = this._matchesColorFilter(filters.color);
             if(result === false) return false;
         }
 
 
         if(Object.hasOwn(filters, 'rarity')){
-            if(filters.rarity.length == 0) return false;
-            result = false;
-            for(const rarityKey of filters.rarity){
-                if(this.rarities.includes(rarityKey)){
-                    result = true;
-                    break;
-                }
-            }
+            result = this._matchesRarityFilters(filters.rarity);
             if(result === false) return false;
         }
 
         if(Object.hasOwn(filters, 'status')){
             if(filters.status.length == 0) return false;
-            if(!filters.status.includes(this.status)) return false;
+            if(!filters.status.includes(this.statusIndex)) return false;
         }
 
         return result;
@@ -319,7 +327,7 @@ class ProtoCard{
         this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}${this.selectedNumber}-${this.foil?'foil':'nonfoil'}`);
     }
 
-    drawInner(setData, printmode=null){
+    drawInner(setData, statusList, printmode=null){
         if(printmode === null){
             if(this.printmode === null){
                 throw new Error('A Printmode must be provided or set');
@@ -328,13 +336,13 @@ class ProtoCard{
         }
 
         if(printmode == 'find')
-            return this._drawInnerFind(setData);
+            return this._drawInnerFind(setData, statusList);
         else if(printmode == 'table')
-            return this._drawInnerTable(setData);
+            return this._drawInnerTable(setData, statusList);
         throw new Error('Invalid printmode');
     }
 
-    draw(setData, printmode=null){
+    draw(setData, statusList, printmode=null){
         if(printmode === null){
             if(this.printmode === null){
                 throw new Error('A Printmode must be provided or set');
@@ -345,9 +353,9 @@ class ProtoCard{
         }
 
         if(printmode == 'find')
-            return this._drawFind(setData);
+            return this._drawFind(setData, statusList);
         else if(printmode == 'table')
-            return this._drawTable(setData);
+            return this._drawTable(setData, statusList);
         else if(printmode == 'proxy')
             return this._drawProxy(setData);
         throw new Error('Invalid printmode');
@@ -357,14 +365,14 @@ class ProtoCard{
       return this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality];
     }
 
-    _drawInnerFind(setData){
+    _drawInnerFind(setData, statusList){
         if(!Object.hasOwn(setData, this.selectedSet) || setData[this.selectedSet] === null){
             console.log(this.selectedSet);
         }
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
                                                   .replaceAll('%%cardimageurl%%', this.getSelectedImageUrl())
-                                                  .replaceAll('%%cardstatus%%', this.status === null ? '&nbsp;' : this.status)
+                                                  .replaceAll('%%cardstatus%%', this.statusIndex ? statusList[this.statusIndex] : '&nbsp;')
                                                   .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name)
                                                   ;
@@ -382,9 +390,9 @@ class ProtoCard{
         return html;
     }
 
-    _drawFind(setData){
+    _drawFind(setData, statusList){
         var html = ProtoCard.findModels.outerModel.replaceAll('%%cardkey%%', this.key)
-                                                  .replaceAll('%%inner-model%%', this._drawInnerFind(setData));
+                                                  .replaceAll('%%inner-model%%', this._drawInnerFind(setData, statusList));
         return html;
     }
 
@@ -436,7 +444,7 @@ class ProtoCard{
         return totalCost.join('&nbsp;//&nbsp;');
     }
 
-    _drawInnerTable(setData){
+    _drawInnerTable(setData, statusList){
         var htmlCost = [];
         var singleCost = [];
 
@@ -458,14 +466,14 @@ class ProtoCard{
                                                    .replaceAll('%%rarityicons%%', rarityIcons)
                                                    .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                    .replaceAll('%%setname%%', setData[this.selectedSet].name)
-                                                   .replaceAll('%%cardstatus%%', this.status === null ? ProtoCard.tableModels.statusNullModel : this.status);
+                                                   .replaceAll('%%cardstatus%%', this.status === null ? ProtoCard.tableModels.statusNullModel : (this.statusIndex ? statusList[this.statusIndex] : '&nbsp;'));
 
         return html;
     }
 
-    _drawTable(setData){
+    _drawTable(setData, statusList){
         var html = ProtoCard.tableModels.outerModel.replaceAll('%%cardkey%%', this.key)
-                                                   .replaceAll('%%innermodel%%', this._drawInnerTable(setData))
+                                                   .replaceAll('%%innermodel%%', this._drawInnerTable(setData, statusList))
                                                    .replaceAll('%%cardguild%%', this._getColorCombinationName());
         return html;
     }

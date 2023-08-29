@@ -97,6 +97,12 @@ class CardList{
                 for(const cardKey of Object.keys(values.cards)){
                     newCard = new ProtoCard(Object.keys(this.cards).length);
                     newCard.buildFromParams(values.cards[cardKey], true);
+                    if(newCard.status !== null){
+                        if(this.statusList.includes(newCard.status)){
+                            newCard.statusIndex = this.statusList.indexOf(newCard.status);
+                        }
+                        newCard.status = null;
+                    }
                     this.cards[newCard.key] = newCard;
                 }
             }else if(key == 'lastUpdate'){
@@ -250,11 +256,11 @@ class CardList{
     }
 
     _saveSettings(settings){
-        const initialStatus = JSON.stringify({
+        const initialStatus = {
             'name': this.name,
             'public': this.public,
             'statusList': this.statusList
-        });
+        };
 
         const possibleKeys = ['name', 'public', 'statusList'];
         for(const k of possibleKeys){
@@ -262,16 +268,32 @@ class CardList{
             this[k] = settings[k];
         }
 
-        const finalStatus = JSON.stringify({
+        const finalStatus = {
             'name': this.name,
             'public': this.public,
             'statusList': this.statusList
-        });
+        };
 
-        if(initialStatus !== finalStatus){
+        if(JSON.stringify(initialStatus.statusList) != JSON.stringify(finalStatus.statusList)){
+            var stat = null;
+            var removedStatus = [];
+            for (var i = 0; i < initialStatus.statusList.length; i++) {
+                stat = initialStatus.statusList[i];
+                if(!finalStatus.statusList.includes(stat) || finalStatus.statusList.indexOf(stat) !== i){
+                    removedStatus.push(i);
+                }
+            }
+
+            for(const cardKey of Object.keys(this.cards)){
+                if(removedStatus.includes(this.cards[cardKey].statusIndex)){
+                    this.cards[cardKey].statusIndex = null;
+                }
+            }
+
+            this._callChangeCallback();
+        }else if(initialStatus.name != finalStatus.name || initialStatus.public != finalStatus.public){
             this._callChangeCallback();
         }
-
     }
 
     callPropertiesModal(){
@@ -351,9 +373,10 @@ class CardList{
     addFilter(filterType, value){
         if(!Object.hasOwn(this.filters, filterType)) return;
 
-        if(value === 'null') this.filters[filterType].push(null);
-        else this.filters[filterType].push(value);
+        if(value === 'null') value = null;
+        if(this.filters[filterType].includes(value)) return;
 
+        this.filters[filterType].push(value);
         this._callChangeCallback();
     }
 
@@ -390,14 +413,27 @@ class CardList{
         this.cardMode = mode;
     }
 
-    setCardStatus(cardKey, status){
-        if(!this.statusList.includes(status) && status != 'next' && card.status !== null) return null;
-        if(!Object.keys(this.cards).includes(cardKey)) return null;
+    setCardStatus(cardKey, statusIndex){
+        // if(!this.statusList.includes(status) && status != 'next' && card.status !== null) return null;
+        if(statusIndex != 'next' && !Number.isInteger(statusIndex)) return;
+        if(!Object.keys(this.cards).includes(cardKey)) return;
 
-        if(status === 'next'){
-            status = this._getNextStatus(this.cards[cardKey].status);
+        var nextStatus = statusIndex;
+        if(statusIndex == 'next'){
+            nextStatus = this.cards[cardKey].statusIndex;
+            if(nextStatus == this.statusList.length - 1){
+                nextStatus = 0;
+            }else{
+                nextStatus += 1;
+            }
         }
-        this.cards[cardKey].status = status;
+
+        this.cards[cardKey].statusIndex = nextStatus;
+
+        // if(status === 'next'){
+        //     status = this._getNextStatus(this.cards[cardKey].status);
+        // }
+        // this.cards[cardKey].status = status;
         this._callChangeCallback();
     }
 
@@ -1042,7 +1078,7 @@ class CardList{
         this._filterCards();
 
         for(const cardKey of this.filteredCards){
-            html.push(this.cards[cardKey].draw(this.sets, this.cardMode));
+            html.push(this.cards[cardKey].draw(this.sets, this.statusList, this.cardMode));
         }
         return html.join('\n');
     }
@@ -1059,7 +1095,7 @@ class CardList{
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         const element = document.querySelector(`.${CardList.modeOuterClass[this.cardMode]}[card_key="${cardKey}"]`);
         if(element === null) return null;
-        element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.cardMode);
+        element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.statusList, this.cardMode);
     }
 
     drawCardDetails(cardKey){
