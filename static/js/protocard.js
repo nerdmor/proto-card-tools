@@ -372,7 +372,7 @@ class ProtoCard{
         var html = ProtoCard.findModels.innerModel.replaceAll('%%quantity%%', String(this.quantity))
                                                   .replaceAll('%%cardname%%', this.name)
                                                   .replaceAll('%%cardimageurl%%', this.getSelectedImageUrl())
-                                                  .replaceAll('%%cardstatus%%', this.statusIndex ? statusList[this.statusIndex] : '&nbsp;')
+                                                  .replaceAll('%%cardstatus%%', this.statusIndex !== null ? statusList[this.statusIndex] : '&nbsp;')
                                                   .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                   .replaceAll('%%setname%%', setData[this.selectedSet].name)
                                                   ;
@@ -466,7 +466,7 @@ class ProtoCard{
                                                    .replaceAll('%%rarityicons%%', rarityIcons)
                                                    .replaceAll('%%seticonurl%%', setData[this.selectedSet].icon_svg_uri)
                                                    .replaceAll('%%setname%%', setData[this.selectedSet].name)
-                                                   .replaceAll('%%cardstatus%%', this.status === null ? ProtoCard.tableModels.statusNullModel : (this.statusIndex ? statusList[this.statusIndex] : '&nbsp;'));
+                                                   .replaceAll('%%cardstatus%%', this.status === null ? ProtoCard.tableModels.statusNullModel : (this.statusIndex !== null ? statusList[this.statusIndex] : '&nbsp;'));
 
         return html;
     }

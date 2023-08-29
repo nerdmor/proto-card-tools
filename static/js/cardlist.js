@@ -90,6 +90,21 @@ class CardList{
 
     _loadFromObject(values){
         var newCard = null;
+        // prioritize statusList
+        if(Object.hasOwn(values, 'statusList')){
+            if(Array.isArray(values['statusList'])){
+                this['statusList'] = values['statusList'];
+            }else{
+                try{
+                    this['statusList'] = JSON.parse(base64ToBytes(values['statusList']));
+                }catch(e){
+                    raise(e);
+                    this['statusList'] = values['statusList'];
+                }
+            }
+        }
+
+
         for(const key of Object.keys(this)){
             if(!Object.hasOwn(values, key)) continue;
             if(key == 'cards'){
@@ -103,15 +118,19 @@ class CardList{
                         }
                         newCard.status = null;
                     }
+                    if(newCard.statusIndex >= this.statusList.length){
+                        newCard.statusIndex = null;
+                    }
                     this.cards[newCard.key] = newCard;
                 }
             }else if(key == 'lastUpdate'){
                 this[key] = moment.tz(values[key], 'UTC');
+            }else if(key == 'statusList'){
+                continue;
             }else{
                 this[key] = values[key];
             }
         }
-
     }
 
     loadFromStorage(values){
@@ -149,13 +168,14 @@ class CardList{
 
     toString(){
         var result = {
+            'version': window.constants.version,
             'id': this.id,
             'user_id': this.user_id,
             'cardMode': this.cardMode,
             'name': this.name,
             'cards': {},
             'sets': this.sets,
-            'statusList': this.statusList,
+            'statusList': bytesToBase64(JSON.stringify(this.statusList)),
             'filters': this.filters,
             'public': this.public,
             'lastUpdate': this.lastUpdate,
@@ -421,19 +441,17 @@ class CardList{
         var nextStatus = statusIndex;
         if(statusIndex == 'next'){
             nextStatus = this.cards[cardKey].statusIndex;
-            if(nextStatus == this.statusList.length - 1){
+            if(nextStatus === null){
                 nextStatus = 0;
+            }else if(nextStatus == this.statusList.length - 1){
+                nextStatus = null;
             }else{
                 nextStatus += 1;
             }
         }
+        console.log(`nextStatus: ${nextStatus}`);
 
         this.cards[cardKey].statusIndex = nextStatus;
-
-        // if(status === 'next'){
-        //     status = this._getNextStatus(this.cards[cardKey].status);
-        // }
-        // this.cards[cardKey].status = status;
         this._callChangeCallback();
     }
 

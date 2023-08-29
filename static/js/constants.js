@@ -1,4 +1,5 @@
 window.constants = {
+	'version': '0.1.2',
 	'domain': 'http://127.0.0.1',
 	'basicLands': ['plains', 'island', 'swamp', 'mountain', 'forest'],
 	'rarities' : ['common', 'uncommon', 'rare', 'mythic', 'special'],

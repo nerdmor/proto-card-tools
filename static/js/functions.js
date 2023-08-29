@@ -110,6 +110,40 @@ function makeRandomId(blocks=1, separator='-'){
     return result.join(separator);
 }
 
+
+function base64ToBytes(base64) {
+    const binString = atob(base64);
+    const bytes = Uint8Array.from(binString, (m) => m.codePointAt(0));
+    return new TextDecoder().decode(bytes);
+}
+
+function bytesToBase64(str) {
+    bytes = new TextEncoder().encode(str);
+    const binString = Array.from(bytes, (x) => String.fromCodePoint(x)).join("");
+    return btoa(binString);
+}
+
+function versionAtLeast(currVer, leastVer){
+    currVer = currVer.split('.');
+    leastVer = leastVer.split('.');
+
+    const verLeng = currVer.length < leastVer.length ? currVer.length : leastVer.length;
+
+    currStep = null;
+    leastStep = null;
+    for (var i = 0; i < verLeng; i++) {
+        currStep = Number.parseInt(currVer[i]);
+        leastStep = Number.parseInt(leastVer[i]);
+        if(isNaN(currStep) || isNaN(leastStep)) return false;
+
+        if(leastStep > currStep) return false;
+    }
+
+    if(leastVer.length > currVer.length) return false;
+
+    return true;
+}
+
 // md5 ugly block
 function md5(d){var r = md5m(md5v(md5y(md5x(encodeURIComponent(d)),8*d.length)));return r.toLowerCase()};
 function md5m(d){for(var _,m="0123456789ABCDEF",f="",r=0;r<d.length;r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}
