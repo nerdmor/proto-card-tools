@@ -163,3 +163,4 @@ tmp/*
 new_ids.txt
 static/img/usr/*
 *.zip
+project.sublime-workspace
