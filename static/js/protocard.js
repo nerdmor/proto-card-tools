@@ -251,7 +251,7 @@ class ProtoCard{
         'loaded': this.loaded,
         'cmc': this.cmc,
         'colors': this.colors,
-        'sets': {},
+        'sets': this.sets,
         'oracleId': this.oracleId,
         'typeLine': this.typeLine,
         'urls': this.urls,
@@ -270,8 +270,6 @@ class ProtoCard{
         'statusIndex': this.statusIndex
       };
 
-      result.sets[this.selectedSet] = {};
-      result.sets[this.selectedSet][this.selectedNumber] = this.sets[this.selectedSet][this.selectedNumber];
       return result;
     }
 

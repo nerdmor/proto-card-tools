@@ -76,9 +76,13 @@
 }
 
 .finder-card-rarity-icon{
-    aspect-ratio: 1 / 1;
-    max-width: 2.5em;
+  aspect-ratio: 1 / 1;
+  font-size: 1.2em;
+}
+@media (width <= 1414px) {
+  .finder-card-rarity-icon{
     font-size: 1.4vw;
+  }
 }
 
 .finder-card-quantity-control{

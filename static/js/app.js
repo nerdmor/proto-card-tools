@@ -293,6 +293,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.mainController.clearData();
     });
 
+    // help menu refresh
+    document.getElementById('header-help-refresh').addEventListener('click', function(event){
+        window.mainController.forceRefresh();
+    });
+
     //login
     document.getElementById('header-account-login').addEventListener('click', function(event){
         window.session.requestLogin();

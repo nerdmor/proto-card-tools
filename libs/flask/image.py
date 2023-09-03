@@ -63,7 +63,7 @@ def add_quantity(fpath, quantity):
         txt_x = round(img_w * 0.42, 0)
         txt_y = round(img_h * 0.87, 0)
 
-    fnt = ImageFont.truetype(os.path.join(os.getcwd(), 'static', 'fonts', 'swansea.ttf'), fontsize)
+    fnt = ImageFont.truetype(os.path.join(os.getcwd(), 'static', 'fonts', 'swansea.ttf'), int(fontsize))
     draw.text((txt_x, txt_y), str(quantity), font=fnt, fill=(0, 0, 0, 255))
 
     filename = fpath.split(os.sep)[-1]
@@ -114,9 +114,8 @@ def make_page_url(pagepath):
         protocol=current_app.config.get('PROTOCOL'),
         domain=current_app.config.get('DOMAIN'),
         port=f":{current_app.config.get('PORT')}" if current_app.config.get('PORT') != '80' else '',
-        staticpath=pagepath[len(configs['img_cardshare_ready_dir'])-1:]
+        staticpath=f"{configs['img_cardshare_ready_dir']}/{pagepath.split('/')[-1]}"
     )
-    url = url.replace(os.sep, '/')
     return url
 
 def make_sharelist(payload):

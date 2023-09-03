@@ -452,6 +452,15 @@ class MainController{
         window.listManager.callPropertiesModal();
     }
 
+    forceRefresh(){
+        window.listManager.loadQueueFromScryfall(
+            null,  // scryfallClient
+            null,  // successCallback
+            (err) => {},  // errorCallback
+            true  // forceRefresh
+        );
+    }
+
 }
 
 window.loadedModules.push('main-controller');

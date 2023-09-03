@@ -751,7 +751,7 @@ class CardList{
         return true;
     }
 
-    async loadQueueFromScryfall(scryfallClient=null, successCallBack=null, errorCallBack=null){
+    async loadQueueFromScryfall(scryfallClient=null, successCallBack=null, errorCallBack=null, forceRefresh=false){
         if(this.scryfallClient === null){
             if(scryfallClient === null){
                 throw new Error('a scryfallClient must be provided');
@@ -759,26 +759,32 @@ class CardList{
             this.scryfallClient = scryfallClient;
         }
 
-
-        this.errors = [];
+        if(forceRefresh===true){
+            for (const [key, card] of Object.entries(this.cards)){
+                this.cardQueue.push(card);
+                this.cardQueue[this.cardQueue.length-1].trustName = true;
+            }
+        }
         if(this.cardQueue.length < 1){
             return;
         }
 
+        this.errors = [];
         this.loadingCardsModal.call();
         const startTimestamp = new Date().getTime();
         await delay(50);
 
         var loaded = null;
-        var i = 0;
+        var i = Object.keys(this.cards).length;
         for (const newCard of this.cardQueue) {
-
             this.loadingCardsModal.update(newCard.typedName);
 
             loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': i});
 
             if(newCard.loaded == 2){
-                if(Object.keys(this.cards).includes(newCard.key)){
+                if(forceRefresh == true){
+                    this.cards[newCard.key] = newCard;
+                }else if(Object.keys(this.cards).includes(newCard.key)){
                     this.cards[newCard.key].quantity += newCard.quantity;
                 }else{
                     this.cards[newCard.key] = newCard;
