@@ -1,12 +1,8 @@
-.rarity-icon-wrapper{
-}
-
 .rarity-icon{
   max-height: 2.1em;
 }
 
 .finder-card-details{
-/*  float: right;*/
   aspect-ratio: 1 / 1;
 }
 
@@ -82,6 +78,11 @@
 @media (width <= 1414px) {
   .finder-card-rarity-icon{
     font-size: 1.4vw;
+  }
+}
+@media (width <= 400px) {
+  .finder-card-rarity-icon{
+    font-size: 0.68em;
   }
 }
 
