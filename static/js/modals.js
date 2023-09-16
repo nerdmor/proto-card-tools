@@ -1,3 +1,7 @@
+/**
+ * Base modal class to be extended by other modals.
+ * @class
+ */
 class ProtoModal{
     constructor(domElement){
         this.modal = null;
