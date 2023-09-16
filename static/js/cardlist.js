@@ -1,3 +1,6 @@
+/**
+ * General manager for cardlists. Should do most of what is needed to keep a list sane.
+ */
 class CardList{
     static allowedModes = ['find', 'table', 'proxy'];
     static modeOuterClass = {
@@ -23,7 +26,6 @@ class CardList{
             <button id="filters-status-all" type="button" class="btn btn-sm btn-outline-secondary btn-extra-small"><i class="bi bi-check-all"></i></button>
         `
     };
-
 
     constructor(statusList=null, cardMode=null){
         this.id = null;
@@ -65,6 +67,13 @@ class CardList{
         this.resetFilters(true);
     }
 
+    /**
+     * Creates a new list by resetting all mutable states.
+     *
+     * @param   {String[]}  [statusList]  Array of status (emojis) to be used for this list. Defaults to an empty Array.
+     *
+     * @return  {null}
+     */
     newList(statusList=null){
         this.id = null;
         this.user_id = null;
@@ -88,20 +97,33 @@ class CardList{
         this.resetFilters(true);
     }
 
+    /**
+     * Internal function. Loads self characteristics from a given object, prioritizing those that are essential or that need special treatment.
+     *
+     * @param   {Object}  values    Object to load data from. Keys should match this object's keys. For a reference, please look at the constructor.
+     *
+     * @return  {null}
+     */
     _loadFromObject(values){
         var newCard = null;
         // prioritize statusList
         if(Object.hasOwn(values, 'statusList')){
             if(Array.isArray(values['statusList'])){
-                this['statusList'] = values['statusList'];
+                this.statusList = values['statusList'];
             }else{
                 try{
-                    this['statusList'] = JSON.parse(base64ToBytes(values['statusList']));
+                    this.statusList = JSON.parse(base64ToBytes(values['statusList']));
                 }catch(e){
                     raise(e);
-                    this['statusList'] = values['statusList'];
+                    this.statusList = values['statusList'];
                 }
             }
+        }
+
+        if(Object.hasOwn(values, 'lastUpdate')){
+            this.lastUpdate = moment.tz(values['lastUpdate'], 'UTC');
+        }else{
+            this.lastUpdate = moment.tz();
         }
 
 
@@ -123,9 +145,7 @@ class CardList{
                     }
                     this.cards[newCard.key] = newCard;
                 }
-            }else if(key == 'lastUpdate'){
-                this[key] = moment.tz(values[key], 'UTC');
-            }else if(key == 'statusList'){
+            }else if(key == 'statusList' || key == 'lastUpdate'){
                 continue;
             }else{
                 this[key] = values[key];
@@ -133,15 +153,29 @@ class CardList{
         }
     }
 
+    /**
+     * Loads attributes from a given object, as returned from storage, treating any exceptions that happen before calling this._loadFromObject
+     *
+     * @param   {Object}  values  Object to load data from. Keys should match this object's keys. For a reference, please look at the constructor.
+     *
+     * @return  {null}
+     */
     loadFromStorage(values){
         if(values === null) return;
         if(!Object.hasOwn(values, 'lastUpdate')) return;
         values.lastUpdate = moment.tz(values.lastUpdate, 'UTC');
         this._loadFromObject(values);
-        const neededKeys = this._getSetKeysInUse();
-        if(neededKeys.length > 0) this.loadSetData(neededKeys);
+        const neededSetKeys = this._getSetKeysInUse();
+        if(neededSetKeys.length > 0) this.loadSetData(neededSetKeys);
     }
 
+    /**
+     * Loads attributes from a given object, as returned from the backend API, treating any exceptions that happen before calling this.loadFromStorage
+     *
+     * @param   {Object}  values  Object to load data from. Keys should match this object's keys. For a reference, please look at the constructor.
+     *
+     * @return  {null}
+     */
     loadFromBackend(values){
         const previousValues = {
             'id': this.id,
@@ -149,14 +183,20 @@ class CardList{
         };
         this.loadFromStorage(values);
         if(previousValues.id != this.id || previousValues.lastUpdate != this.lastUpdate){
+            // TODO: this should treat update mismatches.
             this.lastUpdate = moment.tz();
-            return true;
         }
-        return false;
     }
 
-    async _callChangeCallback(){
-        this.lastUpdate = moment.tz();
+    /**
+     * Internal async function. Updates this.lastUpdate, then tries to and calls this.changeCallback, awaiting if needed.
+     *
+     * @param   {Boolean}  [updateTime]  If set to false, this.lastUpdate will not be changed. Defaults to true.
+     *
+     * @return  {null}
+     */
+    async _callChangeCallback(updateTime=true){
+        if(updateTime===true) this.lastUpdate = moment.tz();
         if(this.changeCallback !== null){
             if(this.changeCallback.constructor.name === 'AsyncFunction'){
                 await this.changeCallback(this);
@@ -166,6 +206,11 @@ class CardList{
         }
     }
 
+    /**
+     * Casts a simplified version of this object into a JSON-compliant string.
+     *
+     * @return  {String}  A slightly simplified version of this object, in JSON form.
+     */
     toString(){
         var result = {
             'version': window.constants.version,
@@ -190,6 +235,20 @@ class CardList{
         return JSON.stringify(result);
     }
 
+    /**
+     * Initiate the modals used by this object. This should be called right after the class is instantiated. It is separated from the constructor to avoid a monstrous amount of parameters.
+     *
+     * @param   {LoadingCardsModal}         loadingCardsModal         Instance of LoadingCardsModal to be used by this object.
+     * @param   {LoadingSetsModal}          loadingSetsModal          Instance of LoadingSetsModal to be used by this object.
+     * @param   {CardSetSelectionModal}     cardSetSelectionModal     Instance of CardSetSelectionModal to be used by this object.
+     * @param   {CardDetailsModal}          cardDetailsModal          Instance of CardDetailsModal to be used by this object.
+     * @param   {LoadErrorModal}            loadErrorModal            Instance of LoadErrorModal to be used by this object.
+     * @param   {ListPropertiesModal}       listPropertiesModal       Instance of ListPropertiesModal to be used by this object.
+     * @param   {FileSelectModal}           fileSelectModal           Instance of FileSelectModal to be used by this object.
+     * @param   {ArchidektFileImportModal}  archidektFileImportModal  Instance of ArchidektFileImportModal to be used by this object.
+     *
+     * @return  {null}
+     */
     initModals(loadingCardsModal, loadingSetsModal, cardSetSelectionModal, cardDetailsModal, loadErrorModal, listPropertiesModal, fileSelectModal, archidektFileImportModal){
         this.loadingCardsModal = loadingCardsModal;
         this.loadingSetsModal = loadingSetsModal;
@@ -208,10 +267,26 @@ class CardList{
         );
     }
 
+    /**
+     * Sets this.alertManager, which is used to show non-process-stopping notifications.
+     *
+     * @param   {AlertManager}  alertManager  Instance of AlertManager to be used in this object.
+     *
+     * @return  {null}
+     */
     setAlertManager(alertManager){
+        // TODO: set verify that the object to be set is actually an instance of AlertManager
         this.alertManager = this.alertManager || alertManager;
     }
 
+    /**
+     * Sets the sorting field and direction for this object when drawing cards.
+     *
+     * @param   {String}  sortField      Field on which we should base our sorting. Must be included in CardList.allowedSorts.
+     * @param   {String}  sortDirection  Direction on which we should sort the cards. Must be either "asc" or "desc".
+     *
+     * @return  {Boolean}                True if the sorting was correctly set.
+     */
     setSort(sortField, sortDirection){
         if(!CardList.allowedSorts.includes(sortField)) return false;
         if(sortDirection != 'asc' && sortDirection != 'desc') return false;
@@ -225,56 +300,95 @@ class CardList{
         return true;
     }
 
+    /**
+     * Internal function. Makes the smallest usable Array that can be used to sort the cards when drawing.
+     *
+     * @param   {String[]}  keyList        Array of keys of this.cards that will be sorted.
+     * @param   {String}    cardAttribute  The attribute that will be used for sorting. Must be an attribute of ProtoCard.
+     *
+     * @return  {Object[]}                 Array of objects. Each object will have a "key" attribute, with the corresponding key from keyList; the other key will be the one defined in cardAttribute, with the corresponding value.
+     */
+    _makeSortableArray(keyList, cardAttribute){
+        const result = [];
+        const cardKeys = Object.keys(this.cards);
+        for(const key of keyList){
+            if(!cardKeys.includes(key)) continue;
+            result.push({
+                'key': key,
+                [cardAttribute]: this.cards[key][cardAttribute]
+            });
+        }
+
+        return result;
+    }
+
+    /**
+     * Internal function. Sorts the cards in this.cards, respecting this.sortField and this.sortDirection.
+     *
+     * @param   {String[]}  [keyList]  Array of keys of this.cards (cardKeys) to be sorted. Defaults to Object.keys(this.cards).
+     *
+     * @return  {String[]}             Array of keys of this.cards, after sorting.
+     */
     _sortCards(keyList=null){
-        var sortList = [];
         if(keyList === null){
             keyList = Object.keys(this.cards);
         }
 
-        for(const key of keyList){
-            sortList.push({
-                'key': key,
-                'name': this.cards[key].name,
-                'cmc': this.cards[key].cmc,
-                'colorSortValue': this.cards[key].colorSortValue,
-                'collectorNumber': this.cards[key].selectedNumber
-            });
-        }
+        var sortList = [];
         if(this.sortField == 'name'){
+            sortList = this._makeSortableArray(keyList, 'name');
             sortList.sort(function (a, b) {
                 return a.name.localeCompare(b.name);
             });
         }else if(this.sortField == 'color'){
+            sortList = this._makeSortableArray(keyList, 'color');
             sortList.sort(function (a, b) {
                 return b.colorSortValue - a.colorSortValue || a.name.localeCompare(b.name);
             });
         }else if(this.sortField == 'manavalue'){
+            sortList = this._makeSortableArray(keyList, 'manavalue');
             sortList.sort(function (a, b) {
                 return b.cmc - a.cmc || a.name.localeCompare(b.name);
             });
         }else if(this.sortField == 'collectornumber'){
+            sortList = this._makeSortableArray(keyList, 'collectornumber');
             sortList.sort(function (a, b) {
                 return b.collectorNumber - a.collectorNumber || a.name.localeCompare(b.name);
             });
+        }else{
+            console.warn('Sorting failed due to improperly set sortField');
         }
 
         if(this.sortDirection == 'desc'){
             sortList.reverse();
         }
 
-        var returnList = [];
-        for(const e of sortList){
-            returnList.push(e.key);
-        }
+        const returnList = sortList.map((ob) => ob.key);
         return returnList;
     }
 
+    /**
+     * Internal function. Calls this.loadSuccessCallback if it is set.
+     *
+     * @return  {null}
+     */
     _callLoadSuccessCallBack(){
         if(this.loadSuccessCallback){
             this.loadSuccessCallback(this.draw());
         }
     }
 
+    /**
+     * Internal function. Saves the settings passed in the parameter object and then calls this._callChangeCallback.
+     * If this.statusList changes, will update the statusIndex of the cards in this.cards to match the new status.
+     *
+     * @param   {Object}    settings                Object containing the settings to be applied and saved.
+     * @param   {String}    settings.name           Name that will be applied to this.name.
+     * @param   {Boolean}   settings.public         If this list will be publicly visible.
+     * @param   {String[]}  settings.statusList     Array of strings (emojis) to be used as statuses in this list.
+     *
+     * @return  {null}
+     */
     _saveSettings(settings){
         const initialStatus = {
             'name': this.name,
@@ -282,8 +396,7 @@ class CardList{
             'statusList': this.statusList
         };
 
-        const possibleKeys = ['name', 'public', 'statusList'];
-        for(const k of possibleKeys){
+        for(const k of Object.keys(initialStatus)){
             if(!Object.hasOwn(settings, k)) continue;
             this[k] = settings[k];
         }
@@ -297,16 +410,29 @@ class CardList{
         if(JSON.stringify(initialStatus.statusList) != JSON.stringify(finalStatus.statusList)){
             var stat = null;
             var removedStatus = [];
+            var changedIndexes = {};
+            var newIndex = null;
             for (var i = 0; i < initialStatus.statusList.length; i++) {
                 stat = initialStatus.statusList[i];
-                if(!finalStatus.statusList.includes(stat) || finalStatus.statusList.indexOf(stat) !== i){
+                if(!finalStatus.statusList.includes(stat)){
                     removedStatus.push(i);
+                    continue;
+                }
+
+                newIndex = finalStatus.statusList.indexOf(stat);
+                if(newIndex !== i){
+                    changedIndexes[i] = newIndex;
                 }
             }
 
             for(const cardKey of Object.keys(this.cards)){
                 if(removedStatus.includes(this.cards[cardKey].statusIndex)){
                     this.cards[cardKey].statusIndex = null;
+                    continue;
+                }
+
+                if(Object.hasOwn(changedIndexes, this.cards[cardKey].statusIndex)){
+                    this.cards[cardKey].statusIndex = changedIndexes[this.cards[cardKey].statusIndex];
                 }
             }
 
@@ -316,15 +442,41 @@ class CardList{
         }
     }
 
+    /**
+     * Invokes the modal of this.listPropertiesModal, where an user can change the properties of this list, hopefully by later calling this._saveSettings.
+     *
+     * @return  {null}
+     */
     callPropertiesModal(){
         this.listPropertiesModal.call(this);
     }
 
+    /**
+     * Calls the modal of this.fileSelectModal, setting this.loadSuccessCallback if provided.
+     *
+     * @param   {Function}  [loadSuccessCallback]   Function to be set in this.loadSuccessCallback. TODO: THis should not be set.
+     *
+     * @return  {null}
+     */
     callFileSelectModal(loadSuccessCallback=null){
         if(loadSuccessCallback) this.loadSuccessCallback = loadSuccessCallback;
         this.fileSelectModal.call();
     }
 
+    /**
+     * Sets all properties needed and calls this.cardSetSelectionModal. The cards are drawn using this.drawSetSelect, and set data will be loaded using this.loadSetData before actually calling the modal.
+     *
+     * @param   {String}    cardKey                         Key of this.cards, which we will use to call the modal.
+     * @param   {String}    selectionElementQuery           Selection query of the elements that should trigger a version selection.
+     * @param   {String}    selectionSetElementPropName     Name of the property in the elements selected by selectionElementQuery that holds the set being selected.
+     * @param   {String}    selectionNumElementPropName     Name of the property in the elements selected by selectionElementQuery that holds the card number in set being selected.
+     * @param   {String}    wrapperElementQuery             Query that matches the wrapper element to which selectedClass will apply when a given card version is selected.
+     * @param   {String}    selectedClass                   Class to be added/removed from an element to show which version is being selected.
+     * @param   {Function}  confirmCallback                 Callback to be used when a given version is confirmed. Should accept {String} cardKey, {String} setCode, {String} collectorNumber
+     * @param   {Function}  cancelCallback                  Callback to be used when the version selection is cancelled. No parameters.
+     *
+     * @return  {null}
+     */
     async callCardSelectModal(cardKey, selectionElementQuery, selectionSetElementPropName, selectionNumElementPropName, wrapperElementQuery, selectedClass, confirmCallback, cancelCallback){
         var cardBody = this.drawSetSelect(cardKey);
         if(cardBody === null){
@@ -351,15 +503,28 @@ class CardList{
         );
     }
 
+    /**
+     * Calls this.cardDetailsModal, to show a given card's details, such as name, rules text and links to other sites.
+     *
+     * @param   {String}    cardKey     Key of this.cards that represents the card that will be shown.
+     *
+     * @return  {null}
+     */
     callCardDetails(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return;
         const html = this.drawCardDetails(cardKey);
 
         if(!html) return;
         this.cardDetailsModal.call(html);
-        return true;
     }
 
+    /**
+     * Internal function. Sets this.filteredCards to hold an array of cardKeys matching the active filters.
+     *
+     * @param   {Boolean}   [sort]  If set to False, will not sort the cards after filtering. Defaults to true.
+     *
+     * @return  {null}
+     */
     _filterCards(sort=true){
         this.filteredCards = [];
         for(const cardKey of Object.keys(this.cards)){
@@ -370,26 +535,46 @@ class CardList{
         if(sort) this.filteredCards = this._sortCards(this.filteredCards);
     }
 
-    resetFilters(suppressChangeCallback){
+    /**
+     * Resets filters to their basic status (all selected). Calls this._callChangeCallback.
+     *
+     * @param   {Boolean}   [suppressChangeCallback]    If set to true, will not call this._callChangeCallback. Defaults to false.
+     *
+     * @return  {null}
+     */
+    resetFilters(suppressChangeCallback=false){
         this.filters = {
             'color': window.constants.colors.slice(),
             'rarity': window.constants.rarities.slice(),
             'status': [...this.statusList.slice(), null]
         };
-        if(!suppressChangeCallback){
-            this._callChangeCallback();
-        }
+        if(!suppressChangeCallback) this._callChangeCallback();
     }
 
-    emptyFilters(){
+    /**
+     * Empties all filters. Calls this._callChangeCallback.
+     *
+     * @param   {Boolean}   [suppressChangeCallback]    If set to true, will not call this._callChangeCallback. Defaults to false.
+     *
+     * @return  {null}
+     */
+    emptyFilters(suppressChangeCallback=false){
         this.filters = {
             'color': [],
             'rarity': [],
             'status': []
         };
-        this._callChangeCallback();
+        if(!suppressChangeCallback) this._callChangeCallback();
     }
 
+    /**
+     * Adds a given value to a given filter type, then calls this._callChangeCallback.
+     *
+     * @param   {String}    filterType  The kinds of filter being added. Must be a key in this.filters.
+     * @param   {String}    value       The filter to be added.
+     *
+     * @return  {null}
+     */
     addFilter(filterType, value){
         if(!Object.hasOwn(this.filters, filterType)) return;
 
@@ -400,16 +585,14 @@ class CardList{
         this._callChangeCallback();
     }
 
-    _addAllFilters(filterType){
-        if(filterType == 'status'){
-            this.filters.status = [...this.statusList.slice(), null];
-        }else if(filterType == 'color'){
-            this.filters.color = window.constants.colors.slice();
-        }else if(filterType == 'rarity'){
-            this.filters.rarity = window.constants.rarities.slice();
-        }
-    }
-
+    /**
+     * Removes a given filter from the given filter type, then calls this._callChangeCallback.
+     *
+     * @param   {String}    filterType  The kinds of filter being removed. Must be a key in this.filters.
+     * @param   {String}    value       The filter to be removed. Must be in this.filters[filterType].
+     *
+     * @return  {null}
+     */
     removeFilter(filterType, value){
         if(!Object.hasOwn(this.filters, filterType)) return;
         if(this.filters[filterType].length == 0) return;
@@ -422,25 +605,47 @@ class CardList{
         this._callChangeCallback();
     }
 
+    /**
+     * Sets this.scryfallClient.
+     *
+     * @param   {Scryfall}  client  Scryfall client to be set.
+     *
+     * @return  {null}
+     */
     setScryfallClient(client){
+        // TODO: ensure that the given client is of the correct type before setting.
         this.scryfallClient = client;
     }
 
+    /**
+     * Sets this.cardMode, which will then be used to draw the cards.
+     *
+     * @param   {String}    mode    The mode in which the cards will be drawn. Must be in CardList.allowedModes.
+     *
+     * @return  {null}
+     */
     setCardMode(mode){
-        if(!CardList.allowedModes.includes(mode)){
-            return false;
-        }
+        if(!CardList.allowedModes.includes(mode)) return;
         this.cardMode = mode;
     }
 
+    /**
+     * Sets the status for a given card, then calls this._callChangeCallback.
+     * If statusIndex is an int, will set the card to the given status. If it is 'next', will set to the next status in this.statusList.
+     *
+     * @param   {String}            cardKey      Key of this.cards to indicate the card to be changed.
+     * @param   {(String|Number)}   statusIndex  Either an int <= this.statusList.length or 'next'.
+     *
+     * @return  {null}
+     */
     setCardStatus(cardKey, statusIndex){
-        // if(!this.statusList.includes(status) && status != 'next' && card.status !== null) return null;
         if(statusIndex != 'next' && !Number.isInteger(statusIndex)) return;
         if(!Object.keys(this.cards).includes(cardKey)) return;
 
         var nextStatus = statusIndex;
         if(statusIndex == 'next'){
             nextStatus = this.cards[cardKey].statusIndex;
+
             if(nextStatus === null){
                 nextStatus = 0;
             }else if(nextStatus == this.statusList.length - 1){
@@ -448,37 +653,58 @@ class CardList{
             }else{
                 nextStatus += 1;
             }
+        }else if(nextStatus >= this.statusList.length){
+            return;
         }
-        console.log(`nextStatus: ${nextStatus}`);
+
+
 
         this.cards[cardKey].statusIndex = nextStatus;
         this._callChangeCallback();
     }
 
-    addCardQuantity(cardKey, newQuant){
+    /**
+     * Adds a given amount to the quantity of a given card. The amount may be negative. If the new amount is now <= 0, the card will be removed.
+     *
+     * @param   {String}    cardKey     Key of this.cards to indicate the card to be changed.
+     * @param   {Number}    changeAmt   The amount to be added to the card quantity.
+     *
+     * @return  {null}
+     */
+    addCardQuantity(cardKey, changeAmt){
         if(!Object.keys(this.cards).includes(cardKey)) return;
-        if(this.cards[cardKey].quantity = Math.max(0, this.cards[cardKey].quantity + newQuant));
+        this.cards[cardKey].quantity = Math.max(0, this.cards[cardKey].quantity + changeAmt);
+
+        if(this.cards[cardKey].quantity <= 0){
+            this.removeCard(cardKey);
+            return;
+        }
         this._callChangeCallback();
     }
 
+    /**
+     * Sets the quantity of a given number. If the new quantity is <= 0, the card will be removed.
+     *
+     * @param   {String}    cardKey     Key of this.cards to indicate the card to be changed.
+     * @param   {Number}    newQuant    The new quantity to be set.
+     *
+     * @return  {null}
+     */
     setCardQuantity(cardKey, newQuant){
         if(!Object.keys(this.cards).includes(cardKey)) return;
-        if(this.cards[cardKey].quantity = Math.max(0, newQuant));
+        this.cards[cardKey].quantity = Math.max(0, newQuant);
+        if(this.cards[cardKey].quantity <= 0){
+            this.removeCard(cardKey);
+            return;
+        }
         this._callChangeCallback();
     }
 
-    _getNextStatus(status){
-        if(status === null || !this.statusList.includes(status)){
-            return this.statusList[0];
-        }
-
-        const nextStatus = this.statusList.indexOf(status) + 1;
-        if(nextStatus >= this.statusList.length){
-            return null;
-        }
-        return this.statusList[nextStatus];
-    }
-
+    /**
+     * Ensures that all sets present in cards in this.cards are represented in this.sets, adding null entries when needed.
+     *
+     * @return  {null}
+     */
     _loadSetKeys(){
         for(const cardKey of Object.keys(this.cards)){
             for(const setCode of Object.keys(this.cards[cardKey].sets)){
@@ -489,6 +715,13 @@ class CardList{
         }
     }
 
+    /**
+     * Internal function. Lists all set keys that are being used (selected) by cards and are null in this.sets.
+     *
+     * @param   {Boolean}   [neededOnly]    If set to false, will return all keys, despite them being not null in this.sets.
+     *
+     * @return  {String[]}                  Array of set codes
+     */
     _getSetKeysInUse(neededOnly=true){
         var setsInUse = {};
         for(const cardKey of Object.keys(this.cards)){
@@ -513,6 +746,14 @@ class CardList{
     }
 
 
+    /**
+     * Async function. Loads the set data of a list of sets. Calls the modal to prevent interaction.
+     *
+     * @param   {String[]}  [setList]       List of set codes to load. Defaults to all sets in all cards.
+     * @param   {Boolean}   [forceBasics]   If set to true, will load all sets of basic lands too. Defaults to false.
+     *
+     * @return  {null}
+     */
     async loadSetData(setList=null, forceBasics=false){
         if(this.scryfallClient == null){
             if(scryfallClient === null){
@@ -563,6 +804,7 @@ class CardList{
             }
         }
 
+        // FOR SOME REASON, if the modal stays up for less than 2 seconds, it crashes on dismiss.
         const elapsedTime = new Date().getTime() - startTimestamp;
         if(elapsedTime < 2000){
             await delay(2000 - elapsedTime);
@@ -574,6 +816,22 @@ class CardList{
         });
     }
 
+    /**
+     * A basic object, containing the data from a parsed line when importing from some source of text.
+     * @typedef     {Object}    ParsedCard
+     * @property    {String}    typedName   The name typed by the user. May or may not be an actual mtg card name.
+     * @property    {Number}    quantity    Quantity of the card.
+     * @property    {Number}    set         The 3-5 letter code representing the set.
+     * @property    {Boolean}   foil        Describes if the card is desired in foil.
+     */
+
+    /**
+     * Internal function. Parses a given string as one that would be exported by Magic Arena.
+     *
+     * @param   {String}    text    String compliant to a MtG Arena export, to be parsed.
+     *
+     * @return  {ParsedCard}        Representing the parsed text.
+     */
     _parseCardLineArena(text){
         text = text.trim();
         if(text.length < 4) return null;
@@ -590,12 +848,20 @@ class CardList{
                                  .replaceAll('"', '')
                                  .trim(),
             'quantity': match[1],
-            'set': match[3]
+            'set': match[3],
+            'foil': null
         };
 
         return response;
     }
 
+    /**
+     * Parses the given text as an item in a list of several possible kinds.
+     *
+     * @param   {String}    text    String compliant to one of several ways to represent a card.
+     *
+     * @return  {ParsedCard}        Representing the parsed text.
+     */
     parseCardLine(text){
         const reWithNum = /^(\d+)( ?[xX]?) (.+)/;
         const reFoil = /^.+ (\[FOIL\])$/;
@@ -627,7 +893,7 @@ class CardList{
         match = text.match(reWithSet);
         if(match){
             response.set = match[2];
-            text = text.substr(0, text.indexOf(` [${match[2]}]`)).trim();
+            text = text.substring(0, text.indexOf(` [${match[2]}]`)).trim();
         }
 
         if(text.length < 2){
@@ -648,14 +914,22 @@ class CardList{
         return response;
     }
 
+    /**
+     * Internal function. Parses a given multiline text into ProtoCards that can then be sent to this.cardQueue.
+     *
+     * @param   {String}    text            The blob of text to be parsed.
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {Object}                    Object with two keys: {String[]} errors, containing all errors generated during ingestion; {ProtoCard[]} with the cards ready to be sent to loading.
+     */
     _digestText(text, trustNames=false){
         if(!text) return;
 
-        var typedList = text.split('\n').filter(e => e.length >= 2);
+        const typedList = text.split('\n').filter(e => e.length >= 3);
         if(len(typedList) < 1) return;
 
-        var errors = [];
-        var queue = [];
+        const errors = [];
+        const queue = [];
 
         var newCard = null;
         var parsedLine = null;
@@ -686,6 +960,15 @@ class CardList{
         };
     }
 
+    /**
+     * Async function. Ingests a single line of text as a card, processes it with buildFromScryFall, calls _callChangeCallback then the provided successCallback.
+     * This uses the alertManager and does not block user interaction.
+     *
+     * @param   {String}    text                The text to be parsed.
+     * @param   {Function}  [successCallback]   Function to be called if the parsing is successfull. Function must accept cardKey as a parameter.
+     *
+     * @return  {null}
+     */
     async quickIngest(text, successCallback=null){
         if(!text) return;
         const ingestedText = this._digestText(text);
@@ -736,6 +1019,14 @@ class CardList{
         this._callChangeCallback();
     }
 
+    /**
+     * Async function. Ingests a block of text as cards and adds it to this.cardQueue.
+     *
+     * @param   {String}    text        The text to be parsed.
+     * @param   {Boolean}   trustNames  If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {Boolean}               true if the block added cards to this.cardQueue.
+     */
     async ingestText(text, trustNames=false){
         if(!text) return;
         this.errors = [];
@@ -751,6 +1042,17 @@ class CardList{
         return true;
     }
 
+    /**
+     * Processes all cards from this.cardQueue, loading data from Scryfall and populating this.cards.
+     * Then, if errors are detected, calls this.loadErrorModal. If no errors are detected, calls this.loadSetData, then calls this._callChangeCallback.
+     *
+     * @param   {Scryfall}  [scryfallClient]    Scryfall client to be used and set to this.scryfallClient.
+     * @param   {Function}  [successCallBack]   Function to be called if the loading succeeds. Supplying this will supress calling this.loadSetData
+     * @param   {Function}  [errorCallBack]     Function to be called in case of error. Supplying this will supress calling loadErrorModal.
+     * @param   {Boolean}   [forceRefresh]      If set to true, will add all cards to this.cardQueue before starting data processing.
+     *
+     * @return  {null}
+     */
     async loadQueueFromScryfall(scryfallClient=null, successCallBack=null, errorCallBack=null, forceRefresh=false){
         if(this.scryfallClient === null){
             if(scryfallClient === null){
@@ -763,6 +1065,7 @@ class CardList{
             for (const [key, card] of Object.entries(this.cards)){
                 this.cardQueue.push(card);
                 this.cardQueue[this.cardQueue.length-1].trustName = true;
+                this.cardQueue[this.cardQueue.length-1].addQuantity = false;
             }
         }
         if(this.cardQueue.length < 1){
@@ -774,18 +1077,21 @@ class CardList{
         const startTimestamp = new Date().getTime();
         await delay(50);
 
-        var loaded = null;
         var i = Object.keys(this.cards).length;
         for (const newCard of this.cardQueue) {
             this.loadingCardsModal.update(newCard.typedName);
 
-            loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': i});
+            let loaded = await newCard.buildFromScryFall(this.scryfallClient, {'index': i});
 
             if(newCard.loaded == 2){
                 if(forceRefresh == true){
                     this.cards[newCard.key] = newCard;
                 }else if(Object.keys(this.cards).includes(newCard.key)){
-                    this.cards[newCard.key].quantity += newCard.quantity;
+                    if(Object.hasOwn(newCard, 'addQuantity') && newCard.addQuantity == false){
+                        newCard.addQuantity = true;
+                    }else{
+                        this.cards[newCard.key].quantity += newCard.quantity;
+                    }
                 }else{
                     this.cards[newCard.key] = newCard;
                 }
@@ -801,6 +1107,7 @@ class CardList{
             i++;
         }
 
+        // FOR SOME REASON modals have to stay on for at least 2 seconds, or they fail in being dismissed.
         const elapsedTime = new Date().getTime() - startTimestamp;
         if(elapsedTime < 2000){
             await delay(2000 - elapsedTime);
@@ -808,8 +1115,11 @@ class CardList{
 
         if(this.errors.length > 0){
             this.loadingCardsModal.dismiss(() => {
-                if(errorCallBack) errorCallBack(this.errors);
-                this.loadErrorModal.call(this.errors);
+                if(errorCallBack){
+                    errorCallBack(this.errors);
+                }else{
+                    this.loadErrorModal.call(this.errors);
+                }
             });
         }else{
             this.loadingCardsModal.dismiss(async () => {
@@ -828,6 +1138,14 @@ class CardList{
         }
     }
 
+    /**
+     * Ingests data returned by the backend after getting cards from a given valid URL.
+     * Then calls this.ingestFile.
+     *
+     * @param   {String}    contents    The text to be parsed.
+     *
+     * @return  {null}
+     */
     ingestFromUrl(contents){
         var innerContents = [];
         for(const catName of Object.keys(contents)){
@@ -840,6 +1158,15 @@ class CardList{
         this.ingestFile(innerContents, 'archidekt', true);
     }
 
+    /**
+     * Ingests an array of strings from a file loaded and parses them to add to this.cardQueue.
+     *
+     * @param   {String[]}  fileContents    Lines in the file read
+     * @param   {String}    fileType        The kind of file to be parsed. Must be one of 'archidekt', 'arena', 'mtggoldfish', 'mtgotxt', 'mtgodek', or 'mwdeck'.
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
     ingestFile(fileContents, fileType, trustNames=false){
         if(fileType == 'archidekt'){
             this._ingestArchidektFile(fileContents, trustNames);
@@ -858,7 +1185,16 @@ class CardList{
         }
     }
 
-    async _ingestDek(xmlString){
+    /**
+     * Internal Async function. Processes a block of xml-compliant text as a list of cards and adds them to this.cardQueue, then calls this.loadQueueFromScryfall.
+     * This only processes a well-formed decklist as one would see exported from Magic Online.
+     *
+     * @param   {String}    xmlString       XML to be parsed.
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
+    async _ingestDek(xmlString, trustNames=false){
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlString, "application/xml");
         if(!xml){
@@ -871,26 +1207,36 @@ class CardList{
             newCard = new ProtoCard(this.cardQueue.length);
             newCard.buildFromParams({
                 typedName: cardElement.getAttribute('Name'),
-                quantity: cardElement.getAttribute('Quantity')
+                quantity: cardElement.getAttribute('Quantity'),
+                trustName: trustNames
             });
             this.cardQueue.push(newCard);
         }
 
         if(this.cardQueue.length > 0){
-            await this.loadQueueFromScryfall(
+            this.loadQueueFromScryfall(
                 null,
                 async () => {  // successCallback
-                    var setList = [];
+                    let setList = [];
                     for(const cardKey of Object.keys(this.cards)){
                         setList.push(this.cards[cardKey].selectedSet);
                     }
-                    await this.loadSetData(setList, true);
+                    this.loadSetData(setList, true);
                 },
                 (err) => {}  // errorCallback
             );
         }
     }
 
+    /**
+     * Internal Async Function. Parses an array of Strings, interpreting each item as a card compliant with exports from Magic Workstation
+     * Adds them to this.cardQueue, then calls this.loadQueueFromScryfall.
+     *
+     * @param   {String[]}  splitList       Array with Strings that represents cards
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
     async _ingestMwdeck(splitList, trustNames=false){
         var text = '';
         var match = null;
@@ -928,6 +1274,15 @@ class CardList{
         }
     }
 
+    /**
+     * Internal Async Function. Parses an array of Strings, interpreting each item as a card compliant with exports from MtgGoldfish
+     * Adds them to this.cardQueue, then calls this.loadQueueFromScryfall.
+     *
+     * @param   {String[]}  splitList       Array with Strings that represents cards
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
     async _ingestMtgGoldFishFile(splitList, trustNames=false){
         if(splitList.length < 1) return;
 
@@ -997,6 +1352,15 @@ class CardList{
         }
     }
 
+    /**
+     * Internal Async Function. Parses an array of Strings, interpreting each item as a card compliant with exports from Magic Arena
+     * Adds them to this.cardQueue, then calls this.loadQueueFromScryfall.
+     *
+     * @param   {String[]}  splitList       Array with Strings that represents cards
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
     async _ingestArenaFile(splitList, trustNames=false){
         if(splitList.length < 1) return;
         var cards = [];
@@ -1035,6 +1399,15 @@ class CardList{
         }
     }
 
+    /**
+     * Internal Function. Parses an array of Strings, interpreting each item as a card compliant with exports from Archidekt
+     * Adds them to this.cardQueue, then calls this.loadQueueFromScryfall.
+     *
+     * @param   {String[]}  splitList       Array with Strings that represents cards
+     * @param   {Boolean}   [trustNames]    If set to true, will trust the names given in the text and skip the initial Scryfall name correction.
+     *
+     * @return  {null}
+     */
     _ingestArchidektFile(splitList, trustNames=false){
         var categories = {};
         var currentCategory = '';
@@ -1066,13 +1439,20 @@ class CardList{
         );
     }
 
+    /**
+     * Internal function. Processes an object containing protocards, as a result of a selection of categories. Adds the cards to this.cardQueue and then calls loadQueueFromScryfall
+     *
+     * @param   {Object}    selectedCategories  Objectcontaining the ProtoCards. Each key should be the name of a category, and values should be arrays of ProtoCards.
+     *
+     * @return  {null}
+     */
     _processArchidektCategoriesSelection(selectedCategories){
         if(!selectedCategories) return;
 
         this.cardQueue = [];
-        for(const catName of Object.keys(selectedCategories)){
-            for (var i = 0; i < selectedCategories[catName].length; i++) {
-                this.cardQueue.push(selectedCategories[catName][i]);
+        for(const [catName, catList] of Object.entries(selectedCategories)){
+            for(const newCard of catList){
+                this.cardQueue.push(newCard);
             }
         }
 
@@ -1091,11 +1471,23 @@ class CardList{
         );
     }
 
+    /**
+     * Internal placeholder function to clear this.cardQueue.
+     *
+     * @return  {null}
+     */
     _callBackClearQueue(){
         this.cardQueue = [];
     }
 
-    draw(drawMode = null){
+    /**
+     * Builds an HTML representing the cards, respecting this.cardMode.
+     *
+     * @param   {String}    [drawMode]  Mode to draw the cards in. Overwrites this.cardMode, if provided.
+     *
+     * @return  {String}                HTML representing the cards
+     */
+    draw(drawMode=null){
         var html = [];
         drawMode = drawMode || this.cardMode;
 
@@ -1107,6 +1499,13 @@ class CardList{
         return html.join('\n');
     }
 
+    /**
+     * Creates the HTML for the set/version select of a given card.
+     *
+     * @param   {String}    cardKey     Identifier of the card to be drawn. Must be a key of this.cards.
+     *
+     * @return  {String}                HTML for the set selection.
+     */
     drawSetSelect(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         for(const setCode of Object.keys(this.cards[cardKey].sets)){
@@ -1115,6 +1514,13 @@ class CardList{
         return this.cards[cardKey].drawSetSelect(this.sets);
     }
 
+    /**
+     * Redraws a card element, with the card being selected by cardKey and the element being targeted by any element with card_key=
+     *
+     * @param   {String}    cardKey     Identifier of the card to be drawn. Must be a key of this.cards.
+     *
+     * @return  {null}
+     */
     redrawCard(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         const element = document.querySelector(`.${CardList.modeOuterClass[this.cardMode]}[card_key="${cardKey}"]`);
@@ -1122,11 +1528,23 @@ class CardList{
         element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.statusList, this.cardMode);
     }
 
+    /**
+     * Creates the HTML for displaying the card details (probably in the modal).
+     *
+     * @param   {String}    cardKey     Identifier of the card to be drawn. Must be a key of this.cards.
+     *
+     * @return  {String}                HTML with the card details.
+     */
     drawCardDetails(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         return this.cards[cardKey].drawDetails();
     }
 
+    /**
+     * Builds the status filters, using CardList.filterModels.statusModel and this.statusList.
+     *
+     * @return  {String}    HTML with the status filters.
+     */
     drawStatusFilters(){
         var html = [CardList.filterModels.statusNullModel];
         for (var i = 0; i < this.statusList.length; i++) {
@@ -1137,6 +1555,15 @@ class CardList{
         return html.join('\n');
     }
 
+    /**
+     * Selects a card version. Acts as a passtrough for ProtoCard.selectVersion, then calls this._callChangeCallback.
+     *
+     * @param   {String}    cardKey             Identifier of the card to be drawn. Must be a key of this.cards.
+     * @param   {String}    setCode             Set code being selected.
+     * @param   {String}    collectorNumber     Collector number to be selected.
+     *
+     * @return  {null}
+     */
     setCardSelectedSet(cardKey, setCode, collectorNumber){
         if(!Object.keys(this.cards).includes(cardKey)) return;
         if(!Object.keys(this.sets).includes(setCode))return;
@@ -1145,12 +1572,24 @@ class CardList{
         this._callChangeCallback();
     }
 
+    /**
+     * Removes a given card from this.cards, then calls this._callChangeCallback.
+     *
+     * @param   {String}    cardKey     Identifier of the card to be drawn. Must be a key of this.cards.
+     *
+     * @return  {null}
+     */
     removeCard(cardKey){
         if(!Object.keys(this.cards).includes(cardKey)) return;
         delete this.cards[cardKey];
         this._callChangeCallback();
     }
 
+    /**
+     * Removes all cards that are currently not filteres out, then calls this._callChangeCallback.
+     *
+     * @return  {null}
+     */
     removeVisibleCards(){
         this._filterCards(false);
         for(const key of this.filteredCards){
@@ -1159,47 +1598,25 @@ class CardList{
         this._callChangeCallback();
     }
 
-
-    ensureQueueIndex(){
-        for (var i = 0; i < this.cardQueue.length; i++) {
-            this.cardQueue[i].index = i;
-        }
-    }
-
-    resetIndex(){
-        const keys = Object.entries(this.cards);
-        for (var i = 0; i < keys.length; i++) {
-            this.cards[keys[i]].index = i;
-        }
-    }
-
-    resetKeys(){
-        const keys = Object.entries(this.cards);
-        var newCard = null;
-        for (var i = 0; i < keys.length; i++) {
-            this.cards[keys[i]].makeKey();
-            if(this.cards[keys[i]].key != keys[i]){
-                newCard = new ProtoCard(i);
-                newCard.buildFromParams(JSON.parse(this.cards[keys[i]].toString()), true);
-
-                delete this.cards[keys[i]];
-
-                this.cards[newCard.key] = newCard;
-            }
-        }
-        this._callChangeCallback();
-    }
-
+    /**
+     * Checks if there are any sets in this.sets that are currently null.
+     *
+     * @return  {Boolean}  True if there are any null sets.
+     */
     hasNullSets(){
         this._loadSetKeys();
 
-        for(const setCode of Object.keys(this.sets)){
-            if(this.sets[setCode] === null)
-                return true;
+        for(const [setCode, setDetails] of Object.entries(this.sets)){
+            if(setDetails === null) return true;
         }
         return false;
     }
 
+    /**
+     * Exports all cards in this.cards to text
+     *
+     * @return  {String}    Text where each row represents a card.
+     */
     exportCardsToText(){
         var result = [];
         for(const key of Object.keys(this.cards)){
@@ -1208,6 +1625,11 @@ class CardList{
         return result;
     }
 
+    /**
+     * Creates an array of objects to be sent to the image creation API
+     *
+     * @return  {Object[]}  Each object has a {Number} quantity key, with the quantity of the given card, and a {String} url key, with the card image's URL.
+     */
     exportCardsToImage(){
         var result = [];
         for(const key of Object.keys(this.cards)){
@@ -1220,5 +1642,5 @@ class CardList{
     }
 }
 
-
+// Allows us to habe a basic module loading check.
 window.loadedModules.push('cardlist');

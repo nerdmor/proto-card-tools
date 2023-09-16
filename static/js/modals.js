@@ -1,3 +1,7 @@
+/**
+ * Base modal class to be extended by other modals.
+ * @class
+ */
 class ProtoModal{
     constructor(domElement){
         this.modal = null;
@@ -314,7 +318,7 @@ class CardSetSelectionModal extends ProtoModal {
         var wrapperElement = event.target.parentElement;
         while(!wrapperElement.matches(this.wrapperElementQuery)){
             wrapperElement = wrapperElement.parentElement;
-            if(wrapperElement.tagName == 'BODY'){
+            if(wrapperElement.classList.contains('modal-body')){
                 wrapperElement = null;
                 break;
             }
