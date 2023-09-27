@@ -197,8 +197,6 @@ class CardList{
      */
     async _callChangeCallback(updateTime=true){
         if(updateTime===true) this.lastUpdate = moment.tz();
-        console.log('changeCallback being called');
-        console.log(this.changeCallback);
         if(this.changeCallback !== null){
             if(this.changeCallback.constructor.name === 'AsyncFunction'){
                 await this.changeCallback(this);
@@ -317,7 +315,8 @@ class CardList{
             if(!cardKeys.includes(key)) continue;
             result.push({
                 'key': key,
-                [cardAttribute]: this.cards[key][cardAttribute]
+                [cardAttribute]: this.cards[key][cardAttribute],
+                'name': this.cards[key].name
             });
         }
 
@@ -350,6 +349,7 @@ class CardList{
         }else if(this.sortField == 'manavalue'){
             sortList = this._makeSortableArray(keyList, 'manavalue');
             sortList.sort(function (a, b) {
+                if(!a.name) console.log(a);
                 return b.cmc - a.cmc || a.name.localeCompare(b.name);
             });
         }else if(this.sortField == 'collectornumber'){
