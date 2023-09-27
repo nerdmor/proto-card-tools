@@ -197,6 +197,8 @@ class CardList{
      */
     async _callChangeCallback(updateTime=true){
         if(updateTime===true) this.lastUpdate = moment.tz();
+        console.log('changeCallback being called');
+        console.log(this.changeCallback);
         if(this.changeCallback !== null){
             if(this.changeCallback.constructor.name === 'AsyncFunction'){
                 await this.changeCallback(this);
@@ -393,7 +395,7 @@ class CardList{
         const initialStatus = {
             'name': this.name,
             'public': this.public,
-            'statusList': this.statusList
+            'statusList': JSON.parse(JSON.stringify(this.statusList))
         };
 
         for(const k of Object.keys(initialStatus)){
@@ -404,10 +406,11 @@ class CardList{
         const finalStatus = {
             'name': this.name,
             'public': this.public,
-            'statusList': this.statusList
+            'statusList': JSON.parse(JSON.stringify(this.statusList))
         };
 
         if(JSON.stringify(initialStatus.statusList) != JSON.stringify(finalStatus.statusList)){
+
             var stat = null;
             var removedStatus = [];
             var changedIndexes = {};

@@ -18,7 +18,10 @@ class MainController{
         window.settings.registerTrigger('useWakeLock', (key, value) => window.wakeLock.setActive(value));
         window.settings.registerTrigger('all', (k, v) => { window.storage.saveSettings(window.settings.toString()) });
 
-        window.listManager.changeCallback = async (lm) => {window.storage.syncItem('listManager', listManager)};
+        window.listManager.changeCallback = async (lm) => {
+            window.storage.syncItem('listManager', lm.toString())
+            this.redrawStatusFilters(window.statusFilterElement);
+        };
         window.listManager.loadSuccessCallback = async (html) => {window.listElement.innerHTML = html};
 
         window.session.registerChangeCallback((token) => this.drawSessionButtons(token));

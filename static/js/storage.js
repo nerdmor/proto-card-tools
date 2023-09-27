@@ -83,7 +83,6 @@ class StorageManager{
     }
 
     syncItem(itemType, item, suppressApi=false){
-        // item = item.toString();
         if(itemType == 'listManager'){
             this.setItem(itemType, item);
             if(suppressApi == false) this._addToSyncQueue(itemType, item);

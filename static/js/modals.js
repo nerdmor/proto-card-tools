@@ -581,8 +581,8 @@ class ListPropertiesModal extends ProtoModal{
         this._bind();
     }
 
-    registerCallbacks(saveCallback){
-        this.saveCallback = saveCallback;
+    registerCallbacks(saveCallback=null){
+        if(saveCallback !== null) this.saveCallback = saveCallback;
         if(this.saveCallback === null){
             this.hiddenCallback = async () => {};
         }else{
@@ -674,7 +674,7 @@ class ListPropertiesModal extends ProtoModal{
         this._drawStatusList();
     }
 
-    _addStatusToList(newStatus){
+    _addStatusToList = (newStatus) => {
         if(this.statusList.includes(newStatus)){
             this.listPropertiesNewStatusInputElement.value = '';
             this._drawError('Status already exists');
@@ -722,7 +722,7 @@ class ListPropertiesModal extends ProtoModal{
     }
 
     call(cardList){
-        this.statusList = cardList.statusList;
+        this.statusList = JSON.parse(JSON.stringify(cardList.statusList));
         this.draw(cardList);
         super.call();
     }
