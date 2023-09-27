@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if(matchElementAndParent(event.target, ['.table-card-details', '.finder-card-details'])) return window.mainController.callCardDetails(event);
     });
 
-    document.querySelector('body').addEventListener('change', (event) => {
+    document.querySelector('#filter-header').addEventListener('change', (event) => {
         // filters checkboxes
         if(event.target.matches('.filter-check')) return window.mainController.processFilterChange(event.target);
     });

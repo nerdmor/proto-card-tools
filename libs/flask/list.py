@@ -179,6 +179,11 @@ def update_list(list_id, user_id, data):
 
 
 def create_list(**kwargs):
+    if 'body' in kwargs:
+        body = json_loads(kwargs['body'])
+        for k, v in body.items():
+            if k not in kwargs:
+                kwargs[k] = v
     for k in MANDATORY_FIELDS:
         if k not in kwargs:
             return jsonify({"success": False, "message": f"missing mandatory field '{k}'"}), 400

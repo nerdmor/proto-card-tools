@@ -113,24 +113,39 @@ class StorageManager{
 
 
     async _syncList(list){
+        var listData = null;
+        if(typeof list === 'string'){
+            listData = JSON.parse(list);
+        }else{
+            listData = JSON.parse(JSON.stringify(list));
+        }
+
         const listDetails = {
-            'name': list.name,
-            'comments': list.comments,
-            'body': list.toString(),
-            'public': list.public
+            'name': listData.name,
+            'comments': listData.comments,
+            'body': JSON.stringify(listData),
+            'public': listData.public
         };
         var response = null
-        if(list.id === null){
+
+        window.testlist = listDetails;
+        console.log('set testlist');
+
+        if(listData.id === null){
             response = await this.sessionManager.createList(listDetails);
             if(response.success == true){
-                list.id = response.data.id;
-                list.user_id = this.sessionManager.user_id;
+                // TODO: fix this direct assignment
+                window.listManager.id = response.data.id;
+                window.listManager.user_id = this.sessionManager.user_id;
+                listData.id = response.data.id;
+                listData.user_id = this.sessionManager.user_id;
+                this.setItem('listManager', listData);
             }else{
                 // TODO: improve this
                 console.error(response.error);
             }
         }else{
-            response = await this.sessionManager.updateList(list.id, listDetails);
+            response = await this.sessionManager.updateList(listData.id, listDetails);
             // TODO: continue from here
         }
     }

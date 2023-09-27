@@ -272,41 +272,39 @@ class MainController{
         if(!targets) return;
 
         var allChecked = true;
-        if(forceValue === null){
+        if(forceValue !== null){
+            allChecked = !forceValue;
+        }else{
             for(const element of targets){
                 if(!element.checked){
                     allChecked = false;
                     break;
                 }
             }
+        }
+
+        if(filterType == 'status'){
+            window.listManager.setAllStatusFilters(!allChecked, false);
+            this.redrawStatusFilters(window.statusFilterElement);
         }else{
-            allChecked = !forceValue;
+            for(const element of targets){
+                element.checked = !allChecked;
+            }
         }
 
-        for(const element of targets){
-            element.checked = !allChecked;
-        }
-
-        if(suppressLoad == false) this.loadFiltersFromInterface()
+        if(suppressLoad == false) this.loadFiltersFromInterface();
     }
 
     async loadFiltersFromInterface(){
-        window.listManager.emptyFilters();
+        window.listManager.emptyFilters(['color', 'rarity'], true);
 
         var filterValue = null;
         for(const filterType of ['color', 'rarity']){
             for(const filterBox of document.querySelectorAll(`.filter-check-${filterType}`)){
                 if(filterBox.checked == false) continue;
                 filterValue = filterBox.checked ? filterBox.value : null;
-                window.listManager.addFilter(filterType, filterValue);
+                window.listManager.addFilter(filterType, filterValue, true);
             }
-        }
-
-        for(const filterBox of document.querySelectorAll(`.filter-check-status`)){
-            if(filterBox.checked == false) continue;
-            filterValue = filterBox.checked ? parseInt(filterBox.getAttribute('id').split('-').slice(-1)[0]) : null;
-            if(isNaN(filterValue)) filterValue = null;
-            window.listManager.addFilter('status', filterValue);
         }
 
         if(window.settings.applyFiltersOnFilterChange){
@@ -341,21 +339,18 @@ class MainController{
     async setInterfaceFilters(){
         var targetElement = null;
         for(const filterType of Object.keys(window.listManager.filters)){
+            if(filterType == 'status'){
+                this.redrawStatusFilters(window.statusFilterElement);
+                continue;
+            }
             if(window.listManager.filters[filterType].length == 0){
                 await this.filterSelectAll(filterType, true, true);
             }else{
                 await this.filterSelectAll(filterType, true, false);
-                if(filterType == 'status'){
-                    for(const filterValue of window.listManager.filters[filterType]){
-                        targetElement = document.getElementById(`filters-status-${filterValue}`);
-                        if(targetElement) targetElement.checked = true;
-                    }
-                }else{
-                    for(const filterValue of window.listManager.filters[filterType]){
-                        targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
-                        if(targetElement){
-                            targetElement.checked = true;
-                        }
+                for(const filterValue of window.listManager.filters[filterType]){
+                    targetElement = document.querySelector(`.filter-check-${filterType}[value="${filterValue}"]`);
+                    if(targetElement){
+                        targetElement.checked = true;
                     }
                 }
             }

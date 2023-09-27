@@ -12,13 +12,13 @@ class CardList{
     static filterModels = {
         'statusNullModel': `
             <div class="form-check form-check-inline filter-check-group">
-              <input id="filters-status-null" class="form-check-input filter-check filter-check-status" type="checkbox" value="null">
+              <input id="filters-status-null" class="form-check-input filter-check filter-check-status" type="checkbox" value="null" %%checked%%>
               <label class="form-check-label" for="filters-status-null" aria-label="no status"><i class="bi bi-border"></i></label>
             </div>
         `,
         'statusModel': `
             <div class="form-check form-check-inline filter-check-group">
-              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check filter-check-status" type="checkbox" value="%%statusicon%%">
+              <input id="filters-status-%%statusindex%%" class="form-check-input filter-check filter-check-status" type="checkbox" value="%%statusicon%%" %%checked%%>
               <label class="form-check-label" for="filters-status-%%statusindex%%" aria-label="no status">%%statusicon%%</label>
             </div>
         `,
@@ -304,19 +304,20 @@ class CardList{
      * Internal function. Makes the smallest usable Array that can be used to sort the cards when drawing.
      *
      * @param   {String[]}  keyList        Array of keys of this.cards that will be sorted.
-     * @param   {String}    cardAttribute  The attribute that will be used for sorting. Must be an attribute of ProtoCard.
      *
      * @return  {Object[]}                 Array of objects. Each object will have a "key" attribute, with the corresponding key from keyList; the other key will be the one defined in cardAttribute, with the corresponding value.
      */
-    _makeSortableArray(keyList, cardAttribute){
+    _makeSortableArray(keyList){
         const result = [];
         const cardKeys = Object.keys(this.cards);
         for(const key of keyList){
             if(!cardKeys.includes(key)) continue;
             result.push({
                 'key': key,
-                [cardAttribute]: this.cards[key][cardAttribute],
-                'name': this.cards[key].name
+                'colorSortValue' : this.cards[key].colorSortValue,
+                'cmc' : this.cards[key].cmc,
+                'collectorNumber' : this.cards[key].selectedNumber,
+                'name' : this.cards[key].name
             });
         }
 
@@ -335,27 +336,25 @@ class CardList{
             keyList = Object.keys(this.cards);
         }
 
-        var sortList = [];
+        var sortList = this._makeSortableArray(keyList);
         if(this.sortField == 'name'){
-            sortList = this._makeSortableArray(keyList, 'name');
             sortList.sort(function (a, b) {
                 return a.name.localeCompare(b.name);
             });
         }else if(this.sortField == 'color'){
-            sortList = this._makeSortableArray(keyList, 'color');
             sortList.sort(function (a, b) {
-                return b.colorSortValue - a.colorSortValue || a.name.localeCompare(b.name);
+                if(b.colorSortValue == a.colorSortValue) return b.name.localeCompare(a.name);
+                return b.colorSortValue - a.colorSortValue;
             });
         }else if(this.sortField == 'manavalue'){
-            sortList = this._makeSortableArray(keyList, 'manavalue');
             sortList.sort(function (a, b) {
-                if(!a.name) console.log(a);
-                return b.cmc - a.cmc || a.name.localeCompare(b.name);
+                if(a.cmc == b.cmc) return b.name.localeCompare(a.name);
+                return b.cmc - a.cmc;
             });
         }else if(this.sortField == 'collectornumber'){
-            sortList = this._makeSortableArray(keyList, 'collectornumber');
             sortList.sort(function (a, b) {
-                return b.collectorNumber - a.collectorNumber || a.name.localeCompare(b.name);
+                if(b.collectorNumber == a.collectorNumber) return b.name.localeCompare(a.name);
+                return b.collectorNumber - a.collectorNumber;
             });
         }else{
             console.warn('Sorting failed due to improperly set sortField');
@@ -561,42 +560,42 @@ class CardList{
      *
      * @return  {null}
      */
-    emptyFilters(suppressChangeCallback=false){
-        this.filters = {
-            'color': [],
-            'rarity': [],
-            'status': []
-        };
+    emptyFilters(arrFilterTypes, suppressChangeCallback=false){
+        for(const k of arrFilterTypes){
+            this.filters[k] = [];
+        }
         if(!suppressChangeCallback) this._callChangeCallback();
     }
 
     /**
      * Adds a given value to a given filter type, then calls this._callChangeCallback.
      *
-     * @param   {String}    filterType  The kinds of filter being added. Must be a key in this.filters.
-     * @param   {String}    value       The filter to be added.
+     * @param   {String}    filterType                  The kinds of filter being added. Must be a key in this.filters.
+     * @param   {String}    value                       The filter to be added.
+     * @param   {Boolean}   [suppressChangeCallback]    If set to true, will prevent this._callChangeCallback from being called. Defaults to false.
      *
      * @return  {null}
      */
-    addFilter(filterType, value){
+    addFilter(filterType, value, suppressChangeCallback=false){
         if(!Object.hasOwn(this.filters, filterType)) return;
 
         if(value === 'null') value = null;
         if(this.filters[filterType].includes(value)) return;
 
         this.filters[filterType].push(value);
-        this._callChangeCallback();
+        if(suppressChangeCallback == false) this._callChangeCallback();
     }
 
     /**
      * Removes a given filter from the given filter type, then calls this._callChangeCallback.
      *
-     * @param   {String}    filterType  The kinds of filter being removed. Must be a key in this.filters.
-     * @param   {String}    value       The filter to be removed. Must be in this.filters[filterType].
+     * @param   {String}    filterType                  The kinds of filter being removed. Must be a key in this.filters.
+     * @param   {String}    value                       The filter to be removed. Must be in this.filters[filterType].
+     * @param   {Boolean}   [suppressChangeCallback]    If set to true, will prevent this._callChangeCallback from being called. Defaults to false.
      *
      * @return  {null}
      */
-    removeFilter(filterType, value){
+    removeFilter(filterType, value, suppressChangeCallback=false){
         if(!Object.hasOwn(this.filters, filterType)) return;
         if(this.filters[filterType].length == 0) return;
 
@@ -605,7 +604,24 @@ class CardList{
         const index = this.filters[filterType].indexOf(value);
         if(index < 0) return;
         this.filters[filterType].splice(index, 1);
-        this._callChangeCallback();
+        if(suppressChangeCallback == false) this._callChangeCallback();
+    }
+
+    /**
+     * Sets the status filters to have all of the status or none of them
+     *
+     * @param   {Boolean}   filterValue                 If set to true, will select all status. If set to False, will select none.
+     * @param   {Boolean}   [suppressChangeCallback]    If set to true, will prevent this._callChangeCallback from being called. Defaults to false.
+     *
+     * @return  {null}
+     */
+    setAllStatusFilters(filterValue, suppressChangeCallback=false){
+        if(filterValue === true){
+            this.filters.status = [null, ...Array(this.statusList.length).fill().map((x,i)=>i)];
+        }else{
+            this.filters.status = [];
+        }
+        if(suppressChangeCallback == false) this._callChangeCallback();
     }
 
     /**
@@ -1549,10 +1565,13 @@ class CardList{
      * @return  {String}    HTML with the status filters.
      */
     drawStatusFilters(){
-        var html = [CardList.filterModels.statusNullModel];
+        var html = [
+            CardList.filterModels.statusNullModel.replaceAll('%%checked%%', (this.filters.status.includes(null) ? 'checked' : ''))
+        ];
         for (var i = 0; i < this.statusList.length; i++) {
             html.push(CardList.filterModels.statusModel.replaceAll('%%statusindex%%', i)
                                                        .replaceAll('%%statusicon%%', this.statusList[i])
+                                                       .replaceAll('%%checked%%', (this.filters.status.includes(i) ? 'checked' : ''))
                      );
         }
         return html.join('\n');
