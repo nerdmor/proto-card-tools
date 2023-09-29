@@ -1544,7 +1544,11 @@ class CardList{
         if(!Object.keys(this.cards).includes(cardKey)) return null;
         const element = document.querySelector(`.${CardList.modeOuterClass[this.cardMode]}[card_key="${cardKey}"]`);
         if(element === null) return null;
-        element.innerHTML = this.cards[cardKey].drawInner(this.sets, this.statusList, this.cardMode);
+        const parent = element.parentElement;
+        const cardHtml = this.cards[cardKey].draw(this.sets, this.statusList, this.cardMode);
+        var template = document.createElement('template');
+        template.innerHTML = cardHtml.trim();
+        parent.replaceChild(template.content.firstChild, element);
     }
 
     /**

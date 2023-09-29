@@ -225,12 +225,14 @@ class ProtoCard{
         this.errors = [];
         this.scryfallClient = null;
         this.key = null;
+        this.cardKey = null;
         this.index = index;
         this.status = null;
         this.printmode = null;
         this.loaded = 0;
         this.trustName = false;
         this.statusIndex = null;
+        this.instanceNumber = 0;
     }
 
     toString(){
@@ -238,7 +240,7 @@ class ProtoCard{
     }
 
     simplify(){
-      var result = {
+      return {
         'typedName': this.typedName,
         'quantity': this.quantity,
         'foil': this.foil,
@@ -267,10 +269,19 @@ class ProtoCard{
         'colorSortValue': this.colorSortValue,
         'status': this.status,
         'trustName': this.trustName,
-        'statusIndex': this.statusIndex
+        'statusIndex': this.statusIndex,
+        'instanceNumber': this.instanceNumber
       };
+    }
 
-      return result;
+    split(instanceNumber){
+        const newCard = new ProtoCard(this.index);
+        this.quantity = Math.ceil(this.quantity/2);
+        newCard.buildFromParams(this.simplify());
+        newCard.instanceNumber = instanceNumber;
+        newCard.makeKey();
+        this.makeKey();
+        return newCard;
     }
 
     _matchesColorFilter(filters){
@@ -322,7 +333,8 @@ class ProtoCard{
     }
 
     makeKey(){
-        this.key = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}${this.selectedNumber}-${this.foil?'foil':'nonfoil'}`);
+        this.cardKey = md5(`${this.names.compiled.replaceAll(' ', '')}-${this.selectedSet}${this.selectedNumber}-${this.foil?'foil':'nonfoil'}`);
+        this.key = `${this.cardKey}-${this.instanceNumber}`;
     }
 
     drawInner(setData, statusList, printmode=null){
@@ -360,7 +372,7 @@ class ProtoCard{
     }
 
     getSelectedImageUrl(){
-      return this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality];
+        return this.sets[this.selectedSet][this.selectedNumber].images[window.settings.cardImgQuality];
     }
 
     _drawInnerFind(setData, statusList){
