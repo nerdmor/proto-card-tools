@@ -9,6 +9,7 @@ config/app.json
 
 # Downloaded files
 db/temp/*
+db/seeds/*
 
 # Installer logs
 pip-log.txt

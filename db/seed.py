@@ -28,7 +28,7 @@ def create_seed(table_name:str) -> str:
     """
     
     cur.execute(query, (table_name, ))
-    column_names = [e for e in cur.fetchall()]
+    column_names = [e['column_name'] for e in cur.fetchall()]
     cur.close()
     
     seedpath = os.path.join(get_dir_paths()['seeds'], f"{table_name}__seed.sql")
@@ -42,9 +42,11 @@ def create_seed(table_name:str) -> str:
         
         if len(column_names) > 0:
             df.write(f"INSERT INTO public.{table_name}\n")
-            df.write(f"\t({', '.join(column_names)})\n")
-            placeholders = ', '.join(['%e' for _ in range(len(column_names))])
-            df.write(f"\tVALUES ({placeholders});\n")
+            cnames = ', '.join([f'"{e}"' for e in column_names])
+            df.write(f"\t({cnames})\n")
+            df.write("\tVALUES\n")
+            placeholders = ', '.join([f"'%{{{e}}}s'" for e in column_names])
+            df.write(f"\t\t({placeholders})\n;")
     
     return seedpath
             
