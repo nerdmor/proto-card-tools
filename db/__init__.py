@@ -21,12 +21,14 @@ class DictRowFactory:
         return dict(zip(self.fields, values))
 
 
-def get_conn(exclusive=False) -> psycopg.Connection:
+def get_conn(autocommit: bool=True, exclusive: bool=False) -> psycopg.Connection:
     """Gets a connection to the database.
 
     Args:
+        autocommit (bool, optional): Parameter passed to the connection creation,
+            controlling wether it autocommits. Defaults to True
         exclusive (bool, optional): If set to True, will create a new connection.
-        Defaults to False.
+            Defaults to False.
 
     Returns:
         psycopg.Connection: a connection to the database
@@ -60,3 +62,26 @@ def get_conn(exclusive=False) -> psycopg.Connection:
         CUR_CONN = new_conn
     
     return CUR_CONN
+
+
+def empty_tables():
+    """Empties all tables in the schema.
+    """    
+    conn = get_conn(False, True)
+    cur = conn.cursor(row_factory=DictRowFactory)
+        
+    # TODO: respect the schema
+    query = """
+    SELECT table_name
+      FROM information_schema.tables
+     WHERE table_schema='public';
+    """
+    cur.execute(query)
+    table_list = [e['table_name'] for e in cur.fetchall()]
+    cur.close()
+    
+    cur = conn.cursor()
+    for tb in table_list:
+        cur.execute(f"TRUNCATE TABLE {tb} CASCADE;")
+    conn.commit()
+    cur.close()

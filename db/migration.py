@@ -77,7 +77,7 @@ def create_migration(name):
     fname = f"{datetime.now().strftime('%Y%m%d%H%M%S')}__{name}.sql"
     fpath = os.path.join(get_dir_paths()['migrations'], fname)
     with open(fpath, 'w+', encoding='utf-8') as df:
-        df.write(f"-- migration file\n")
+        df.write("-- migration file\n")
         df.write(f"-- {fname}\n")
-        df.write(f"-- -----------------------------------------------------------------------------\n\n\n")
+        df.write("-- -----------------------------------------------------------------------------\n\n\n")
     return fpath
