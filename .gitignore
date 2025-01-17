@@ -6,6 +6,7 @@ __pycache__/
 # Private config files
 config/db.json
 config/app.json
+config/log.json
 
 # Downloaded files
 db/temp/*
