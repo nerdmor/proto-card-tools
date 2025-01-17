@@ -1,13 +1,16 @@
 {
-    "streams": {
-        "console": {
+    "streams": [
+        {
+            "type": "console",
             "level": "info",
             "format": "%(message)s"
         },
-        "file": {
+        {
+            "type": "file",
             "level": "info",
-            "path": "...",
-            "format": "%(asctime)s | %(levelname)s | %(message)s"
+            "path": "logs/log.txt",
+            "format": "%(asctime)s | %(levelname)s | %(message)s",
+            "max_bytes": 1000000
         }
-    }
+    ]
 }

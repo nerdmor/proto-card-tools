@@ -23,4 +23,4 @@ def ensure_directories():
 
     for dirpath in dirs.values():
         if not os.path.isdir(dirpath):
-            os.makedirs(dirpath)
+            os.makedirs(dirpath, exist_ok=True)
