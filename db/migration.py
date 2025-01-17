@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 
 from config import config
+from logger import get_logger
 from db import get_conn, DictRowFactory
 from db.utils import ensure_directories, get_dir_paths
 
@@ -67,16 +68,18 @@ def migrate():
            (filename, run_at)
     VALUES (%s, now());
     """
+    logger = get_logger()
     for fname in migrations_to_run:
-        print(f"trying to run {fname}")
+        migname = fname.split(os.sep)
+        logger.info(f"Trying to run migration {migname}")
         with open(os.path.join(dirpath, fname), 'r', encoding='utf-8') as f:
             mig_query = f.read()
             try:
                 conn.execute(mig_query)
                 conn.execute(query, (fname, ))
-                print("\tSUCCESS!")
+                logger.info("Success running migration")
             except Exception as e:
-                print(f"\tERROR: {e}")
+                logger.error(f"Error running migration {migname}: {str(e)}")
 
 
 def create_migration(name:str) -> str:

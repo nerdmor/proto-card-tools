@@ -3,6 +3,7 @@
 import os
 
 from config import config
+from logger import get_logger
 from db import get_conn, DictRowFactory
 from db.utils import get_dir_paths
 
@@ -62,6 +63,7 @@ def seed():
     conn = get_conn()
 
     dirpath = get_dir_paths()['seeds']
+    logger = get_logger()
     for fname in os.listdir(dirpath):
         fpath = os.path.join(dirpath, fname)
         if not os.path.isfile(fpath):
@@ -72,5 +74,11 @@ def seed():
         with open(fpath, 'r', encoding='utf-8') as sf:
             query = sf.read()
             cur = conn.cursor()
-            cur.execute(query)
+
+            seedname = fpath.split(os.sep)[-1]
+            try:
+                cur.execute(query)
+                logger.info(f"Running seed {seedname}")
+            except Exception as e:
+                logger.error(f"error running seed {seedname}: {str(e)}")
             cur.close()

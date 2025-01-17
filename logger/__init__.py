@@ -5,6 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 from config import configs
 
+
 LOGGER = logging.getLogger('proto-card-tools')
 
 
@@ -39,5 +40,10 @@ for cfg in configs['log']['streams']:
 
 
 def get_logger() -> logging.RootLogger:
+    """Returns the logger for the app.
+
+    Returns:
+        logging.RootLogger: logger, with all the streams.
+    """
     global LOGGER
     return LOGGER

@@ -11,6 +11,7 @@ import requests
 import psycopg
 
 from config import config
+from logger import get_logger
 from db.utils import get_dir_paths
 
 
@@ -135,6 +136,8 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
     ON CONFLICT (name) DO NOTHING;
     """
 
+    logger = get_logger()
+
     while row := source_file.readline():
         row = row.strip('[], \n')
         if len(row) < 4:
@@ -252,6 +255,8 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             card['is_colorless'],
             card['is_land'],
         ))
+        if cur.rowcount > 0:
+            logger.info(f"Inserted new card '{card['name']}'")
 
         # we always detect variation
         variation = {
@@ -306,6 +311,8 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
                 variation['variant_key'],
             )
         )
+        if cur.rowcount > 0:
+            logger.info(f"Inserted variant {variation['set_code']} card '{card['name']}'")
 
         for nm in names:
             cur.execute(name_query_insert, (variation['oracle_id'], nm,))
