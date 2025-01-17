@@ -1,9 +1,14 @@
+"""Collection of functions to deal with Scryfall files.
+"""
+
 import os
 import json
 from datetime import datetime
 from string import ascii_letters
+from typing import Any
 
 import requests
+import psycopg
 
 from db.utils import get_dir_paths
 
@@ -12,66 +17,94 @@ BULK_URL = 'https://api.scryfall.com/bulk-data'
 SETS_URL = 'https://api.scryfall.com/sets'
 
 
-def get_scryfall_filepath():
+def get_scryfall_filepath() -> str:
+    """Creates the filepath where a downloaded Scryfall file should go,
+    respecting the db directories.
+
+    Returns:
+        str: absolute filepath where a Scryfall file should be stored.
+    """
     destination_filename = f"scryfall_default_cards_{datetime.now().strftime('%Y%m%d')}.json"
     return os.path.join(get_dir_paths()['temp'], destination_filename)
 
-def download_scryfall_file():
+
+def download_scryfall_file() -> str:
+    """Downloads the "default_cards" Scryfall bulk file and returns its absolute
+    location.
+
+    Returns:
+        str: Absolute location where the file was stored.
+    """
     bulk_info = requests.get(BULK_URL).json()['data']
     for e in bulk_info:
         if e['type'] == 'default_cards':
             file_url = e['download_uri']
             break
-    
+
     destination_filename = get_scryfall_filepath()
 
     with requests.get(file_url, stream=True) as r:
         r.raise_for_status()
         with open(destination_filename, 'wb+') as f:
-            for chunk in r.iter_content(chunk_size=8192): 
+            for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
     return destination_filename
 
 
-def get_scryfall_most_complex(file_name):
+def get_scryfall_most_complex(file_name:str) -> dict[str, Any]:
+    """Helper function that parses a Scryfall file and makes the most complex
+    card-representing dict out of it.
+
+    Args:
+        file_name (str): Absolute path where the file to be parsed is located.
+
+    Returns:
+        dict[str, Any]: The most complex dict possible.
+    """
     source_file = open(file_name, 'r', encoding='utf-8')
     complex_card = {}
+    rownum = 0
     while row := source_file.readline():
+        rownum += 1
         row = row.strip('[], \n')
         if len(row) < 4:
             continue
-        
+
         try:
             row = json.loads(row)
         except Exception as e:
-            print(e)
-            print(row)
-            return {}
+            raise Exception(f"Could not parse row{rownum} of the file as a JSON. Error found: {str(e)}")
         for k, v in row.items():
             if k not in complex_card:
                 if v is not None and v not in ['', []]:
                     complex_card[k] = v
-    
+
     source_file.close()
-        
     return complex_card
 
 
-def parse_scryfall_file(file_name, conn):
+def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
+    """Parses a downloaded Scryfall file, inserting cards and their variations
+    into the database.
+
+    Args:
+        file_name (str): Absolute path of the file to be parsed.
+        conn (psycopg.Connection): Database connection to be used.
+    """
     source_file = open(file_name, 'r', encoding='utf-8')
     cur = conn.cursor()
-    
-    results = {}
-    
+
     variant_query_insert = """
-    INSERT INTO variants
-    (oracle_id, flavor_name, scryfall_id, image_uri, lang, rarity, set_code, collector_number, collector_number_sort, finishes, image_downloaded, variant_key)
-    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT
+      INTO variants
+           (oracle_id, flavor_name, scryfall_id, image_uri, lang, rarity, set_code, collector_number, collector_number_sort, finishes, image_downloaded, variant_key)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (variant_key) DO NOTHING
     """
-    
+
     card_query_insert = """
-    INSERT INTO cards (
+    INSERT
+      INTO cards (
         oracle_id,
         name,
         names,
@@ -89,21 +122,22 @@ def parse_scryfall_file(file_name, conn):
         is_colorless,
         is_land
     ) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT (oracle_id) DO NOTHING
+    ON CONFLICT (oracle_id) DO NOTHING;
     """
-    
+
     name_query_insert = """
-    INSERT INTO names
-    (oracle_id, name)
+    INSERT
+      INTO names
+           (oracle_id, name)
     VALUES (%s, %s)
-    ON CONFLICT (name) DO NOTHING
+    ON CONFLICT (name) DO NOTHING;
     """
 
     while row := source_file.readline():
         row = row.strip('[], \n')
         if len(row) < 4:
             continue
-        
+
         jrow = json.loads(row)
         if 'oracle_id' not in jrow:
             continue
@@ -115,7 +149,7 @@ def parse_scryfall_file(file_name, conn):
             continue
         if jrow.get('set_type', '').lower() in ['memorabilia']:
             continue
-        
+
         # doing card basics
         card = {
             'oracle_id': jrow['oracle_id'],
@@ -135,7 +169,7 @@ def parse_scryfall_file(file_name, conn):
             'is_colorless': False,
             'is_land': False,
         }
-            
+
         if 'card_faces' in jrow:
             names = [e['name'] for e in jrow['card_faces']]
             card['type_line'] = jrow['card_faces'][0].get('type_line', '')
@@ -150,19 +184,23 @@ def parse_scryfall_file(file_name, conn):
             continue
 
         name = ' // '.join(names)
-
+        names.append(name)
         if 'flavor_name' in jrow:
             names.append(jrow['flavor_name'])
 
         if jrow.get('set', '') in ['ust', 'unf']:
+            # exception for Unstable cards with same name, but diferent text.
             col_num = jrow.get('collector_number', "0")
             if col_num[-1] in ascii_letters:
                 names.append(f"{name} ({jrow['set'].upper()} {col_num[-1]})")
         elif jrow.get('set', '') == 'ulst':
+            # exception for THE LIST reprints of Unstable cards with same name,
+            # but diferent text.
             cur.execute("SELECT count(*) FROM cards WHERE name = %s;", (name, ))
             res = cur.fetchone()[0]
             names.append(f"{name} ({jrow['set'].upper()} {ascii_letters[res]})")
         elif jrow.get('name', '') == "B.F.M. (Big Furry Monster)":
+            # exception to deal with B.F.M.
             if jrow.get('mana_cost', '-') == '':
                 names.append("B.F.M. (Big Furry Monster) (a)")
             else:
@@ -172,11 +210,7 @@ def parse_scryfall_file(file_name, conn):
             names = [f"{e} [playtest]" for e in names]
             name = f"{name} [playtest]"
 
-        if 'flavor_name' in jrow:
-            card['names'] = json.dumps(names[:-1])
-        else:
-            card['names'] = json.dumps(names)
-
+        card['names'] = json.dumps(names)
         card['name'] = name
         card['sort_name'] = name.lower()
 

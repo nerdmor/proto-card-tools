@@ -1,3 +1,6 @@
+"""Collection of functions that deal with migrations
+"""
+
 import os
 from datetime import datetime
 
@@ -6,8 +9,8 @@ from db.utils import ensure_directories, get_dir_paths
 
 
 def migrate():
-    """Ensure tables for migrations and actrually migrates everything in
-    db/migrations
+    """Ensure tables for migrations and actually migrates everything in
+    db/migrations.
     """
     # preparation: connecting to DB exclusively
     conn = get_conn(True)
@@ -37,9 +40,11 @@ def migrate():
     
     # step 3: listing migrations to run
     query = """
-    SELECT id, filename, run_at
-    FROM migrations
-    WHERE filename = %s
+    SELECT  id
+           ,filename
+           ,run_at
+      FROM migrations
+     WHERE filename = %s
     """
     cur = conn.cursor(row_factory=DictRowFactory)
     
@@ -57,9 +62,10 @@ def migrate():
     cur.close()
     
     query = """
-    INSERT INTO public.migrations
-    (filename, run_at)
-    VALUES(%s, now());
+    INSERT
+      INTO public.migrations
+           (filename, run_at)
+    VALUES (%s, now());
     """
     for fname in migrations_to_run:
         print(f"trying to run {fname}")
@@ -73,7 +79,16 @@ def migrate():
                 print(f"\tERROR: {e}")
 
 
-def create_migration(name):
+def create_migration(name:str) -> str:
+    """Creates a migration file with the given name.
+    Migration files names follow the pattern '%Y%m%d%H%M%S__{name}.sql'.
+
+    Args:
+        name (str): name of the migration to be created.
+
+    Returns:
+        str: path of the created file.
+    """
     fname = f"{datetime.now().strftime('%Y%m%d%H%M%S')}__{name}.sql"
     fpath = os.path.join(get_dir_paths()['migrations'], fname)
     with open(fpath, 'w+', encoding='utf-8') as df:

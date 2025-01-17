@@ -1,4 +1,5 @@
-"""Basic wrapper module to get a singleton connection to the database
+"""Basic wrapper module to get a singleton connection to the database and other
+simple database functions like migration.
 """
 
 import json
@@ -65,7 +66,7 @@ def get_conn(autocommit: bool=True, exclusive: bool=False) -> psycopg.Connection
 
 
 def empty_tables():
-    """Empties all tables in the schema.
+    """Truncates all tables in the schema.
     """    
     conn = get_conn(False, True)
     cur = conn.cursor(row_factory=DictRowFactory)
@@ -74,7 +75,7 @@ def empty_tables():
     query = """
     SELECT table_name
       FROM information_schema.tables
-     WHERE table_schema='public';
+     WHERE table_schema = 'public';
     """
     cur.execute(query)
     table_list = [e['table_name'] for e in cur.fetchall()]
