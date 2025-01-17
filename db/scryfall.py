@@ -10,6 +10,7 @@ from typing import Any
 import requests
 import psycopg
 
+from config import config
 from db.utils import get_dir_paths
 
 
@@ -94,17 +95,18 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
     source_file = open(file_name, 'r', encoding='utf-8')
     cur = conn.cursor()
 
-    variant_query_insert = """
+    variant_query_insert = f"""
     INSERT
-      INTO variants
+      INTO {config['db']['schema']}.variants
            (oracle_id, flavor_name, scryfall_id, image_uri, lang, rarity, set_code, collector_number, collector_number_sort, finishes, image_downloaded, variant_key)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (variant_key) DO NOTHING
     """
 
-    card_query_insert = """
+    card_query_insert = f"""
     INSERT
-      INTO cards (
+      INTO {config['db']['schema']}.cards
+      (
         oracle_id,
         name,
         names,
@@ -125,9 +127,9 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
     ON CONFLICT (oracle_id) DO NOTHING;
     """
 
-    name_query_insert = """
+    name_query_insert = f"""
     INSERT
-      INTO names
+      INTO {config['db']['schema']}.names
            (oracle_id, name)
     VALUES (%s, %s)
     ON CONFLICT (name) DO NOTHING;
@@ -196,7 +198,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         elif jrow.get('set', '') == 'ulst':
             # exception for THE LIST reprints of Unstable cards with same name,
             # but diferent text.
-            cur.execute("SELECT count(*) FROM cards WHERE name = %s;", (name, ))
+            cur.execute(f"SELECT count(*) FROM {config['db']['schema']}.cards WHERE name = %s;", (name, ))
             res = cur.fetchone()[0]
             names.append(f"{name} ({jrow['set'].upper()} {ascii_letters[res]})")
         elif jrow.get('name', '') == "B.F.M. (Big Furry Monster)":

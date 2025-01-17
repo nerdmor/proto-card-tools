@@ -4,6 +4,7 @@
 import os
 from datetime import datetime
 
+from config import config
 from db import get_conn, DictRowFactory
 from db.utils import ensure_directories, get_dir_paths
 
@@ -17,13 +18,13 @@ def migrate():
 
     # step 1: ensuring we have the needed tables
     queries = [
-        """CREATE TABLE IF NOT EXISTS migrations (
+        f"""CREATE TABLE IF NOT EXISTS {config['db']['schema']}.migrations (
         id SERIAL PRIMARY KEY,
         filename VARCHAR (256) NOT NULL,
         run_at TIMESTAMP NOT NULL DEFAULT NOW()
         );
         """,
-        """CREATE TABLE IF NOT EXISTS seeds (
+        f"""CREATE TABLE IF NOT EXISTS {config['db']['schema']}.seeds (
         id SERIAL PRIMARY KEY,
         filename VARCHAR (256) NOT NULL,
         run_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -33,21 +34,20 @@ def migrate():
 
     for query in queries:
         conn.execute(query)
-        
 
     # step 2: making sure that we have the folders that we need
     ensure_directories()
-    
+
     # step 3: listing migrations to run
-    query = """
+    query = f"""
     SELECT  id
            ,filename
            ,run_at
-      FROM migrations
+      FROM {config['db']['schema']}.migrations
      WHERE filename = %s
     """
     cur = conn.cursor(row_factory=DictRowFactory)
-    
+
     dirpath = get_dir_paths()['migrations']
     migrations_to_run = []
     for fname in os.listdir(dirpath):
@@ -57,13 +57,13 @@ def migrate():
         res = cur.fetchall()
         if len(res) > 1:
             continue
-        
+
         migrations_to_run.append(fname)
     cur.close()
-    
-    query = """
+
+    query = f"""
     INSERT
-      INTO public.migrations
+      INTO {config['db']['schema']}.migrations
            (filename, run_at)
     VALUES (%s, now());
     """

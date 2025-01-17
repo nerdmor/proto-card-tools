@@ -2,7 +2,7 @@
 """
 import os
 
-
+from config import config
 from db import get_conn, DictRowFactory
 from db.utils import get_dir_paths
 
@@ -22,11 +22,11 @@ def create_seed(table_name:str) -> str:
     conn = get_conn(False, True)
     cur = conn.cursor(row_factory=DictRowFactory)
 
-    query = """
+    query = f"""
     SELECT  column_name
            ,ordinal_position
       FROM information_schema.columns
-     WHERE table_schema = 'public'
+     WHERE table_schema = '{config['db']['schema']}'
        AND table_name = %s
      ORDER BY ordinal_position
      ;
@@ -46,7 +46,7 @@ def create_seed(table_name:str) -> str:
         df.write("-- -----------------------------------------------------------------------------\n\n\n")
 
         if len(column_names) > 0:
-            df.write(f"INSERT\n  INTO public.{table_name}\n")
+            df.write(f"INSERT\n  INTO {config['db']['schema']}.{table_name}\n")
             cnames = ', '.join([f'"{e}"' for e in column_names])
             df.write(f"       ({cnames})\n")
             df.write("\tVALUES ")

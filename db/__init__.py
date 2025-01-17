@@ -2,11 +2,13 @@
 simple database functions like migration.
 """
 
-import json
 from typing import Any, Sequence
 
 import psycopg
 from psycopg import Cursor
+
+from config import config
+
 
 # global connection object to be re-used
 CUR_CONN = None
@@ -35,7 +37,7 @@ def get_conn(autocommit: bool=True, exclusive: bool=False) -> psycopg.Connection
         psycopg.Connection: a connection to the database
     """
     global CUR_CONN
-    
+
     make_new_comm = False
     if exclusive:
         make_new_comm = True
@@ -45,42 +47,39 @@ def get_conn(autocommit: bool=True, exclusive: bool=False) -> psycopg.Connection
         make_new_comm = True
 
     if make_new_comm is True:
-        with open('config/db.json', 'r', encoding='utf-8') as sf:
-            config = json.load(sf)
         new_conn = psycopg.connect(
-            hostaddr=config['host'],
-            port=config['port'],
-            dbname =config['database'],
-            user=config['username'],
-            password=config['password'],
-            autocommit=True
+            hostaddr=config['db']['host'],
+            port=config['db']['port'],
+            dbname =config['db']['database'],
+            user=config['db']['username'],
+            password=config['db']['password'],
+            autocommit=autocommit
         )
-    
+
     if exclusive:
         return new_conn
 
     if make_new_comm:
         CUR_CONN = new_conn
-    
+
     return CUR_CONN
 
 
 def empty_tables():
     """Truncates all tables in the schema.
-    """    
+    """
     conn = get_conn(False, True)
     cur = conn.cursor(row_factory=DictRowFactory)
-        
-    # TODO: respect the schema
-    query = """
+
+    query = f"""
     SELECT table_name
       FROM information_schema.tables
-     WHERE table_schema = 'public';
+     WHERE table_schema = '{config['db']['schema']}';
     """
     cur.execute(query)
     table_list = [e['table_name'] for e in cur.fetchall()]
     cur.close()
-    
+
     cur = conn.cursor()
     for tb in table_list:
         cur.execute(f"TRUNCATE TABLE {tb} CASCADE;")

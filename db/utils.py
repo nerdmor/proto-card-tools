@@ -20,7 +20,7 @@ def ensure_directories():
     """Ensures that all important directories in get_dir_paths() exist.
     """
     dirs = get_dir_paths()
-    
-    for dirkey, dirpath in dirs.items():
+
+    for dirpath in dirs.values():
         if not os.path.isdir(dirpath):
             os.makedirs(dirpath)
