@@ -1,0 +1,13 @@
+{
+    "streams": {
+        "console": {
+            "level": "info",
+            "format": "%(message)s"
+        },
+        "file": {
+            "level": "info",
+            "path": "...",
+            "format": "%(asctime)s | %(levelname)s | %(message)s"
+        }
+    }
+}
