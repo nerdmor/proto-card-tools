@@ -6,6 +6,7 @@
 CREATE TABLE IF NOT EXISTS cards (
     oracle_id VARCHAR (64) PRIMARY KEY,
     name VARCHAR (256) NOT NULL,
+    simple_name VARCHAR (256) NOT NULL,
     names VARCHAR (256) NOT NULL,
     cmc FLOAT NOT NULL,
     color_identity VARCHAR (5) NOT NULL,

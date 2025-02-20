@@ -17,7 +17,7 @@ for cfg in configs['log']['streams']:
         # ensuring director
         dir_path = cfg['path'].split('/')[:-1]
         dir_path = os.path.join(os.getcwd(), *dir_path)
-        os.makedirs(file_path, exist_ok=True)
+        os.makedirs(dir_path, exist_ok=True)
 
         # actually creating the handler
         file_path = os.path.join(os.getcwd(), *cfg['path'].split('/'))

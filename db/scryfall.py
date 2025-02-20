@@ -6,13 +6,16 @@ import json
 from datetime import datetime
 from string import ascii_letters
 from typing import Any
+import hashlib
 
 import requests
 import psycopg
+from unidecode import unidecode
 
 from config import config
 from logger import get_logger
 from db.utils import get_dir_paths
+from libs.utils import clean_card_name
 
 
 BULK_URL = 'https://api.scryfall.com/bulk-data'
@@ -93,12 +96,24 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         file_name (str): Absolute path of the file to be parsed.
         conn (psycopg.Connection): Database connection to be used.
     """
+
+    # this will be later used to insert names
+    def add_name_to_db(oracle_id, name, printed_name):
+        name_key = f"{variation['oracle_id']}_{nm}"
+        name_key = hashlib.md5(name_key.encode()).hexdigest()
+        cur.execute(name_query_insert, (
+            variation['oracle_id'],
+            nm,
+            card['name'],
+            name_key,
+        ))
+
     source_file = open(file_name, 'r', encoding='utf-8')
     cur = conn.cursor()
 
     variant_query_insert = f"""
     INSERT
-      INTO {config['db']['schema']}.variants
+      INTO {config['db']['schema']}.card_variants
            (oracle_id, flavor_name, scryfall_id, image_uri, lang, rarity, set_code, collector_number, collector_number_sort, finishes, image_downloaded, variant_key)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (variant_key) DO NOTHING
@@ -110,6 +125,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
       (
         oracle_id,
         name,
+        simple_name,
         names,
         cmc,
         color_identity,
@@ -124,16 +140,16 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         is_multicolor,
         is_colorless,
         is_land
-    ) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (oracle_id) DO NOTHING;
     """
 
     name_query_insert = f"""
     INSERT
-      INTO {config['db']['schema']}.names
-           (oracle_id, name)
-    VALUES (%s, %s)
-    ON CONFLICT (name) DO NOTHING;
+      INTO {config['db']['schema']}.card_names
+           (oracle_id, name_part, printed_name, name_key)
+    VALUES (%s, %s, %s, %s)
+    ON CONFLICT (name_key) DO NOTHING;
     """
 
     logger = get_logger()
@@ -159,6 +175,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         card = {
             'oracle_id': jrow['oracle_id'],
             'name': None,
+            'simple_name': None,
             'names': None,
             'cmc': jrow.get('cmc', 0),
             'color_identity': ''.join(jrow.get('color_identity', [])).lower(),
@@ -215,8 +232,12 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             names = [f"{e} [playtest]" for e in names]
             name = f"{name} [playtest]"
 
+        # simplifying names
+        names = list(set([unidecode(e).lower() for e in names]))
+
         card['names'] = json.dumps(names)
         card['name'] = name
+        card['simple_name'] = clean_card_name(name)
         card['sort_name'] = name.lower()
 
         if 'w' in card['colors']:
@@ -240,6 +261,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         cur.execute(card_query_insert, (
             card['oracle_id'],
             card['name'],
+            card['simple_name'],
             card['names'],
             card['cmc'],
             card['color_identity'],
@@ -315,7 +337,10 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             logger.info(f"Inserted variant {variation['set_code']} card '{card['name']}'")
 
         for nm in names:
-            cur.execute(name_query_insert, (variation['oracle_id'], nm,))
+            add_name_to_db(card['oracle_id'], nm, card['name'])
+            clean_name = clean_card_name(nm)
+            if clean_name != nm:
+                add_name_to_db(card['oracle_id'], clean_name, card['name'])
 
     cur.close()
     source_file.close()

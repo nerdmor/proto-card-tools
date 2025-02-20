@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# server configs
+server/*
+
 # Private config files
 config/db.json
 config/app.json

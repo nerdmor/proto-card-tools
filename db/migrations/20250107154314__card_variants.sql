@@ -3,7 +3,7 @@
 -- -----------------------------------------------------------------------------
 
 
-CREATE TABLE IF NOT EXISTS variants (
+CREATE TABLE IF NOT EXISTS card_variants (
     oracle_id VARCHAR (64) NOT NULL,
     flavor_name VARCHAR (256) NULL,
     scryfall_id VARCHAR (256) NOT NULL,
@@ -18,6 +18,6 @@ CREATE TABLE IF NOT EXISTS variants (
     variant_key VARCHAR (256) NOT NULL,
     UNIQUE (variant_key),
     CONSTRAINT fk_cards_variants
-        FOREIGN KEY (oracle_id) 
+        FOREIGN KEY (oracle_id)
         REFERENCES cards (oracle_id)
 );
