@@ -131,6 +131,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         color_identity,
         colors,
         type_line,
+        types,
         number_faces,
         is_white,
         is_blue,
@@ -140,7 +141,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         is_multicolor,
         is_colorless,
         is_land
-    ) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ) VALUES( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (oracle_id) DO NOTHING;
     """
 
@@ -181,6 +182,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             'color_identity': ''.join(jrow.get('color_identity', [])).lower(),
             'colors': ''.join(jrow.get('colors', [])).lower(),
             'type_line': '',
+            'types': [],
             'number_faces': len(jrow.get('card_faces', '1')),
             'is_white': False,
             'is_blue': False,
@@ -204,6 +206,17 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             continue
         if card['type_line'].lower() in ['card', 'card // card']:
             continue
+
+        # cleaning up card type
+        card['type_line'] = card['type_line'].replace('—', '-').replace('\\u2014', '-')
+        tmp = card['type_line'].replace(' - ', ' ')
+        card['types'] = []
+        if 'Time Lord' in tmp:
+            card['types'].append('time lord')
+            tmp.replace('Time Lord', '')
+        tmp.replace('  ', ' ')
+        for e in tmp.split(' '):
+            card['types'].append(e.lower())
 
         name = ' // '.join(names)
         names.append(name)
@@ -267,6 +280,7 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             card['color_identity'],
             card['colors'],
             card['type_line'],
+            json.dumps(card['types']),
             card['number_faces'],
             card['is_white'],
             card['is_blue'],

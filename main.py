@@ -2,21 +2,21 @@ from random import randint
 
 from flask import Flask
 from flask import send_from_directory
+from flask import send_file
+from flask import request
+from flask import jsonify
 
 from config import config
 import routes.list as routes_list
 import routes.card as routes_card
+import routes.importer as routes_importer
 
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    txt = f"""
-    <h1 style='color:blue'>Hello There!</h1>
-    <p>Have a random number on the house: {randint(1,100)}</p>
-    """
-    return txt
+    return send_file('static/html/index.html')
 
 @app.route("/list/all")
 def list_all():
@@ -34,10 +34,36 @@ def card_random(quantity):
 def card_oracle(oid):
     return routes_card.card_oracle_id(oid)
 
-if __name__ == "__main__":
+@app.route("/import/archidekt", methods=['POST'])
+def import_archidekt():
+    err = None
+    try:
+        post_data = request.get_json()
+    except Exception as e:
+        err = {
+            'result': 'error',
+            'error_type': str(type(e)),
+            'error': str(e)
+        }
 
+    if 'url' not in post_data:
+        err = {
+            'result': 'error',
+            'error': "'url' field missing in POST data"
+        }
+
+    if err is not None:
+        return jsonify(err), 400
+
+    return routes_importer.parse_archidekt(post_data['url'])
+
+if __name__ == "__main__":
     @app.route('/js/<path:path>')
     def serve_js(path):
         return send_from_directory('static/js', path)
+
+    @app.route('/css/<path:path>')
+    def serve_css(path):
+        return send_from_directory('static/css', path)
 
     app.run(host='0.0.0.0')

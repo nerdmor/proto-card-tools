@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS cards (
     color_identity VARCHAR (5) NOT NULL,
     colors VARCHAR (5) NOT NULL,
     type_line VARCHAR (256) NOT NULL,
+    types VARCHAR(256) NOT NULL,
     number_faces INT NOT NULL,
     is_white BOOLEAN NOT NULL,
     is_blue BOOLEAN NOT NULL,

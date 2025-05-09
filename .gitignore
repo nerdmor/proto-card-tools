@@ -18,7 +18,7 @@ db/seeds/*
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
-test.py
+test.*
 
 # Unit test / coverage reports
 htmlcov/
