@@ -1,5 +1,3 @@
-from random import randint
-
 from flask import Flask
 from flask import send_from_directory
 from flask import send_file

@@ -12,7 +12,11 @@ class ListManager{
 
     async importArchidekt(url){
         const apiResp = await window.apiManager.importArchidekt(url);
-        console.log(apiResp);
+        // TODO: this should call a window for us to select the categories that will actually be imported.
+        // but, for now, this works as a testing bench
+        for(var oid in apiResp.data.cards){
+            this.addCardFromObj(apiResp.data.cards[oid]);
+        }
     }
 
     async addCardFromOracleId(oracleId, quantity=1, selectedVariant=null, addToExisting=true){

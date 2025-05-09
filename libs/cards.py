@@ -82,7 +82,7 @@ def get_by_name(name:str) -> list:
 
     query = f"""
     SELECT DISTINCT
-        car.oracle_id,
+        car.oracle_id
     FROM {config['db']['schema']}.card_names AS can
         INNER JOIN {config['db']['schema']}.cards AS car
             ON can.oracle_id = car.oracle_id
