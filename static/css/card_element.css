@@ -1,0 +1,28 @@
+:root{
+    --card_width: 100px
+}
+
+.card_outer {
+    background-color: #505065;
+    border-width: 2px;
+    border-color:#505065;
+    border-radius: 5px;
+    border-style: solid;
+    width: var(--card_width);
+    /* display: inline-flex; */
+}
+
+.card_header{
+    background-color: #505065;
+    width: 100%;
+    padding: 0 0 0 0;
+    /* display: inline; */
+}
+
+.card_img {
+    width: 100%;
+    aspect-ratio: 61 / 85;
+    display: inline-flex;
+    padding: 0 0 0 0;
+    background-size: contain;
+}

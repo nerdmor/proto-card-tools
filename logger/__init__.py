@@ -24,6 +24,7 @@ for cfg in configs['log']['streams']:
         # actually creating the handler
         new_handler = RotatingFileHandler(file_path, maxBytes=cfg.get('max_bytes', 1000000), encoding='utf-8')
     else:
+        # if we ever want to add more handler types, we do it here
         continue
 
     formatter = cfg.get("format", '%(message)s')

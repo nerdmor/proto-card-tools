@@ -64,6 +64,20 @@ class ListManager{
         }
         return maxPileNum;
     }
+
+    printCards(){
+        var card = null;
+        var cardHtml = '';
+        var htmlList = [];
+        for(const cardKey in this.cardList){
+            card = this.cardList[cardKey];
+            cardHtml = cardHtmlModel.replaceAll('{{card_id}}', cardKey)
+                                    .replaceAll('{{image_url}}', card.variants[card.selectedVariant].image_uri);
+            htmlList.push(cardHtml);
+        }
+
+        document.getElementById('main_container').innerHTML = htmlList.join('\n');
+    }
 }
 
 window.listManager = new ListManager();
