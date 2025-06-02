@@ -172,6 +172,10 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
         if jrow.get('set_type', '').lower() in ['memorabilia']:
             continue
 
+        if jrow['oracle_id'] == '1e5a5a7d-2c34-4e56-96e9-ebcf7745a03c':
+            with open('jrow.txt', 'w+', encoding='utf-8') as tpf:
+                json.dump(jrow, tpf, indent=4)
+
         # doing card basics
         card = {
             'oracle_id': jrow['oracle_id'],
@@ -319,7 +323,10 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             variation['collector_number_sort'] = "0"
         variation['collector_number_sort'] = int(variation['collector_number_sort'])
 
-        image_uris = jrow.get('image_uris', [])
+        if 'card_faces' in jrow:
+            image_uris = jrow['card_faces'][0].get('image_uris', [])
+        else:
+            image_uris = jrow.get('image_uris', [])
         if 'large' in image_uris:
             variation['image_uri'] = image_uris['large']
         elif 'normal' in image_uris:
