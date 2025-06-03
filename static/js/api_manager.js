@@ -1,9 +1,6 @@
 class ApiManager {
     constructor(){
-        this.domain = `${window.location.protocol}//${window.location.hostname}`;
-        if(window.location.port != ''){
-            this.domain = this.domain + ":" + window.location.port;
-        }
+        this.domain = `${window.location.protocol}//${window.location.host}`;
     }
 
     async fetchJson(url){

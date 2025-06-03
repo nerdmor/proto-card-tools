@@ -69,10 +69,12 @@ class ListManager{
         var card = null;
         var cardHtml = '';
         var htmlList = [];
+        var cardImgUrl = '';
         for(const cardKey in this.cardList){
             card = this.cardList[cardKey];
+            cardImgUrl = card.variants[card.selectedVariant].image_uri.replaceAll('https://cards.scryfall.io/', `${window.location.protocol}//${window.location.host}/cardimg/`);
             cardHtml = cardHtmlModel.replaceAll('{{card_id}}', cardKey)
-                                    .replaceAll('{{image_url}}', card.variants[card.selectedVariant].image_uri);
+                                    .replaceAll('{{image_url}}', cardImgUrl);
             htmlList.push(cardHtml);
         }
 
