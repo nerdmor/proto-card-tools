@@ -9,12 +9,14 @@ import routes.list as routes_list
 import routes.card as routes_card
 import routes.importer as routes_importer
 import routes.card_image as routes_card_image
+import routes.login as routes_login
 
 
 app = Flask(__name__)
+app.secret_key = config["app"]["secret"]
 
 @app.route("/")
-def hello():
+def index():
     return send_file('static/html/index.html')
 
 @app.route("/list/all")
@@ -61,6 +63,21 @@ def card_img(path):
     return routes_card_image.get_img(path)
 
 
+@app.route('/login')
+def login():
+    return routes_login.login_start()
+
+
+@app.route('/login/oauth')
+def login_oauth():
+    return routes_login.login_callback()
+
+
+@app.route("/login/redirect")
+def login_redirect():
+    return send_file('static/html/login_redirect.html')
+
+
 if __name__ == "__main__":
     @app.route('/js/<path:path>')
     def serve_js(path):
@@ -70,4 +87,8 @@ if __name__ == "__main__":
     def serve_css(path):
         return send_from_directory('static/css', path)
 
-    app.run(host='0.0.0.0')
+    @app.route('/img/<path:path>')
+    def serve_img(path):
+        return send_from_directory('static/img', path)
+
+    app.run(host='0.0.0.0', ssl_context='adhoc')

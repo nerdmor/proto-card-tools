@@ -10,6 +10,7 @@ server/*
 config/db.json
 config/app.json
 config/log.json
+config/google.json
 
 # Downloaded files
 db/temp/*

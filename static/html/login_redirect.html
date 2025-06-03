@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Felipe Proto">
+        <title>Proto Card Tools</title>
+        <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/login.css">
+    </head>
+    <body>
+        <main>
+            <div id="main_container" class="container">
+                You are being redirected...
+            </div>
+        </main>
+        <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <script src="/js/js.cookie.min.js"></script>
+        <script>
+            window.setTimeout(() => {
+                let params = new URLSearchParams(document.location.search);
+                Cookies.set('pct_login', params.get('token'), {expires: 29})
+
+                window.location.href = `${window.location.protocol}//${window.location.host}/`
+            }, 300)
+        </script>
+    </body>
+</html>
