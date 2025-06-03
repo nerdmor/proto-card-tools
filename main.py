@@ -8,6 +8,7 @@ from config import config
 import routes.list as routes_list
 import routes.card as routes_card
 import routes.importer as routes_importer
+import routes.card_image as routes_card_image
 
 
 app = Flask(__name__)
@@ -34,26 +35,31 @@ def card_oracle(oid):
 
 @app.route("/import/archidekt", methods=['POST'])
 def import_archidekt():
-    err = None
+    post_data = {}
     try:
         post_data = request.get_json()
+        if not isinstance(post_data, dict) or 'url' not in post_data:
+            err = {
+                'result': 'error',
+                'error': "'url' field missing in POST data"
+            }
+            return jsonify(err), 400
     except Exception as e:
         err = {
             'result': 'error',
             'error_type': str(type(e)),
             'error': str(e)
         }
-
-    if 'url' not in post_data:
-        err = {
-            'result': 'error',
-            'error': "'url' field missing in POST data"
-        }
-
-    if err is not None:
         return jsonify(err), 400
 
     return routes_importer.parse_archidekt(post_data['url'])
+
+
+@app.route('/cardimg', defaults={'path': ''})
+@app.route('/cardimg/<path:path>')
+def card_img(path):
+    return routes_card_image.get_img(path)
+
 
 if __name__ == "__main__":
     @app.route('/js/<path:path>')
