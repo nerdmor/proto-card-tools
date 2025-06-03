@@ -2,6 +2,7 @@ class Card{
     constructor(obj=null){
         this.cardKey = '';
         this.pileNumber = 1;
+        this.icon = '';
         this.props = {
             'oracle_id': 'oracleId',
             'name': 'name',
@@ -87,6 +88,28 @@ class Card{
     updateKey(){
         this.cardKey = this.oracleId + '.' + this.selectedVariant + '.' + this.pileNumber;
     }
+
+    makeOuterHTML(){
+        const cardHtml = cardOuterHtmlModel.replaceAll('{{card_key}}', this.cardKey)
+                                           .replaceAll('{{innerHTML}}', this.makeInnerHTML());
+        return cardHtml;
+    }
+
+    makeInnerHTML(){
+        return `${this.makeHeaderHTML()}\n${this.makeBodyHTML()}`;
+    }
+
+    makeHeaderHTML(){
+        return cardHeaderHtmlModel.replaceAll('{{card_key}}', this.cardKey);
+    }
+
+    makeBodyHTML(){
+        const cardImgUrl = this.variants[this.selectedVariant].image_uri.replaceAll('https://cards.scryfall.io/', `${window.location.protocol}//${window.location.host}/cardimg/`);
+        return cardBodyHtmlModel.replaceAll('{{card_key}}', this.cardKey)
+                                .replaceAll('{{image_url}}', cardImgUrl)
+                                .replaceAll('{{card_icon}}', this.icon);
+    }
+
 
 
 }

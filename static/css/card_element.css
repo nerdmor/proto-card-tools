@@ -2,7 +2,7 @@
     --card_width: 100px
 }
 
-.card_outer {
+.mtgcard-outer {
     background-color: #505065;
     border-width: 2px;
     border-color:#505065;
@@ -10,19 +10,28 @@
     border-style: solid;
     width: var(--card_width);
     display: inline-flex;
+    margin-bottom: 0.1em;
 }
 
-.card_header{
+.mtgcard-header{
     background-color: #505065;
     width: 100%;
     padding: 0 0 0 0;
     /* display: inline; */
 }
 
-.card_img {
+.mtgcard-body {
     width: 100%;
     aspect-ratio: 61 / 85;
     display: inline-flex;
     padding: 0 0 0 0;
     background-size: contain;
+}
+
+.mtgcard-icon-wrapper {
+    width: 100%;
+    text-align: center;
+    font-size: 6em;
+    margin-top: auto;
+    margin-bottom: auto;
 }

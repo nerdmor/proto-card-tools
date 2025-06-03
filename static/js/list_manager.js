@@ -65,20 +65,43 @@ class ListManager{
         return maxPileNum;
     }
 
-    printCards(){
-        var card = null;
-        var cardHtml = '';
+    printAllCards(){
         var htmlList = [];
-        var cardImgUrl = '';
         for(const cardKey in this.cardList){
-            card = this.cardList[cardKey];
-            cardImgUrl = card.variants[card.selectedVariant].image_uri.replaceAll('https://cards.scryfall.io/', `${window.location.protocol}//${window.location.host}/cardimg/`);
-            cardHtml = cardHtmlModel.replaceAll('{{card_id}}', cardKey)
-                                    .replaceAll('{{image_url}}', cardImgUrl);
-            htmlList.push(cardHtml);
+            htmlList.push(this.cardList[cardKey].makeOuterHTML());
         }
 
         document.getElementById('main_container').innerHTML = htmlList.join('\n');
+    }
+
+    printOneCard(cardKey, addIfNotFound=false){
+        if(!cardKey in this.cardList) return;
+        const cardElement = document.getElementById(`card_${cardKey}`);
+        if(cardElement === null){
+            if(addIfNotFound === false) return;
+            document.getElementById('main_container').innerHTML = document.getElementById('main_container').innerHTML + this.cardList[cardKey].makeOuterHTML();
+        }else{
+            cardElement.innerHTML = this.cardList[cardKey].makeInnerHTML();
+        }
+    }
+
+    advanceCardIcon(cardKey){
+        if(!cardKey in this.cardList) return;
+        const currentCardIcon = this.cardList[cardKey].icon;
+        if(!currentCardIcon in this.icons){
+            this.cardList[cardKey].icon = null;
+            return;
+        }
+        if(currentCardIcon == null){
+            this.cardList[cardKey].icon = this.icons[0];
+            return;
+        }
+        const currentCardIconIndex = this.icons.indexOf(currentCardIcon);
+        if(currentCardIconIndex == this.icons.length - 1){
+            this.cardList[cardKey].icon = null;
+            return;
+        }
+        this.cardList[cardKey].icon = this.icons[currentCardIconIndex + 1];
     }
 }
 

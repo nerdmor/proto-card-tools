@@ -1,5 +1,3 @@
-console.log('main.js loaded')
-
 // sets the css variable --card_width based on window width
 function resizeCards(){
     const currWidth = window.innerWidth;
@@ -22,3 +20,19 @@ window.addEventListener("resize", (e) => { resizeCards() })
 
 // running first instance on load
 resizeCards();
+
+
+// future elements bindings
+document.querySelector('body').addEventListener('click', (event) => {
+    // clicking on card to change status
+    if(matchElementAndParent(event.target, [
+        '.mtgcard-icon-p',
+        '.mtgcard-icon-wrapper',
+        '.mtgcard-body'
+    ])){
+        const cardKey = getCardKeyFromParent(event.target);
+        console.log(cardKey);
+        window.listManager.advanceCardIcon(cardKey);
+        window.listManager.printOneCard(cardKey);
+    }
+});
