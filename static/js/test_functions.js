@@ -10,10 +10,11 @@ async function addRandomCards(quantity){
     return window.listManager.cardList;
 }
 
-function testScryfallImport(url){
+async function testScryfallImport(url){
     if(url == null){
         url = 'https://archidekt.com/decks/12982598/super_bunny_round';
     }
-    window.listManager.importArchidekt(url);
+    await window.listManager.importArchidekt(url);
+    window.listManager.printCards();
 }
 

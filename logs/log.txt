@@ -3483,3 +3483,4 @@
 2025-05-16 16:05:34 | INFO | Inserted variant eld card 'Bonecrusher Giant // Stomp'
 2025-05-16 16:05:34 | INFO | Inserted variant dbl card 'Desperate Farmer // Depraved Harvester'
 2025-05-16 16:05:34 | INFO | Inserted variant psoi card 'Thing in the Ice // Awoken Horror'
+2025-06-03 10:06:06 | INFO | Running seed users__seed.sql

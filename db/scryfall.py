@@ -323,10 +323,16 @@ def parse_scryfall_file(file_name:str, conn: psycopg.Connection):
             variation['collector_number_sort'] = "0"
         variation['collector_number_sort'] = int(variation['collector_number_sort'])
 
-        if 'card_faces' in jrow:
-            image_uris = jrow['card_faces'][0].get('image_uris', [])
-        else:
-            image_uris = jrow.get('image_uris', [])
+        if 'image_uris' in jrow:
+            image_uris = jrow.get('image_uris', {})
+        elif 'card_faces' in jrow:
+            for face in jrow['card_faces']:
+                image_uris = face.get('image_uris', None)
+                if image_uris is not None:
+                    break
+            if image_uris is None:
+                image_uris = {}
+
         if 'large' in image_uris:
             variation['image_uri'] = image_uris['large']
         elif 'normal' in image_uris:

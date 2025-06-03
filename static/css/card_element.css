@@ -9,7 +9,7 @@
     border-radius: 5px;
     border-style: solid;
     width: var(--card_width);
-    /* display: inline-flex; */
+    display: inline-flex;
 }
 
 .card_header{
