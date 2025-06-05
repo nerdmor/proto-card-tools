@@ -71,7 +71,7 @@ class ListManager{
             htmlList.push(this.cardList[cardKey].makeOuterHTML());
         }
 
-        document.getElementById('main_container').innerHTML = htmlList.join('\n');
+        document.getElementById('main-container').innerHTML = htmlList.join('\n');
     }
 
     printOneCard(cardKey, addIfNotFound=false){
@@ -102,5 +102,10 @@ class ListManager{
             return;
         }
         this.cardList[cardKey].icon = this.icons[currentCardIconIndex + 1];
+    }
+
+    clear(){
+        this.cardList = {};
+        this.printAllCards();
     }
 }

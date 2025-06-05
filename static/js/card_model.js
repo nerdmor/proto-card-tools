@@ -59,6 +59,13 @@ class Card{
             }
         }
 
+        const internalProps = ['pileNumber', 'icon'];
+        for(const propName in internalProps){
+            if(Object.hasOwn(obj, propName)){
+                this.propName = obj.propName;
+            }
+        }
+
         if(this.selectedVariant === null || !Object.hasOwn(this.variants, this.selectedVariant)){
             this.selectedVariant = Object.keys(this.variants)[0];
         }
@@ -110,6 +117,7 @@ class Card{
                                 .replaceAll('{{card_icon}}', this.icon);
     }
 
-
-
+    copy(){
+        return new Card(JSON.parse(JSON.stringify(this)));
+    }
 }

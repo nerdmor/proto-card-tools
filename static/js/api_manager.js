@@ -3,10 +3,26 @@ class ApiManager {
         this.domain = `${window.location.protocol}//${window.location.host}`;
     }
 
+    async fetchText(url, cache=false){
+        var cacheValue = "no-cache";
+        if(cache === true){
+            cacheValue = 'default';
+        }else if(cache instanceof String){
+            cacheValue = cache;
+        }
+
+        const httpResponse = await fetch(url, {
+            method: "GET",
+            cache: cacheValue
+        });
+        const response = await httpResponse.text();
+        return response;
+    }
+
     async fetchJson(url){
         const response = await fetch(url, {
             method: "GET",
-            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            cache: "no-cache",
             headers: {
                 "Content-Type": "application/json",
             }
@@ -53,6 +69,12 @@ class ApiManager {
     async loginRenew(){
         const url = `${this.domain}/login/renew`;
         const response = await this.fetchJson(url);
+        return response;
+    }
+
+    async htmlContent(fileName){
+        const url = `${this.domain}/html/${fileName}`;
+        const response = await this.fetchText(url, true);
         return response;
     }
 }

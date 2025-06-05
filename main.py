@@ -101,4 +101,8 @@ if __name__ == "__main__":
     def serve_img(path):
         return send_from_directory('static/img', path)
 
+    @app.route('/html/<path:path>')
+    def serve_html(path):
+        return send_from_directory('static/html', path)
+
     app.run(host='0.0.0.0', ssl_context='adhoc')

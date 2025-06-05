@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     window.apiManager = new ApiManager();
     window.listManager = new ListManager();
     window.sessionManager = new SessionManager();
+    window.modalManager = new ModalManager('modal-wrapper');
 
 
     /* EVENT BINDINGS *****************************************************************************/
