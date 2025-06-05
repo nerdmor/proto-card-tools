@@ -104,5 +104,3 @@ class ListManager{
         this.cardList[cardKey].icon = this.icons[currentCardIconIndex + 1];
     }
 }
-
-window.listManager = new ListManager();

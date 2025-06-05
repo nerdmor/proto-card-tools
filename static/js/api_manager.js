@@ -43,6 +43,16 @@ class ApiManager {
         const response = await this.fetchJson(url);
         return response;
     }
-}
 
-window.apiManager = new ApiManager();
+    async loginValidate(){
+        const url = `${this.domain}/login/validate`;
+        const response = await this.fetchJson(url);
+        return response;
+    }
+
+    async loginRenew(){
+        const url = `${this.domain}/login/renew`;
+        const response = await this.fetchJson(url);
+        return response;
+    }
+}
