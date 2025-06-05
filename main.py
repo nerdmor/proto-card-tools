@@ -78,6 +78,16 @@ def login_redirect():
     return send_file('static/html/login_redirect.html')
 
 
+@app.route("/login/validate")
+def login_validate():
+    return routes_login.validate_token()
+
+
+@app.route("/login/renew")
+def login_renew():
+    return routes_login.renew_token()
+
+
 if __name__ == "__main__":
     @app.route('/js/<path:path>')
     def serve_js(path):

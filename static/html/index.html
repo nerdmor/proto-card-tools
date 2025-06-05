@@ -7,38 +7,75 @@
         <meta name="author" content="Felipe Proto">
         <title>Proto Card Tools</title>
         <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="/css/card_element.css">
     </head>
     <body>
         <main>
-            <header id="top_header" class="p-3 text-bg-dark">
+            <header id="header-top" class="p-3 text-bg-dark">
                 <div class="container">
                     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                         <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
-                                <use xlink:href="#bootstrap"></use>
+                            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Proto Card Tools">
+                                <use xlink:href="#"></use>
                             </svg>
                         </a>
-                        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                            <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
-                            <li><a href="#" class="nav-link px-2 text-white">Features</a></li>
-                            <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li>
-                            <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li>
-                            <li><a href="#" class="nav-link px-2 text-white">About</a></li>
+                        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-left mb-md-0 menu-top">
+                            <li><a href="#" class="nav-link px-2 text-secondary">Proto Card Tools</a></li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link px-2 text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                List
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="menu-top-list-new" class="dropdown-item" href="#"><i class="bi bi-file-earmark-plus"></i>&nbsp;New</a></li>
+                                    <li><a id="menu-top-list-open" class="dropdown-item" href="#"><i class="bi bi-folder"></i>&nbsp;Open</a></li>
+                                    <li><a id="menu-top-list-settings" class="dropdown-item" href="#"><i class="bi bi-sliders"></i>&nbsp;Setings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a id="menu-top-list-import" class="dropdown-item" href="#"><i class="bi bi-cloud-upload"></i>&nbsp;Import</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a id="menu-top-list-clear" class="dropdown-item" href="#"><i class="bi bi-dash-circle"></i>&nbsp;Clear</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link px-2 text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                System
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a id="menu-top-system-settings" class="dropdown-item" href="#"><i class="bi bi-gear"></i>&nbsp;Settings</a></li>
+                                    <li><a id="menu-top-system-about" class="dropdown-item" href="#"><i class="bi bi-info-circle"></i>&nbsp;About</a></li>
+                                    <!-- <li><hr class="dropdown-divider"></li> -->
+                                    <!-- <li><a id="menu-top-clear-storage" class="dropdown-item" href="#">Clear local storage</a></li> -->
+                                </ul>
+                            </li>
                         </ul>
                         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                            <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
+                            &nbsp;
                         </form>
                         <div class="text-end">
-                            <button type="button" class="btn btn-outline-light me-2">Login</button>
-                            <button type="button" class="btn btn-warning">Sign-up</button>
+                            <ul class="nav">
+                                <li id="menu-top-login-li" class="hidden">
+                                    <a id="menu-top-login" href="/login" class="btn btn-outline-warning me-2"><i class="bi bi-google"></i>&nbsp;Login with Google</a>
+                                </li>
+                                <li id="menu-top-user-li" class="nav-item dropdown hidden">
+                                    <a id="menu-top-user" class="nav-link text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-person-fill"></i>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a id="menu-top-user-account" class="dropdown-item" href="#"><i class="bi bi-person"></i>&nbsp;My Account</a></li>
+                                        <li><a id="menu-top-user-logout" class="dropdown-item" href="#"><i class="bi bi-bi-box-arrow-left"></i>&nbsp;Logout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </header>
-            <div id="main_container" class="container">
-            </div><!-- container  -->
+            <!-- container  -->
+            <div id="main-container" class="container">
+            </div>
+            <!-- container  -->
         </main>
         <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
         <script src="/js/js.cookie.min.js"></script>
@@ -47,6 +84,7 @@
         <script src="/js/card_model.js"></script>
         <script src="/js/api_manager.js"></script>
         <script src="/js/list_manager.js"></script>
+        <script src="/js/session_manager.js"></script>
         <script src="/js/main.js"></script>
         <script src="/js/test_functions.js"></script>
     </body>

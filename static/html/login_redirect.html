@@ -20,7 +20,7 @@
         <script>
             window.setTimeout(() => {
                 let params = new URLSearchParams(document.location.search);
-                Cookies.set('pct_login', params.get('token'), {expires: 29})
+                Cookies.set('pct_login', atob(params.get('token')), {expires: 29})
 
                 window.location.href = `${window.location.protocol}//${window.location.host}/`
             }, 300)

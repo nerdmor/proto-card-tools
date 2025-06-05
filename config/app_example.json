@@ -1,4 +1,8 @@
 {
     "app_secret": "581663158773099413211957165956581663158773099413211957165956",
-    "cookie_valid_days": 30
+    "cookie_valid_days": 30,
+    "bypass_external_login": false,
+    "default_login": {
+        "id": 1
+    }
 }

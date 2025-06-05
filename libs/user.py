@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import base64
 
 import jwt
 
@@ -76,7 +77,7 @@ def create_user(**kwargs):
     return new_id
 
 
-def make_jwt_token(user_id):
+def make_jwt_token(user_id, encode_base64=False):
     now = datetime.now()
     expiration_date = now + timedelta(days=config['app']['cookie_valid_days'])
 
@@ -90,6 +91,11 @@ def make_jwt_token(user_id):
         config['app']['secret'],
         algorithm="HS256"
     )
+
+    if encode_base64 is True:
+        token_bytes = base64.b64encode(encoded_jwt.encode("ascii"))
+        encoded_jwt = token_bytes.decode("ascii")
+
     return encoded_jwt
 
 
@@ -98,7 +104,11 @@ def decode_jwt_token(token):
 
 
 def validate_jwt_token(token):
-    decoded_token = decode_jwt_token(token)
+    if not isinstance(token, dict):
+        decoded_token = decode_jwt_token(token)
+    else:
+        decoded_token = token
+
     now = datetime.now()
     decoded_token['created_at'] = datetime.strptime(decoded_token['created_at'], '%Y-%m-%d %H:%M:%S')
     decoded_token['expires_at'] = datetime.strptime(decoded_token['expires_at'], '%Y-%m-%d %H:%M:%S')

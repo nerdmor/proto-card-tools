@@ -1,9 +1,25 @@
+.hidden {
+    display: none;
+}
+
+
 body {
     /* background-color: #101214; */
     background-color: #171921;
 }
 
-#main_container {
+#main-container {
     max-width: 95%;
+}
+
+.menu-top a{
+    margin-left: 0.5em;
+}
+
+#menu-top-user{
+    border-width: 1px;
+    border-color: #fff;
+    border-style: solid;
+    border-radius: 8px;
 }
 

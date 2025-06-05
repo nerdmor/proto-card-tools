@@ -1,7 +1,6 @@
 import json
-import base64
 
-from flask import request, redirect, url_for, jsonify
+from flask import request, redirect, jsonify
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 
@@ -10,20 +9,26 @@ from libs import user as userlib
 
 
 def login_start():
+    if config['app']['bypass_external_login'] is True:
+        # if we can't login because Google won't let us use OAUTH in the local
+        # domains, we use default login.
+        jwt_token = userlib.make_jwt_token(config['app']['default_login_id'], encode_base64=True)
+        redirect_url = f"{request.base_url}/redirect?token={jwt_token}"
+        return redirect(redirect_url)
+
     client = WebApplicationClient(config['google']['web']['client_id'])
 
     # Find out what URL to hit for Google login
     google_provider_cfg = requests.get(config['google']['discovery_url']).json()
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
     # Use library to construct the request for Google login and provide
     # scopes that let you retrieve user's profile from Google
-
     request_uri = client.prepare_request_uri(
-        authorization_endpoint,
+        google_provider_cfg["authorization_endpoint"],
         redirect_uri=request.base_url + "/oauth",
         scope=["openid"]
     )
+    print(request_uri)
 
     return redirect(request_uri)
 
@@ -68,15 +73,42 @@ def login_callback():
     else:
         user_id = existing_user['id']
 
-    jwt_token = userlib.make_jwt_token(user_id)
-    token_bytes = base64.b64encode(jwt_token.encode("ascii"))
-    token_string = token_bytes.decode("ascii")
-
+    jwt_token = userlib.make_jwt_token(user_id, encode_base64=True)
     redirect_url = request.base_url.replace('/oauth', '/redirect')
-    redirect_url = f"{redirect_url}?token={token_string}"
+    redirect_url = f"{redirect_url}?token={jwt_token}"
 
     return redirect(redirect_url)
 
 
+def validate_token():
+    token = request.cookies.get('pct_login')
+    if not token or userlib.validate_jwt_token(token) is False:
+        resp = {
+            "status": "fail",
+            "message": "invalid token"
+        }
+        return jsonify(resp), 401
+
+    resp = {
+        "status": "success",
+        "message": "valid token"
+    }
+    return jsonify(resp), 200
 
 
+def renew_token():
+    token = request.cookies.get('pct_login')
+    if not token or userlib.validate_jwt_token(token) is False:
+        resp = {
+            "status": "fail",
+            "message": "invalid token"
+        }
+        return jsonify(resp), 403
+
+    jwt_token = userlib.make_jwt_token(userlib.decode_jwt_token(token)['user_id'], encode_base64=True)
+
+    resp = {
+        "status": "success",
+        "token":  jwt_token
+    }
+    return jsonify(resp), 200
