@@ -12,10 +12,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
     window.addEventListener("resize", (e) => { resizeCards() })
 
     // Click on menu items events
+    document.getElementById('menu-top-list-clear').addEventListener('click', (e)=>{
+        e.preventDefault();
+        window.modalManager.emptyListModal('modal-empty-list', 'modal-empty-list-confirm');
+    });
+
     document.getElementById('menu-top-user-logout').addEventListener('click', (e) => {
         e.preventDefault();
         window.sessionManager.logout();
     });
+
 
 
     // future elements bindings
